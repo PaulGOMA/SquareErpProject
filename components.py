@@ -5,8 +5,9 @@
 """
 
 import sys
-from PySide6.QtWidgets import  QMainWindow, QWidget, QHBoxLayout, QApplication, QPushButton, QBoxLayout, QSizePolicy
-from PySide6.QtGui import QIcon, QFont, Qt, QPixmap
+from PySide6.QtWidgets import  QMainWindow, QWidget, QHBoxLayout, QApplication, QPushButton, QBoxLayout, QSizePolicy, QFrame, QLineEdit
+from PySide6.QtGui import QIcon, QFont, Qt
+from PySide6.QtCore import QSize
 
 
 # ::::::::Buttons::::::::::::: #
@@ -62,6 +63,40 @@ def validate_button(parent: QWidget, layout: QBoxLayout):
 
 # ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
+# ::::::::text input line::::::::::::: #
+
+# Search bar 
+
+def searchbar_for_navbar(parent: QWidget, layout: QBoxLayout):
+    frame = QFrame(parent)
+    frame.setFixedSize(424, 52)
+    frame.setStyleSheet("QFrame {background-color: transparent; border: 3px solid #e1e2fe;}")
+
+    frame_layout = QHBoxLayout()
+    frame.setLayout(frame_layout)
+
+    line_input = QLineEdit(frame)
+    line_input.setFixedWidth(350)
+    line_input.setPlaceholderText("Recherchez...")
+    line_input.setFrame(QFrame.NoFrame)
+    line_input.setStyleSheet("background-color: transparent; color: #3d3d3d;")
+    line_input.setFont(QFont("Montserrat", 11, QFont.Normal))
+    frame_layout.addWidget(line_input)
+
+    frame_layout.addStretch()
+
+    icon = QPushButton(frame)
+    icon.setFlat(True)
+    icon.setIcon(QIcon("Icons/search_icon.svg"))
+    icon.setIconSize(QSize(26, 22))
+    icon.setStyleSheet(
+        "QPushButton:pressed {icon: url('Icons/search_icon_clicked.svg')}"
+    )
+    frame_layout.addWidget(icon)
+
+    layout.addWidget(frame)
+    return frame
+
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -74,8 +109,9 @@ class MainWindow(QMainWindow):
         self.centralArea.setLayout(self.layout)
 
         add_button_without_text(parent=self.centralArea, layout=self.layout)
-        add_button_with_text(parent=self, layout=self.layout, text="Nouveau message ")
-        validate_button(parent=self, layout=self.layout)
+        add_button_with_text(parent=self.centralArea, layout=self.layout, text="Nouveau message ")
+        validate_button(parent=self.centralArea, layout=self.layout)
+        searchbar_for_navbar(parent=self.centralArea, layout=self.layout)
 
 
 if __name__ == "__main__":
