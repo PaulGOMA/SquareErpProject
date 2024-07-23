@@ -7,7 +7,7 @@
 import sys
 from PySide6.QtWidgets import  QMainWindow, QWidget, QHBoxLayout, QApplication, QPushButton, QBoxLayout, QSizePolicy, QFrame, QLineEdit
 from PySide6.QtGui import QIcon, QFont, Qt
-from PySide6.QtCore import QSize
+from PySide6.QtCore import QSize, Slot
 
 
 # ::::::::Buttons::::::::::::: #
@@ -66,6 +66,36 @@ def validate_button(parent: QWidget, layout: QBoxLayout):
 # ::::::::text input line::::::::::::: #
 
 # Search bar 
+def searchbar(parent: QWidget, layout: QBoxLayout, text: str):
+    frame = QFrame(parent)
+    frame.setFixedSize(240, 52)
+    frame.setStyleSheet("QFrame {background-color: transparent; border: 3px solid #e1e2fe;}")
+
+    frame_layout = QHBoxLayout()
+    frame.setLayout(frame_layout)
+
+    button = QPushButton(frame)
+    button.setObjectName("button")
+    button.setFlat(True)
+    button.setIcon(QIcon("Icons/search_icon.svg"))
+    button.setIconSize(QSize(26, 22))
+    button.setStyleSheet("QPushButton:pressed {icon: url('Icons/search_icon_clicked.svg')}")
+    frame_layout.addWidget(button)
+
+    frame_layout.addStretch()
+
+    line_edit = QLineEdit(frame)
+    line_edit.setObjectName("line_edit")
+    line_edit.setFixedWidth(175)
+    line_edit.setPlaceholderText(text)
+    line_edit.setFrame(QFrame.NoFrame)
+    line_edit.setStyleSheet("background-color: transparent; color: #3d3d3d;")
+    line_edit.setFont(QFont("Montserrat", 11, QFont.Normal))
+    frame_layout.addWidget(line_edit)
+
+    layout.addWidget(frame)
+    return frame
+
 
 def searchbar_for_navbar(parent: QWidget, layout: QBoxLayout):
     frame = QFrame(parent)
@@ -75,24 +105,24 @@ def searchbar_for_navbar(parent: QWidget, layout: QBoxLayout):
     frame_layout = QHBoxLayout()
     frame.setLayout(frame_layout)
 
-    line_input = QLineEdit(frame)
-    line_input.setFixedWidth(350)
-    line_input.setPlaceholderText("Recherchez...")
-    line_input.setFrame(QFrame.NoFrame)
-    line_input.setStyleSheet("background-color: transparent; color: #3d3d3d;")
-    line_input.setFont(QFont("Montserrat", 11, QFont.Normal))
-    frame_layout.addWidget(line_input)
+    line_edit = QLineEdit(frame)
+    line_edit.setObjectName("line_edit")
+    line_edit.setFixedWidth(350)
+    line_edit.setPlaceholderText("Recherchez...")
+    line_edit.setFrame(QFrame.NoFrame)
+    line_edit.setStyleSheet("background-color: transparent; color: #3d3d3d;")
+    line_edit.setFont(QFont("Montserrat", 11, QFont.Normal))
+    frame_layout.addWidget(line_edit)
 
     frame_layout.addStretch()
 
-    icon = QPushButton(frame)
-    icon.setFlat(True)
-    icon.setIcon(QIcon("Icons/search_icon.svg"))
-    icon.setIconSize(QSize(26, 22))
-    icon.setStyleSheet(
-        "QPushButton:pressed {icon: url('Icons/search_icon_clicked.svg')}"
-    )
-    frame_layout.addWidget(icon)
+    button = QPushButton(frame)
+    button.setObjectName("button")
+    button.setFlat(True)
+    button.setIcon(QIcon("Icons/search_icon.svg"))
+    button.setIconSize(QSize(26, 22))
+    button.setStyleSheet("QPushButton:pressed {icon: url('Icons/search_icon_clicked.svg')}")
+    frame_layout.addWidget(button)
 
     layout.addWidget(frame)
     return frame
@@ -112,7 +142,11 @@ class MainWindow(QMainWindow):
         add_button_with_text(parent=self.centralArea, layout=self.layout, text="Nouveau message ")
         validate_button(parent=self.centralArea, layout=self.layout)
         searchbar_for_navbar(parent=self.centralArea, layout=self.layout)
+        searchbar(parent=self.centralArea, layout=self.layout, text="Recherchez une mission...")
 
+@Slot()
+def print_text(text: str):
+    print(text)
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
