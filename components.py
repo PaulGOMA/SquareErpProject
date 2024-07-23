@@ -1,13 +1,12 @@
 """
-    #This file contains all the functions
+    # This file contains all the functions
     # required to create the componants used in the application, 
     # such as buttons, search bars, etc.
 """
 
-import sys
-from PySide6.QtWidgets import  QMainWindow, QWidget, QHBoxLayout, QApplication, QPushButton, QBoxLayout, QSizePolicy, QFrame, QLineEdit, QLabel
+from PySide6.QtWidgets import QWidget, QHBoxLayout, QPushButton, QBoxLayout, QSizePolicy, QFrame, QLineEdit, QLabel, QVBoxLayout
 from PySide6.QtGui import QIcon, QFont, Qt, QPixmap
-from PySide6.QtCore import QSize, Slot
+from PySide6.QtCore import QSize
 from enumeration import MESSAGE_FILE_TYPE as TYPE, PROGRESS
 
 
@@ -247,7 +246,7 @@ def display_file_inside_message(parent: QWidget, layout: QBoxLayout, filename: s
         value = size / 1048576
         file_size.setText(f"{value: .2f} Mo")
     else:
-        print("la valeur est trop grande")
+        file_size.setText("!!")
 
     frame_layout.addWidget(file_size) 
 
@@ -263,4 +262,93 @@ def display_file_inside_message(parent: QWidget, layout: QBoxLayout, filename: s
     layout.addWidget(frame)
     return frame
 
+# display report
+def display_report(parent: QWidget, layout: QBoxLayout, filename: str, size: int) -> QFrame:
+    frame = QFrame(parent)
+    frame.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+    frame.setStyleSheet(
+        """
+            QFrame {border : none; background-color : transparent;}
+            QFrame:hover {background-color : #E1E2FE;}
+        """ 
+    )
+    frame.setToolTip(filename)
 
+    frame_layout = QHBoxLayout()
+    frame.setLayout(frame_layout)
+
+    frame_layout.addStretch(1)
+
+    first_layout = QVBoxLayout()
+    frame_layout.addLayout(first_layout)
+
+    icon = QLabel(frame)
+    icon.setStyleSheet("border: none;")
+    split_file = filename.split(".")
+    file_format = split_file[1]
+    if file_format == 'pdf':
+        icon.setPixmap(QPixmap("Icons/pdf_report_icon.svg"))
+    elif file_format in ["doc", "docx"]:
+        icon.setPixmap(QPixmap("Icons/doc_report_icon.svg"))
+    else:
+        icon.setPixmap(QPixmap("Icons/unknown_report_icon.svg"))
+
+    icon_layout = QHBoxLayout()
+    first_layout.addLayout(icon_layout)
+    icon_layout.addStretch(1)
+    icon_layout.addWidget(icon)
+    icon_layout.addStretch(1)
+    first_layout.addStretch(1)
+
+    file_name = QLabel(frame)
+    file_name.setFont(QFont('Calibri', 16, QFont.Bold, True))
+    file_name.setStyleSheet("QLabel{color : #7c7c7c; border: none;}")
+    if len(filename) > 12:
+        name = filename[0:9] + "..."
+        file_name.setText(name)
+    else:
+        file_name.setText(filename)
+
+    file_name_layout = QHBoxLayout()
+    file_name_layout.addStretch(1)
+    file_name_layout.addWidget(file_name)
+    file_name_layout.addStretch(1)
+    first_layout.addLayout(file_name_layout)
+    first_layout.addStretch(1)
+
+    file_size = QLabel(frame)
+    file_size.setFont(QFont('Calibri', 16, QFont.Bold, False))
+    file_size.setStyleSheet("color: #656565; border: none;")
+
+    if 1 <= len(str(size)) <= 2:
+        file_size.setText(f"{size} o")
+    elif 3 <= len(str(size)) <= 5:
+        value = size / 1024
+        file_size.setText(f"{value: .2f} Ko")
+    elif 6 <= len(str(size)) <= 7:
+        value = size / 1048576
+        file_size.setText(f"{value: .2f} Mo")
+    else:
+        file_size.setText("!!")
+
+    file_size_layout = QHBoxLayout()
+    file_size_layout.addStretch(1)
+    file_size_layout.addWidget(file_size) 
+    file_size_layout.addStretch(1)
+    first_layout.addLayout(file_size_layout)
+
+    second_layout = QVBoxLayout()
+    frame_layout.addLayout(second_layout)
+
+    button = QPushButton(frame)
+    button.setObjectName("button")
+    button.setFlat(True)
+    button.setIcon(QIcon("Icons/close_report_icon.svg"))
+    button.setStyleSheet("QPushButton:pressed {icon: url('Icons/close_report_icon_clicked.svg')}")
+    second_layout.addWidget(button)
+
+    second_layout.addStretch()
+    frame_layout.addStretch(1)
+    
+    layout.addWidget(frame)
+    return frame
