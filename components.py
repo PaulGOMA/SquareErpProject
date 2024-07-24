@@ -4,8 +4,8 @@
     # such as buttons, search bars, etc.
 """
 
-from PySide6.QtWidgets import QWidget, QHBoxLayout, QPushButton, QBoxLayout, QSizePolicy, QFrame, QLineEdit, QLabel, QVBoxLayout
-from PySide6.QtGui import QIcon, QFont, Qt, QPixmap
+from PySide6.QtWidgets import QWidget, QHBoxLayout, QPushButton, QBoxLayout, QSizePolicy, QFrame, QLineEdit, QLabel, QVBoxLayout, QComboBox, QStyledItemDelegate, QStyle
+from PySide6.QtGui import QIcon, QFont, Qt, QPixmap, QPen, QColor
 from PySide6.QtCore import QSize
 from enumeration import MESSAGE_FILE_TYPE as TYPE, PROGRESS
 
@@ -352,3 +352,58 @@ def display_report(parent: QWidget, layout: QBoxLayout, filename: str, size: int
     
     layout.addWidget(frame)
     return frame
+
+# ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+# ::::::::display combo box::::::::::::: #
+
+#Customize combo box
+class CustomComboboxDelegate(QStyledItemDelegate):
+    def paint(self, painter, option, index):
+        rect = option.rect.adjusted(16, 0, 0, 0)
+
+        painter.setFont(QFont('Calibri', 14, QFont.Medium, False))
+        if option.state & QStyle.State_Selected:
+            painter.fillRect(option.rect, "#ACA8F9")
+            painter.setPen(QColor("#ffffff"))  
+        else:
+            painter.setPen(option.palette.text().color())
+
+        painter.drawText(rect, Qt.AlignLeft, index.data())
+
+def combobox(parent: QWidget, layout: QBoxLayout, items: list) -> QComboBox:
+    combo = QComboBox(parent)
+    combo.addItems(items)
+    combo.setFont(QFont('Calibri', 14, QFont.Medium, False))
+    combo.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+    combo.setItemDelegate(CustomComboboxDelegate())
+    combo.setStyleSheet(
+        """
+            QComboBox {
+                background-color: #ffffff;
+                border: 2px solid #3d3d3d;
+                padding: 8px 76px 8px 16px;
+                color: #3d3d3d;
+            }
+            QComboBox:on {
+                border-color: #ACA8F9;
+            }
+            QComboBox:down-arrow {
+                image: url(Icons/down_arrow_icon.svg);
+                margin-right: 16px; 
+            }
+            QComboBox:down-arrow:on {
+                image: url(Icons/down_arrow_icon_on.svg);
+            }
+            QComboBox::drop-down {
+                border: none;
+            }
+            QComboBox QAbstractItemView {
+                background-color: white;
+                color: #3d3d3d;
+                border: 2px solid #3d3d3d;
+            }
+        """
+    )
+
+    layout.addWidget(combo)
+    return combo
