@@ -5,7 +5,7 @@
 """
 
 from PySide6.QtWidgets import QWidget, QHBoxLayout, QPushButton, QBoxLayout, QSizePolicy, QFrame, QLineEdit, QLabel, QVBoxLayout, QComboBox, QStyledItemDelegate, QStyle
-from PySide6.QtGui import QIcon, QFont, Qt, QPixmap, QPen, QColor
+from PySide6.QtGui import QIcon, QFont, Qt, QPixmap, QColor
 from PySide6.QtCore import QSize
 from enumeration import MESSAGE_FILE_TYPE as TYPE, PROGRESS
 
@@ -200,7 +200,7 @@ def display_file_inside_message(parent: QWidget, layout: QBoxLayout, filename: s
     icon = QLabel(frame)
     icon.setStyleSheet("border: none;")
     split_file = filename.split(".")
-    file_format = split_file[1]
+    file_format = split_file[-1]
     if file_format == 'pdf':
         icon.setPixmap(QPixmap("Icons/pdf_file_icon.svg"))
     elif file_format == 'txt':
@@ -407,3 +407,6 @@ def combobox(parent: QWidget, layout: QBoxLayout, items: list) -> QComboBox:
 
     layout.addWidget(combo)
     return combo
+
+# ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+# ::::::::display combo box::::::::::::: #
