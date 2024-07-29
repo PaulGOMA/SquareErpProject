@@ -4,9 +4,12 @@
     # such as buttons, search bars, etc.
 """
 
-from PySide6.QtWidgets import QWidget, QHBoxLayout, QPushButton, QBoxLayout, QSizePolicy, QFrame, QLineEdit, QLabel, QVBoxLayout, QComboBox, QStyledItemDelegate, QStyle
+from PySide6.QtWidgets import QWidget, QHBoxLayout, QStyle, \
+    QPushButton, QBoxLayout, QSizePolicy, QFrame, QLineEdit, \
+    QLabel, QVBoxLayout, QComboBox, QStyledItemDelegate, \
+    QTableView, QAbstractItemView
 from PySide6.QtGui import QIcon, QFont, Qt, QPixmap, QColor
-from PySide6.QtCore import QSize
+from PySide6.QtCore import QSize, QAbstractTableModel
 from enumeration import MESSAGE_FILE_TYPE as TYPE, PROGRESS
 
 
@@ -409,4 +412,49 @@ def combobox(parent: QWidget, layout: QBoxLayout, items: list) -> QComboBox:
     return combo
 
 # ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-# ::::::::display combo box::::::::::::: #
+# ::::::::display table view::::::::::::: #
+
+# Setting up the data manager
+class CustomTableModel(QAbstractTableModel):
+    def __init__(self, data):
+        super(CustomTableModel, self).__init__()
+        self._data = data
+
+    def data(self, index, role):
+        if role == Qt.DisplayRole:
+            return self._data[index.row()][index.column()]
+
+    def rowCount(self, index):
+        return len(self._data)
+
+    def columnCount(self, index):
+        return len(self._data[0]) if self._data else 0
+    
+
+def display_table(parent: QWidget, layout: QBoxLayout, model: CustomTableModel) -> QTableView:
+    table = QTableView(parent)
+    table.setModel(model)
+    table.setFont(QFont('Calibri', 14, QFont.Medium, False))
+    table.setGridStyle(Qt.NoPen)
+    table.setSelectionMode(QAbstractItemView.SingleSelection)
+    table.setSelectionBehavior(QAbstractItemView.SelectRows)
+    table.setStyleSheet(
+        """
+            QTableView {
+                background-color: #ffffff;
+                color: #3d3d3d;                
+                selection-color: #ffffff;
+                selection-background-color: #E1E2FE;
+            }
+            QHeaderView:section{
+                background-color: #744BE0;
+            }
+            QTableView::item:selected{
+                background-color: #E1E2FE;
+                border: 1px solid #E1E2FE;
+            }
+        """
+    )
+
+    layout.addWidget(table)
+    return table
