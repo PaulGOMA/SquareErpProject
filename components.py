@@ -7,7 +7,7 @@
 from PySide6.QtWidgets import QWidget, QHBoxLayout, QStyle, \
     QPushButton, QBoxLayout, QSizePolicy, QFrame, QLineEdit, \
     QLabel, QVBoxLayout, QComboBox, QStyledItemDelegate, \
-    QTableView, QAbstractItemView
+    QTableView, QAbstractItemView, QButtonGroup
 from PySide6.QtGui import QIcon, QFont, Qt, QPixmap, QColor
 from PySide6.QtCore import QSize, QAbstractTableModel
 from enumeration import MESSAGE_FILE_TYPE as TYPE, PROGRESS
@@ -16,7 +16,7 @@ from enumeration import MESSAGE_FILE_TYPE as TYPE, PROGRESS
 # ::::::::Buttons::::::::::::: #
 
 # Add new element button
-def add_button_without_text(parent: QWidget, layout: QBoxLayout) -> QPushButton:
+def addButtonWithoutText(parent: QWidget, layout: QBoxLayout) -> QPushButton:
     button = QPushButton(parent)
     button.setIcon(QIcon("Icons/big_plus_icon.svg"))
     button.setFlat(True)
@@ -31,7 +31,7 @@ def add_button_without_text(parent: QWidget, layout: QBoxLayout) -> QPushButton:
     return button
 
 
-def add_button_with_text(parent: QWidget, layout: QBoxLayout, text: str) -> QPushButton:
+def addButtonWithText(parent: QWidget, layout: QBoxLayout, text: str) -> QPushButton:
     button = QPushButton(QIcon("Icons/big_plus_icon.svg"), text, parent)
     button.setFlat(True)
     button.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
@@ -48,7 +48,7 @@ def add_button_with_text(parent: QWidget, layout: QBoxLayout, text: str) -> QPus
     return button
 
 # Validate button
-def validate_button(parent: QWidget, layout: QBoxLayout) -> QPushButton:
+def validateButton(parent: QWidget, layout: QBoxLayout) -> QPushButton:
     button = QPushButton(QIcon("Icons/validate_icon_button.svg"), "Valider ", parent)
     button.setFlat(True)
     button.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
@@ -63,6 +63,59 @@ def validate_button(parent: QWidget, layout: QBoxLayout) -> QPushButton:
     )
     layout.addWidget(button)
     return button
+
+# Side bar button
+def sidebarButton(parent: QWidget, text: str, uncheckedIconPath: str, checkedIconPath: str, layout: QBoxLayout, group: QButtonGroup) -> QPushButton:
+    button = QPushButton(QIcon(uncheckedIconPath), text, parent)
+    button.setFlat(True)
+    button.setCheckable(True)
+    button.setMaximumWidth(186)
+    button.setFixedHeight(51)
+    button.setFont(QFont("Montserrat", 14, QFont.Normal))
+    button.setStyleSheet(
+        f"""
+        QPushButton {{
+            background-color: none; 
+            text-align: left;
+            color: #CAC9FC;
+            border: none;
+            padding-left: 12px;}}
+        QPushButton:checked {{
+            icon: url({checkedIconPath});
+            border-left: 3px solid white;
+            background-color: #ACA8F9; 
+            color: white;}}
+        """
+    )
+    group.addButton(button)
+    layout.addWidget(button)
+    return button
+
+def sidebarButtonForReport(parent: QWidget, text: str, layout: QBoxLayout, group: QButtonGroup) -> QPushButton:
+    button = QPushButton(text, parent)
+    button.setFlat(True)
+    button.setCheckable(True)
+    button.setMaximumWidth(205)
+    button.setFixedHeight(58)
+    button.setFont(QFont("Montserrat", 14, QFont.Medium))
+    button.setStyleSheet(
+        f"""
+        QPushButton {{
+            background-color: none; 
+            text-align: left;
+            color: #744BE0;
+            border: none;
+            padding-left: 16px;}}
+        QPushButton:checked {{
+            border-left: 3px solid #744BE0;
+            background-color: #ACA8F9; 
+            color: white;}}
+        """
+    )
+    group.addButton(button)
+    layout.addWidget(button)
+    return button
+
 
 # ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 # ::::::::text input line::::::::::::: #
@@ -99,7 +152,7 @@ def searchbar(parent: QWidget, layout: QBoxLayout, text: str) -> QFrame:
     return frame
 
 
-def searchbar_for_navbar(parent: QWidget, layout: QBoxLayout) -> QFrame:
+def searchbarForNavbar(parent: QWidget, layout: QBoxLayout) -> QFrame:
     frame = QFrame(parent)
     frame.setFixedSize(424, 52)
     frame.setStyleSheet("QFrame {background-color: transparent; border: 3px solid #e1e2fe;}")
@@ -181,7 +234,7 @@ def progress(parent: QWidget, layout: QBoxLayout, progress: PROGRESS) -> QFrame:
 # ::::::::display file::::::::::::: #
 
 # File to send/download by message
-def display_file_inside_message(parent: QWidget, layout: QBoxLayout, filename: str, size: int, type: TYPE) -> QFrame:
+def displayFileInsideMessage(parent: QWidget, layout: QBoxLayout, filename: str, size: int, type: TYPE) -> QFrame:
     frame = QFrame(parent)
     frame.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
     frame.setStyleSheet(
@@ -266,7 +319,7 @@ def display_file_inside_message(parent: QWidget, layout: QBoxLayout, filename: s
     return frame
 
 # display report
-def display_report(parent: QWidget, layout: QBoxLayout, filename: str, size: int) -> QFrame:
+def displayReport(parent: QWidget, layout: QBoxLayout, filename: str, size: int) -> QFrame:
     frame = QFrame(parent)
     frame.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
     frame.setStyleSheet(
@@ -431,7 +484,7 @@ class CustomTableModel(QAbstractTableModel):
         return len(self._data[0]) if self._data else 0
     
 
-def display_table(parent: QWidget, layout: QBoxLayout, model: CustomTableModel) -> QTableView:
+def displayTable(parent: QWidget, layout: QBoxLayout, model: CustomTableModel) -> QTableView:
     table = QTableView(parent)
     table.setModel(model)
     table.setFont(QFont('Calibri', 14, QFont.Medium, False))
