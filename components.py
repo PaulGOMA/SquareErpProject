@@ -116,6 +116,54 @@ def sidebarButtonForReport(parent: QWidget, text: str, layout: QBoxLayout, group
     layout.addWidget(button)
     return button
 
+# title bar buttons
+def closeWindowButton(parent: QWidget, layout: QBoxLayout) -> QPushButton:
+    button = QPushButton(parent)
+    button.setIcon(QIcon("Icons/unchecked_close_button.svg"))
+    button.setFlat(True)
+    button.setFixedSize(45, 45)
+    button.setStyleSheet(
+        """
+        QPushButton {background-color: none; border: none;}
+        QPushButton:pressed {
+            background-color: #E81123;
+            icon: url("Icons/checked_close_button.svg");
+        }
+        """
+    )
+    layout.addWidget(button)
+    return button
+
+def resizeWindowButton(parent: QWidget, layout: QBoxLayout) -> QPushButton:
+    button = QPushButton(parent)
+    button.setIcon(QIcon("Icons/unchecked_resize_icon.svg"))
+    button.setFlat(True)
+    button.setCheckable(True)
+    button.setFixedSize(45, 45)
+    button.setStyleSheet(
+        """
+        QPushButton {background-color: none; border: none;}
+        QPushButton:pressed {background-color: #EFEFFE; border: none;}
+        QPushButton:checked {icon: url("Icons/checked_resize_icon.svg");}
+        """
+    )
+    layout.addWidget(button)
+    return button
+
+def minimizeWindowButton(parent: QWidget, layout: QBoxLayout) -> QPushButton:
+    button = QPushButton(parent)
+    button.setIcon(QIcon("Icons/minimize_icon.svg"))
+    button.setFlat(True)
+    button.setChecked(True)
+    button.setFixedSize(45, 45)
+    button.setStyleSheet(
+        """
+        QPushButton {background-color: none; border: none;}
+        QPushButton:pressed {background-color: #EFEFFE; border: none;}
+        """
+    )
+    layout.addWidget(button)
+    return button
 
 # ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 # ::::::::text input line::::::::::::: #
