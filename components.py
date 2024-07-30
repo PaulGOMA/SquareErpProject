@@ -511,3 +511,13 @@ def displayTable(parent: QWidget, layout: QBoxLayout, model: CustomTableModel) -
 
     layout.addWidget(table)
     return table
+
+# ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+# ::::::::separator::::::::::::: #
+def separator(parent: QWidget, layout: QBoxLayout) -> QFrame:
+    frame = QFrame(parent)
+    frame.setFrameShape(QFrame.Shape.HLine)
+    frame.setFrameShadow(QFrame.Shadow.Plain)
+
+    layout.addWidget(frame)
+    return frame
