@@ -106,7 +106,7 @@ def sidebar(parent: QWidget, layout: QBoxLayout) -> QFrame:
     groupbutton = QButtonGroup(frame)
     groupbutton.setExclusive(True)
 
-    frameLayout.addStretch(1)
+    frameLayout.addStretch(2)
 
     dashboard = sidebarButton(parent=frame, text="Dashboard", uncheckedIconPath="Icons/unchecked_dashboard_icon.svg", checkedIconPath="Icons/checked_dashboard_icon.svg", layout=frameLayout, group=groupbutton)
     dashboard.setObjectName("dashboard")
@@ -138,7 +138,7 @@ def sidebar(parent: QWidget, layout: QBoxLayout) -> QFrame:
     logOut = sidebarButton(parent=frame, text="Déconnexion", uncheckedIconPath="Icons/unchecked_logout_icon.svg", checkedIconPath="Icons/checked_logout_icon.svg", layout=frameLayout, group=groupbutton)
     logOut.setObjectName("logOut")
 
-    frameLayout.addStretch(3)
+    frameLayout.addStretch(4)
 
     layout.addWidget(frame)
     return frame
