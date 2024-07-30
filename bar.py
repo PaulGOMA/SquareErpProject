@@ -4,11 +4,12 @@
 """
 
 from PySide6.QtWidgets import QFrame, QWidget, QBoxLayout,\
-    QSizePolicy, QHBoxLayout, QLabel
-from PySide6.QtGui import QFont, QPalette, QColor
+    QSizePolicy, QHBoxLayout, QLabel, QVBoxLayout, QButtonGroup
+from PySide6.QtGui import QFont, QPalette, QColor, QPixmap
 from PySide6.QtCore import Qt
 
-from components import addButtonWithText, validateButton
+from components import addButtonWithText, validateButton,\
+    sidebarButton, separator
 
 # ::::::::Headers::::::::::::: #
 
@@ -82,3 +83,62 @@ def headerWithoutButton(parent: QWidget, layout: QBoxLayout, text: str) -> QFram
     layout.addWidget(frame)
     return frame
 
+# ::::::::Sidebar::::::::::::: #
+
+def sidebar(parent: QWidget, layout: QBoxLayout) -> QFrame:
+    frame = QFrame(parent)
+    frame.setFixedWidth(186)
+    frame.setStyleSheet("background-color: #5234A5;")
+    frame.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Expanding)
+
+    frameLayout = QVBoxLayout()
+    frame.setLayout(frameLayout)
+    frameLayout.setContentsMargins(0, 24, 0, 24)
+    
+    logo = QLabel(frame)
+    logo.setPixmap(QPixmap("Pictures/full_logo_sb.png"))
+    logo.setScaledContents(True)
+    logo.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+    logo.setFixedSize(140, 50)
+    frameLayout.addWidget(logo)
+    frameLayout.setAlignment(logo, Qt.AlignHCenter)
+
+    groupbutton = QButtonGroup(frame)
+    groupbutton.setExclusive(True)
+
+    frameLayout.addStretch(1)
+
+    dashboard = sidebarButton(parent=frame, text="Dashboard", uncheckedIconPath="Icons/unchecked_dashboard_icon.svg", checkedIconPath="Icons/checked_dashboard_icon.svg", layout=frameLayout, group=groupbutton)
+    dashboard.setObjectName("dashboard")
+
+    report = sidebarButton(parent=frame, text="Rapport", uncheckedIconPath="Icons/unchecked_reporting_icon.svg", checkedIconPath="Icons/checked_reporting_icon.svg", layout=frameLayout, group=groupbutton)
+    report.setObjectName("report")
+
+    tracking = sidebarButton(parent=frame, text="Suivi", uncheckedIconPath="Icons/unchecked_data_collection_icon.svg", checkedIconPath="Icons/checked_data_collection_icon.svg", layout=frameLayout, group=groupbutton)
+    tracking.setObjectName("tracking")
+
+    location = sidebarButton(parent=frame, text="Site", uncheckedIconPath="Icons/unchecked_map_icon.svg", checkedIconPath="Icons/checked_map_icon.svg", layout=frameLayout, group=groupbutton)
+    location.setObjectName("location")
+
+    graph = sidebarButton(parent=frame, text="Analyse", uncheckedIconPath="Icons/unchecked_data_tracking_icon.svg", checkedIconPath="Icons/checked_data_tracking_icon.svg", layout=frameLayout, group=groupbutton)
+    graph.setObjectName("graph")
+
+    frameLayout.addStretch(2)
+
+    separator(parent=frame, layout=frameLayout)
+
+    frameLayout.addStretch(2)
+
+    message = sidebarButton(parent=frame, text="Message", uncheckedIconPath="Icons/unchecked_Message_icon.svg", checkedIconPath="Icons/checked_Message_icon.svg", layout=frameLayout, group=groupbutton)
+    message.setObjectName("message")
+
+    admin = sidebarButton(parent=frame, text="Admistration", uncheckedIconPath="Icons/unchecked_admin_icon.svg", checkedIconPath="Icons/checked_admin_icon.svg", layout=frameLayout, group=groupbutton)
+    admin.setObjectName("admin")
+
+    logOut = sidebarButton(parent=frame, text="Déconnexion", uncheckedIconPath="Icons/unchecked_logout_icon.svg", checkedIconPath="Icons/checked_logout_icon.svg", layout=frameLayout, group=groupbutton)
+    logOut.setObjectName("logOut")
+
+    frameLayout.addStretch(3)
+
+    layout.addWidget(frame)
+    return frame
