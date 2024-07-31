@@ -10,7 +10,8 @@ from PySide6.QtWidgets import QWidget, QHBoxLayout, QStyle, \
     QTableView, QAbstractItemView, QButtonGroup
 from PySide6.QtGui import QIcon, QFont, Qt, QPixmap, QColor
 from PySide6.QtCore import QSize, QAbstractTableModel
-from enumeration import MESSAGE_FILE_TYPE as TYPE, PROGRESS
+from enumeration import MESSAGE_FILE_TYPE as TYPE, PROGRESS,\
+    CONNEXION_STATUS as STATUS
 
 
 # ::::::::Buttons::::::::::::: #
@@ -80,7 +81,7 @@ def sidebarButton(parent: QWidget, text: str, uncheckedIconPath: str, checkedIco
             color: #CAC9FC;
             border: none;
             padding-left: 12px;}}
-        QPushButton:checked {{
+        QPushButton:checked, QPushButton:hover {{
             icon: url({checkedIconPath});
             border-left: 3px solid white;
             background-color: #ACA8F9; 
@@ -106,7 +107,7 @@ def sidebarButtonForReport(parent: QWidget, text: str, layout: QBoxLayout, group
             color: #744BE0;
             border: none;
             padding-left: 16px;}}
-        QPushButton:checked {{
+        QPushButton:checked, QPushButton:hover {{
             border-left: 3px solid #744BE0;
             background-color: #ACA8F9; 
             color: white;}}
@@ -125,7 +126,7 @@ def closeWindowButton(parent: QWidget, layout: QBoxLayout) -> QPushButton:
     button.setStyleSheet(
         """
         QPushButton {background-color: none; border: none;}
-        QPushButton:pressed {
+        QPushButton:pressed, QPushButton:hover {
             background-color: #E81123;
             icon: url("Icons/checked_close_button.svg");
         }
@@ -143,7 +144,7 @@ def resizeWindowButton(parent: QWidget, layout: QBoxLayout) -> QPushButton:
     button.setStyleSheet(
         """
         QPushButton {background-color: none; border: none;}
-        QPushButton:pressed {background-color: #EFEFFE; border: none;}
+        QPushButton:hover {background-color: #EFEFFE; border: none;}
         QPushButton:checked {icon: url("Icons/checked_resize_icon.svg");}
         """
     )
@@ -159,7 +160,7 @@ def minimizeWindowButton(parent: QWidget, layout: QBoxLayout) -> QPushButton:
     button.setStyleSheet(
         """
         QPushButton {background-color: none; border: none;}
-        QPushButton:pressed {background-color: #EFEFFE; border: none;}
+        QPushButton:hover {background-color: #EFEFFE; border: none;}
         """
     )
     layout.addWidget(button)
@@ -202,8 +203,8 @@ def searchbar(parent: QWidget, layout: QBoxLayout, text: str) -> QFrame:
 
 def searchbarForNavbar(parent: QWidget, layout: QBoxLayout) -> QFrame:
     frame = QFrame(parent)
-    frame.setFixedSize(424, 52)
-    frame.setStyleSheet("QFrame {background-color: transparent; border: 3px solid #e1e2fe;}")
+    frame.setFixedSize(424, 40)
+    frame.setStyleSheet("QFrame {background-color: transparent; border: 2px solid #e1e2fe;}")
 
     frame_layout = QHBoxLayout()
     frame.setLayout(frame_layout)
@@ -214,7 +215,7 @@ def searchbarForNavbar(parent: QWidget, layout: QBoxLayout) -> QFrame:
     line_edit.setPlaceholderText("Recherchez...")
     line_edit.setFrame(QFrame.NoFrame)
     line_edit.setStyleSheet("background-color: transparent; color: #3d3d3d;")
-    line_edit.setFont(QFont("Montserrat", 11, QFont.Normal))
+    line_edit.setFont(QFont("Montserrat", 8, QFont.Normal))
     frame_layout.addWidget(line_edit)
 
     frame_layout.addStretch()
@@ -223,7 +224,6 @@ def searchbarForNavbar(parent: QWidget, layout: QBoxLayout) -> QFrame:
     button.setObjectName("button")
     button.setFlat(True)
     button.setIcon(QIcon("Icons/search_icon.svg"))
-    button.setIconSize(QSize(26, 22))
     button.setStyleSheet("QPushButton:pressed {icon: url('Icons/search_icon_clicked.svg')}")
     frame_layout.addWidget(button)
 
@@ -569,3 +569,46 @@ def separator(parent: QWidget, layout: QBoxLayout) -> QFrame:
 
     layout.addWidget(frame)
     return frame
+
+# ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+# ::::::::user::::::::::::: #
+def user(parent: QWidget, layout: QBoxLayout, username: str, usermail: str) -> QFrame:
+    frame = QFrame(parent)
+    frame.setFrameShape(QFrame.NoFrame)
+    frame.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+    frame.setStyleSheet("background-color: none;")
+
+    frameLayout = QVBoxLayout()
+    frameLayout.setContentsMargins(0, 0, 0, 0)
+    frame.setLayout(frameLayout)
+
+    font = QFont('Calibri', 12, QFont.Normal, False)
+
+    name = QLabel(frame)
+    name.setText(username)
+    name.setFont(font)
+    name.setStyleSheet("color: #525252;")
+    name.setObjectName("name")
+    frameLayout.addWidget(name)
+
+    mail = QLabel(frame)
+    mail.setText(usermail)
+    mail.setFont(font)
+    mail.setStyleSheet("color: #525252;")
+    mail.setObjectName("mail")
+    frameLayout.addWidget(mail)
+
+    layout.addWidget(frame)
+    return frame
+
+# ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+# ::::::::attendance status::::::::::::: #
+def attendanceStatus(parent: QWidget, layout: QBoxLayout, status: STATUS) -> QLabel:
+    label = QLabel(parent)
+    label.setFrameShape(QFrame.NoFrame)
+    label.setScaledContents(True)
+    label.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+    label.setPixmap(QPixmap("Icons/online_icon.svg" if status == STATUS.OnLine else "Icons/offline_icon.svg"))
+
+    layout.addWidget(label)
+    return label
