@@ -9,3 +9,7 @@ class PROGRESS(Enum):
     Scheduled = 1
     InProgress = 2
     Finished = 3
+
+class CONNEXION_STATUS(Enum):
+    OffLine = 0
+    OnLine = 1
