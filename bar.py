@@ -9,7 +9,10 @@ from PySide6.QtGui import QFont, QPalette, QColor, QPixmap
 from PySide6.QtCore import Qt
 
 from components import addButtonWithText, validateButton,\
-    sidebarButton, separator
+    sidebarButton, separator, searchbarForNavbar, attendanceStatus, \
+    user, closeWindowButton, resizeWindowButton, minimizeWindowButton
+
+from enumeration import CONNEXION_STATUS as STATUS
 
 # ::::::::Headers::::::::::::: #
 
@@ -84,16 +87,16 @@ def headerWithoutButton(parent: QWidget, layout: QBoxLayout, text: str) -> QFram
     return frame
 
 # ::::::::Sidebar::::::::::::: #
-
 def sidebar(parent: QWidget, layout: QBoxLayout) -> QFrame:
     frame = QFrame(parent)
     frame.setFixedWidth(186)
     frame.setStyleSheet("background-color: #5234A5;")
+    frame.setFrameShape(QFrame.NoFrame)
     frame.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Expanding)
 
     frameLayout = QVBoxLayout()
     frame.setLayout(frameLayout)
-    frameLayout.setContentsMargins(0, 24, 0, 24)
+    frameLayout.setContentsMargins(0, 24, 0, 0)
     
     logo = QLabel(frame)
     logo.setPixmap(QPixmap("Pictures/full_logo_sb.png"))
@@ -139,6 +142,44 @@ def sidebar(parent: QWidget, layout: QBoxLayout) -> QFrame:
     logOut.setObjectName("logOut")
 
     frameLayout.addStretch(4)
+
+    layout.addWidget(frame)
+    return frame
+
+# ::::::::Titlebar::::::::::::: #
+def titlebar(parent: QWidget, layout: QBoxLayout, connexionstatus: STATUS, name: str, mail: str) -> QFrame:
+    frame = QFrame(parent)
+    frame.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
+    frame.setFrameShape(QFrame.NoFrame)
+    frame.setStyleSheet("background-color: white;")
+
+    frameLayout = QHBoxLayout()
+    frame.setLayout(frameLayout)
+    frameLayout.setContentsMargins(32, 0, 0, 0)
+
+    searchbar = searchbarForNavbar(frame, frameLayout)
+    searchbar.setObjectName("searchbar")
+
+    frameLayout.addStretch(12)
+
+    status = attendanceStatus(frame, frameLayout, connexionstatus)
+    status.setObjectName("status")
+
+    frameLayout.addStretch(1)
+
+    person =user(frame, frameLayout, name, mail)
+    person.setObjectName("person")
+
+    frameLayout.addStretch(1)
+
+    minimizeButton = minimizeWindowButton(frame, frameLayout)
+    minimizeButton.setObjectName("minimizeButton")
+
+    resizeButton = resizeWindowButton(frame, frameLayout)
+    resizeButton.setObjectName("resizeButton")
+
+    closeButton = closeWindowButton(frame, frameLayout)
+    closeButton.setObjectName("closeButton")
 
     layout.addWidget(frame)
     return frame
