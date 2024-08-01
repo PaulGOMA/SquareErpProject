@@ -29,7 +29,7 @@ def header(parent: QWidget, layout: QBoxLayout, text: str, textButton: str) -> Q
     title.setText(text)
     title.setFont(QFont("Montserrat", 14, QFont.DemiBold))
     palette = title.palette()
-    palette.setColor(QPalette.WindowText, QColor("#744BE0"))  # Couleur du texte
+    palette.setColor(QPalette.WindowText, QColor("#5234a5"))  # Couleur du texte
     title.setPalette(palette)
     frameLayout.addWidget(title)
 
@@ -53,7 +53,7 @@ def headerWithValidateButton(parent: QWidget, layout: QBoxLayout, text: str) -> 
     title.setText(text)
     title.setFont(QFont("Montserrat", 14, QFont.DemiBold))
     palette = title.palette()
-    palette.setColor(QPalette.WindowText, QColor("#744BE0"))
+    palette.setColor(QPalette.WindowText, QColor("#5234a5"))
     title.setPalette(palette)
     frameLayout.addWidget(title)
 
@@ -77,7 +77,7 @@ def headerWithoutButton(parent: QWidget, layout: QBoxLayout, text: str) -> QFram
     title.setText(text)
     title.setFont(QFont("Montserrat", 14, QFont.DemiBold))
     palette = title.palette()
-    palette.setColor(QPalette.WindowText, QColor("#744BE0"))
+    palette.setColor(QPalette.WindowText, QColor("#5234a5"))
     title.setPalette(palette)
     frameLayout.addWidget(title)
 
@@ -111,19 +111,19 @@ def sidebar(parent: QWidget, layout: QBoxLayout) -> QFrame:
 
     frameLayout.addStretch(2)
 
-    dashboard = sidebarButton(parent=frame, text="Dashboard", uncheckedIconPath="Icons/unchecked_dashboard_icon.svg", checkedIconPath="Icons/checked_dashboard_icon.svg", layout=frameLayout, group=groupbutton)
+    dashboard = sidebarButton(parent=frame, text="  Dashboard", uncheckedIconPath="Icons/unchecked_dashboard_icon.svg", checkedIconPath="Icons/checked_dashboard_icon.svg", layout=frameLayout, group=groupbutton)
     dashboard.setObjectName("dashboard")
 
-    report = sidebarButton(parent=frame, text="Rapport", uncheckedIconPath="Icons/unchecked_reporting_icon.svg", checkedIconPath="Icons/checked_reporting_icon.svg", layout=frameLayout, group=groupbutton)
+    report = sidebarButton(parent=frame, text="  Rapport", uncheckedIconPath="Icons/unchecked_reporting_icon.svg", checkedIconPath="Icons/checked_reporting_icon.svg", layout=frameLayout, group=groupbutton)
     report.setObjectName("report")
 
-    tracking = sidebarButton(parent=frame, text="Suivi", uncheckedIconPath="Icons/unchecked_data_collection_icon.svg", checkedIconPath="Icons/checked_data_collection_icon.svg", layout=frameLayout, group=groupbutton)
+    tracking = sidebarButton(parent=frame, text="  Suivi", uncheckedIconPath="Icons/unchecked_data_collection_icon.svg", checkedIconPath="Icons/checked_data_collection_icon.svg", layout=frameLayout, group=groupbutton)
     tracking.setObjectName("tracking")
 
-    location = sidebarButton(parent=frame, text="Site", uncheckedIconPath="Icons/unchecked_map_icon.svg", checkedIconPath="Icons/checked_map_icon.svg", layout=frameLayout, group=groupbutton)
+    location = sidebarButton(parent=frame, text="  Site", uncheckedIconPath="Icons/unchecked_map_icon.svg", checkedIconPath="Icons/checked_map_icon.svg", layout=frameLayout, group=groupbutton)
     location.setObjectName("location")
 
-    graph = sidebarButton(parent=frame, text="Analyse", uncheckedIconPath="Icons/unchecked_data_tracking_icon.svg", checkedIconPath="Icons/checked_data_tracking_icon.svg", layout=frameLayout, group=groupbutton)
+    graph = sidebarButton(parent=frame, text="  Analyse", uncheckedIconPath="Icons/unchecked_data_tracking_icon.svg", checkedIconPath="Icons/checked_data_tracking_icon.svg", layout=frameLayout, group=groupbutton)
     graph.setObjectName("graph")
 
     frameLayout.addStretch(2)
@@ -132,13 +132,13 @@ def sidebar(parent: QWidget, layout: QBoxLayout) -> QFrame:
 
     frameLayout.addStretch(2)
 
-    message = sidebarButton(parent=frame, text="Message", uncheckedIconPath="Icons/unchecked_Message_icon.svg", checkedIconPath="Icons/checked_Message_icon.svg", layout=frameLayout, group=groupbutton)
+    message = sidebarButton(parent=frame, text="  Message", uncheckedIconPath="Icons/unchecked_Message_icon.svg", checkedIconPath="Icons/checked_Message_icon.svg", layout=frameLayout, group=groupbutton)
     message.setObjectName("message")
 
-    admin = sidebarButton(parent=frame, text="Admistration", uncheckedIconPath="Icons/unchecked_admin_icon.svg", checkedIconPath="Icons/checked_admin_icon.svg", layout=frameLayout, group=groupbutton)
+    admin = sidebarButton(parent=frame, text="  Admistration", uncheckedIconPath="Icons/unchecked_admin_icon.svg", checkedIconPath="Icons/checked_admin_icon.svg", layout=frameLayout, group=groupbutton)
     admin.setObjectName("admin")
 
-    logOut = sidebarButton(parent=frame, text="Déconnexion", uncheckedIconPath="Icons/unchecked_logout_icon.svg", checkedIconPath="Icons/checked_logout_icon.svg", layout=frameLayout, group=groupbutton)
+    logOut = sidebarButton(parent=frame, text="  Déconnexion", uncheckedIconPath="Icons/unchecked_logout_icon.svg", checkedIconPath="Icons/checked_logout_icon.svg", layout=frameLayout, group=groupbutton)
     logOut.setObjectName("logOut")
 
     frameLayout.addStretch(4)
