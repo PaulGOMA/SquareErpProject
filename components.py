@@ -7,11 +7,11 @@
 from PySide6.QtWidgets import QWidget, QHBoxLayout, QStyle, \
     QPushButton, QBoxLayout, QSizePolicy, QFrame, QLineEdit, \
     QLabel, QVBoxLayout, QComboBox, QStyledItemDelegate, \
-    QTableView, QAbstractItemView, QButtonGroup
+    QTableView, QAbstractItemView, QButtonGroup, QCheckBox
 from PySide6.QtGui import QIcon, QFont, Qt, QPixmap, QColor
 from PySide6.QtCore import QSize, QAbstractTableModel
 from enumeration import MESSAGE_FILE_TYPE as TYPE, PROGRESS,\
-    CONNEXION_STATUS as STATUS
+    CONNEXION_STATUS as STATUS, SIZE
 
 
 # ::::::::Buttons::::::::::::: #
@@ -24,8 +24,8 @@ def addButtonWithoutText(parent: QWidget, layout: QBoxLayout) -> QPushButton:
     button.setFixedSize(44, 44)
     button.setStyleSheet(
         """
-        QPushButton {background-color: #744BE0;border: none;}
-        QPushButton:pressed {background-color: #52349f;}
+        QPushButton {background-color: #5234A5;border: none;}
+        QPushButton:pressed {background-color: #44317e; text-decoration: underline;}
         """
     )
     layout.addWidget(button)
@@ -40,9 +40,9 @@ def addButtonWithText(parent: QWidget, layout: QBoxLayout, text: str) -> QPushBu
     button.setLayoutDirection(Qt.RightToLeft)
     button.setStyleSheet(
         """
-        QPushButton {background-color: #744BE0; color: white; border: none; 
+        QPushButton {background-color: #5234a5; color: white; border: none; 
             padding-top: 10px; padding-right: 20px; padding-bottom: 10px; padding-left: 20px;}
-        QPushButton:pressed {background-color: #52349f; color: white;}
+        QPushButton:pressed {background-color: #44317e; color: white;}
         """
     )
     layout.addWidget(button)
@@ -57,9 +57,9 @@ def validateButton(parent: QWidget, layout: QBoxLayout) -> QPushButton:
     button.setLayoutDirection(Qt.RightToLeft)
     button.setStyleSheet(
         """
-        QPushButton {background-color: #744BE0; color: white; border: none; 
+        QPushButton {background-color: #5234a5; color: white; border: none; 
             padding-top: 10px; padding-right: 20px; padding-bottom: 10px; padding-left: 20px;}
-        QPushButton:pressed {background-color: #52349f; color: white;}
+        QPushButton:pressed {background-color: #44317e; color: white;}
         """
     )
     layout.addWidget(button)
@@ -104,11 +104,11 @@ def sidebarButtonForReport(parent: QWidget, text: str, layout: QBoxLayout, group
         QPushButton {{
             background-color: none; 
             text-align: left;
-            color: #744BE0;
+            color: #5234a5;
             border: none;
             padding-left: 16px;}}
         QPushButton:checked, QPushButton:hover {{
-            border-left: 3px solid #744BE0;
+            border-left: 3px solid #5234a5;
             background-color: #ACA8F9; 
             color: white;}}
         """
@@ -155,7 +155,6 @@ def minimizeWindowButton(parent: QWidget, layout: QBoxLayout) -> QPushButton:
     button = QPushButton(parent)
     button.setIcon(QIcon("Icons/minimize_icon.svg"))
     button.setFlat(True)
-    button.setChecked(True)
     button.setFixedSize(45, 45)
     button.setStyleSheet(
         """
@@ -166,8 +165,42 @@ def minimizeWindowButton(parent: QWidget, layout: QBoxLayout) -> QPushButton:
     layout.addWidget(button)
     return button
 
+# Connection button
+def connectionButton(parent: QWidget, layout: QBoxLayout) -> QPushButton:
+    button = QPushButton(parent)
+    button.setText("Valider")
+    button.setFixedSize(346, 38)
+    button.setFlat(True)
+    button.setStyleSheet(
+        """
+        QPushButton {background-color: #5234A5;border: none;}
+        QPushButton:pressed {background-color: #44317e;}
+        """
+    )
+    button.setFont(QFont("Montserrat", 16, QFont.DemiBold))
+
+    layout.addWidget(button)
+    return button
+
+# Button without background and border
+def bareButton(parent: QWidget, layout: QBoxLayout, text: str) -> QPushButton:
+    button = QPushButton(parent)
+    button.setText(text)
+    button.setFlat(True)
+    button.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+    button.setFont(QFont("Montserrat", 12, QFont.Medium))
+    button.setStyleSheet(
+        """
+        QPushButton {color: #8676F3;border: none;}
+        QPushButton:pressed {color: #744be0;}
+        """
+    )
+
+    layout.addWidget(button)
+    return button
+
 # ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-# ::::::::text input line::::::::::::: #
+# ::::::::text entry field::::::::::::: #
 
 # Search bar 
 def searchbar(parent: QWidget, layout: QBoxLayout, text: str) -> QFrame:
@@ -190,7 +223,7 @@ def searchbar(parent: QWidget, layout: QBoxLayout, text: str) -> QFrame:
 
     line_edit = QLineEdit(frame)
     line_edit.setObjectName("line_edit")
-    line_edit.setFixedWidth(175)
+    line_edit.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
     line_edit.setPlaceholderText(text)
     line_edit.setFrame(QFrame.NoFrame)
     line_edit.setStyleSheet("background-color: transparent; color: #3d3d3d;")
@@ -211,7 +244,7 @@ def searchbarForNavbar(parent: QWidget, layout: QBoxLayout) -> QFrame:
 
     line_edit = QLineEdit(frame)
     line_edit.setObjectName("line_edit")
-    line_edit.setFixedWidth(350)
+    line_edit.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
     line_edit.setPlaceholderText("Recherchez...")
     line_edit.setFrame(QFrame.NoFrame)
     line_edit.setStyleSheet("background-color: transparent; color: #3d3d3d;")
@@ -225,6 +258,72 @@ def searchbarForNavbar(parent: QWidget, layout: QBoxLayout) -> QFrame:
     button.setFlat(True)
     button.setIcon(QIcon("Icons/search_icon.svg"))
     button.setStyleSheet("QPushButton:pressed {icon: url('Icons/search_icon_clicked.svg')}")
+    frame_layout.addWidget(button)
+
+    layout.addWidget(frame)
+    return frame
+
+# text entry field for login screens
+def shortEntryField(parent: QWidget, layout: QBoxLayout, icon: str, placehoder: str, size: SIZE) -> QFrame:
+    frame = QFrame(parent)
+    frame.setFixedHeight(38)
+    frame.setFixedWidth(163 if size == SIZE.Short else 346)
+    frame.setStyleSheet("QFrame {border-bottom: 1px solid #8676F3; background-color: transparent;}")
+
+    frame_layout = QHBoxLayout()
+    frame_layout.setContentsMargins(0, 0, 0, 14)
+    frame.setLayout(frame_layout)
+
+    label = QLabel(frame)
+    label.setPixmap(QPixmap(icon))
+    label.setFrameShape(QFrame.NoFrame)
+    label.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+    label.setScaledContents(True)
+    frame_layout.addWidget(label)
+
+    line_edit = QLineEdit(frame)
+    line_edit.setObjectName("line_edit")
+    line_edit.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
+    line_edit.setPlaceholderText(placehoder)
+    line_edit.setFrame(QFrame.NoFrame)
+    line_edit.setStyleSheet("background-color: transparent; color: #3d3d3d;")
+    line_edit.setFont(QFont("Montserrat", 13, QFont.Normal))
+    frame_layout.addWidget(line_edit)
+
+    layout.addWidget(frame)
+    return frame
+
+def passwordEntryField(parent: QWidget, layout: QBoxLayout, placehoder: str) -> QFrame:
+    frame = QFrame(parent)
+    frame.setFixedSize(346, 38)
+    frame.setStyleSheet("QFrame {border-bottom: 1px solid #8676F3; background-color: transparent;}")
+
+    frame_layout = QHBoxLayout()
+    frame_layout.setContentsMargins(0, 0, 0, 14)
+    frame.setLayout(frame_layout)
+
+    label = QLabel(frame)
+    label.setPixmap(QPixmap("Icons/lock_login_icon.svg"))
+    label.setFrameShape(QFrame.NoFrame)
+    label.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+    label.setScaledContents(True)
+    frame_layout.addWidget(label)
+
+    line_edit = QLineEdit(frame)
+    line_edit.setObjectName("line_edit")
+    line_edit.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
+    line_edit.setPlaceholderText(placehoder)
+    line_edit.setFrame(QFrame.NoFrame)
+    line_edit.setStyleSheet("background-color: transparent; color: #3d3d3d;")
+    line_edit.setFont(QFont("Montserrat", 13, QFont.Normal))
+    frame_layout.addWidget(line_edit)
+
+    button = QPushButton(frame)
+    button.setObjectName("button")
+    button.setFlat(True)
+    button.setCheckable(True)
+    button.setIcon(QIcon("Icons/eye_opened_login_icon.svg"))
+    button.setStyleSheet("QPushButton:checked {icon: url('Icons/eye_closed_login_icon.svg')}")
     frame_layout.addWidget(button)
 
     layout.addWidget(frame)
@@ -612,3 +711,36 @@ def attendanceStatus(parent: QWidget, layout: QBoxLayout, status: STATUS) -> QLa
 
     layout.addWidget(label)
     return label
+
+# ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+# ::::::::display check box::::::::::::: #
+
+# check box for login screen
+def loginCheckbox(parent: QWidget, layout: QBoxLayout) -> QCheckBox:
+    check = QCheckBox("Se souvenir de moi", parent)
+    check.setFont(QFont('Calibri', 14, QFont.Normal, False))
+    # check.setFixedSize(20, 20)
+    check.setStyleSheet(
+        """
+            QCheckBox {
+                spacing: 18px;
+                color: black;
+            }
+            QCheckBox::indicator {
+                width: 20px;
+                height: 20px;
+                border: 2px solid #a8a8a8;
+            }
+            QCheckBox::indicator:hover {
+                border-color: #e1e1fe;
+            }
+            QCheckBox::indicator:checked {
+                background-color: none;
+                border: none;
+                image: url('Icons/checkbox_icon.svg')
+            }
+        """
+    )
+
+    layout.addWidget(check)
+    return check
