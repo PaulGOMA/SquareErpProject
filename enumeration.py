@@ -13,3 +13,7 @@ class PROGRESS(Enum):
 class CONNEXION_STATUS(Enum):
     OffLine = 0
     OnLine = 1
+
+class SIZE(Enum):
+    Short = 0
+    Long = 1
