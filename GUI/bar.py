@@ -1,6 +1,5 @@
 """
-    # This file contains all main headers and bars used commonly 
-    # in the application
+    # This file contains all main headers and bars used commonly in the application
 """
 
 from PySide6.QtWidgets import QFrame, QWidget, QBoxLayout,\
