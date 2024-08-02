@@ -19,7 +19,7 @@ from enumeration import MESSAGE_FILE_TYPE as TYPE, PROGRESS,\
 # Add new element button
 def addButtonWithoutText(parent: QWidget, layout: QBoxLayout) -> QPushButton:
     button = QPushButton(parent)
-    button.setIcon(QIcon("Icons/big_plus_icon.svg"))
+    button.setIcon(QIcon("GUI/Icons/big_plus_icon.svg"))
     button.setFlat(True)
     button.setFixedSize(44, 44)
     button.setStyleSheet(
@@ -33,7 +33,7 @@ def addButtonWithoutText(parent: QWidget, layout: QBoxLayout) -> QPushButton:
 
 
 def addButtonWithText(parent: QWidget, layout: QBoxLayout, text: str) -> QPushButton:
-    button = QPushButton(QIcon("Icons/big_plus_icon.svg"), text, parent)
+    button = QPushButton(QIcon("GUI/Icons/big_plus_icon.svg"), text, parent)
     button.setFlat(True)
     button.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
     button.setFont(QFont("Montserrat", 11, QFont.DemiBold))
@@ -50,7 +50,7 @@ def addButtonWithText(parent: QWidget, layout: QBoxLayout, text: str) -> QPushBu
 
 # Validate button
 def validateButton(parent: QWidget, layout: QBoxLayout) -> QPushButton:
-    button = QPushButton(QIcon("Icons/validate_icon_button.svg"), "Valider ", parent)
+    button = QPushButton(QIcon("GUI/Icons/validate_icon_button.svg"), "Valider ", parent)
     button.setFlat(True)
     button.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
     button.setFont(QFont("Montserrat", 11, QFont.DemiBold))
@@ -120,7 +120,7 @@ def sidebarButtonForReport(parent: QWidget, text: str, layout: QBoxLayout, group
 # title bar buttons
 def closeWindowButton(parent: QWidget, layout: QBoxLayout) -> QPushButton:
     button = QPushButton(parent)
-    button.setIcon(QIcon("Icons/unchecked_close_button.svg"))
+    button.setIcon(QIcon("GUI/Icons/unchecked_close_button.svg"))
     button.setFlat(True)
     button.setFixedSize(45, 45)
     button.setStyleSheet(
@@ -128,7 +128,7 @@ def closeWindowButton(parent: QWidget, layout: QBoxLayout) -> QPushButton:
         QPushButton {background-color: none; border: none;}
         QPushButton:pressed, QPushButton:hover {
             background-color: #E81123;
-            icon: url("Icons/checked_close_button.svg");
+            icon: url("GUI/Icons/checked_close_button.svg");
         }
         """
     )
@@ -137,7 +137,7 @@ def closeWindowButton(parent: QWidget, layout: QBoxLayout) -> QPushButton:
 
 def resizeWindowButton(parent: QWidget, layout: QBoxLayout) -> QPushButton:
     button = QPushButton(parent)
-    button.setIcon(QIcon("Icons/unchecked_resize_icon.svg"))
+    button.setIcon(QIcon("GUI/Icons/unchecked_resize_icon.svg"))
     button.setFlat(True)
     button.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
     button.setCheckable(True)
@@ -146,7 +146,7 @@ def resizeWindowButton(parent: QWidget, layout: QBoxLayout) -> QPushButton:
         """
         QPushButton {background-color: none; border: none;}
         QPushButton:hover {background-color: #EFEFFE; border: none;}
-        QPushButton:checked {icon: url("Icons/checked_resize_icon.svg");}
+        QPushButton:checked {icon: url("GUI/Icons/checked_resize_icon.svg");}
         """
     )
     layout.addWidget(button)
@@ -154,7 +154,7 @@ def resizeWindowButton(parent: QWidget, layout: QBoxLayout) -> QPushButton:
 
 def minimizeWindowButton(parent: QWidget, layout: QBoxLayout) -> QPushButton:
     button = QPushButton(parent)
-    button.setIcon(QIcon("Icons/minimize_icon.svg"))
+    button.setIcon(QIcon("GUI/Icons/minimize_icon.svg"))
     button.setFlat(True)
     button.setFixedSize(45, 45)
     button.setStyleSheet(
@@ -215,9 +215,9 @@ def searchbar(parent: QWidget, layout: QBoxLayout, text: str) -> QFrame:
     button = QPushButton(frame)
     button.setObjectName("button")
     button.setFlat(True)
-    button.setIcon(QIcon("Icons/search_icon.svg"))
+    button.setIcon(QIcon("GUI/Icons/search_icon.svg"))
     button.setIconSize(QSize(26, 22))
-    button.setStyleSheet("QPushButton:pressed {icon: url('Icons/search_icon_clicked.svg')}")
+    button.setStyleSheet("QPushButton:pressed {icon: url('GUI/Icons/search_icon_clicked.svg')}")
     frame_layout.addWidget(button)
 
     frame_layout.addStretch()
@@ -257,8 +257,8 @@ def searchbarForNavbar(parent: QWidget, layout: QBoxLayout) -> QFrame:
     button = QPushButton(frame)
     button.setObjectName("button")
     button.setFlat(True)
-    button.setIcon(QIcon("Icons/search_icon.svg"))
-    button.setStyleSheet("QPushButton:pressed {icon: url('Icons/search_icon_clicked.svg')}")
+    button.setIcon(QIcon("GUI/Icons/search_icon.svg"))
+    button.setStyleSheet("QPushButton:pressed {icon: url('GUI/Icons/search_icon_clicked.svg')}")
     frame_layout.addWidget(button)
 
     layout.addWidget(frame)
@@ -304,7 +304,7 @@ def passwordEntryField(parent: QWidget, layout: QBoxLayout, placehoder: str) -> 
     frame.setLayout(frame_layout)
 
     label = QLabel(frame)
-    label.setPixmap(QPixmap("Icons/lock_login_icon.svg"))
+    label.setPixmap(QPixmap("GUI/Icons/lock_login_icon.svg"))
     label.setFrameShape(QFrame.NoFrame)
     label.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
     label.setScaledContents(True)
@@ -323,8 +323,8 @@ def passwordEntryField(parent: QWidget, layout: QBoxLayout, placehoder: str) -> 
     button.setObjectName("button")
     button.setFlat(True)
     button.setCheckable(True)
-    button.setIcon(QIcon("Icons/eye_opened_login_icon.svg"))
-    button.setStyleSheet("QPushButton:checked {icon: url('Icons/eye_closed_login_icon.svg')}")
+    button.setIcon(QIcon("GUI/Icons/eye_opened_login_icon.svg"))
+    button.setStyleSheet("QPushButton:checked {icon: url('GUI/Icons/eye_closed_login_icon.svg')}")
     frame_layout.addWidget(button)
 
     layout.addWidget(frame)
@@ -350,19 +350,19 @@ def progress(parent: QWidget, layout: QBoxLayout, progress: PROGRESS) -> QFrame:
     frame_layout.addWidget(label)
 
     if progress == PROGRESS.NotScheduled:
-        icon.setPixmap(QPixmap("Icons/not_scheduled_icon.svg") )
+        icon.setPixmap(QPixmap("GUI/Icons/not_scheduled_icon.svg") )
         frame.setStyleSheet("QFrame{background-color: #F2D0D0}")
         label.setText("NON - PROGRAMME")
     elif progress == PROGRESS.Scheduled:
-        icon.setPixmap(QPixmap("Icons/scheduled_icon.svg"))
+        icon.setPixmap(QPixmap("GUI/Icons/scheduled_icon.svg"))
         frame.setStyleSheet("QFrame{background-color: #F4E4AC}")
         label.setText("PROGRAMME")
     elif progress == PROGRESS.InProgress:
-        icon.setPixmap(QPixmap("Icons/in_progress_icon.svg"))
+        icon.setPixmap(QPixmap("GUI/Icons/in_progress_icon.svg"))
         frame.setStyleSheet("QFrame{background-color: #B6F4AC}")
         label.setText("EN COURS")
     elif progress == PROGRESS.Finished:
-        icon.setPixmap(QPixmap("Icons/finished_icon.svg"))
+        icon.setPixmap(QPixmap("GUI/Icons/finished_icon.svg"))
         frame.setStyleSheet("QFrame{background-color: #ACE7F4}")
         label.setText("TERMINE")
 
@@ -371,8 +371,8 @@ def progress(parent: QWidget, layout: QBoxLayout, progress: PROGRESS) -> QFrame:
     button = QPushButton(frame)
     button.setObjectName("button")
     button.setFlat(True)
-    button.setIcon(QIcon("Icons/cross_icon_status.svg"))
-    button.setStyleSheet("QPushButton:pressed {icon: url('Icons/cross_icon_status_clicked.svg')}")
+    button.setIcon(QIcon("GUI/Icons/cross_icon_status.svg"))
+    button.setStyleSheet("QPushButton:pressed {icon: url('GUI/Icons/cross_icon_status_clicked.svg')}")
     frame_layout.addWidget(button)
 
     layout.addWidget(frame)
@@ -406,21 +406,21 @@ def displayFileInsideMessage(parent: QWidget, layout: QBoxLayout, filename: str,
     split_file = filename.split(".")
     file_format = split_file[-1]
     if file_format == 'pdf':
-        icon.setPixmap(QPixmap("Icons/pdf_file_icon.svg"))
+        icon.setPixmap(QPixmap("GUI/Icons/pdf_file_icon.svg"))
     elif file_format == 'txt':
-        icon.setPixmap(QPixmap("Icons/txt_file_icon.svg"))
+        icon.setPixmap(QPixmap("GUI/Icons/txt_file_icon.svg"))
     elif file_format in ["zip", "7z"]:
-        icon.setPixmap(QPixmap("Icons/zip_file_icon.svg"))
+        icon.setPixmap(QPixmap("GUI/Icons/zip_file_icon.svg"))
     elif file_format in ["png", "jpg", "bmp", "webp", "svg"]:
-        icon.setPixmap(QPixmap("Icons/image_file_icon.svg"))
+        icon.setPixmap(QPixmap("GUI/Icons/image_file_icon.svg"))
     elif file_format in ["mp3", "wav", "ogg"]:
-        icon.setPixmap(QPixmap("Icons/audio_file_icon.svg"))
+        icon.setPixmap(QPixmap("GUI/Icons/audio_file_icon.svg"))
     elif file_format in ["mp4", "mov", "wmv", "webm", "avi"]:
-        icon.setPixmap(QPixmap("Icons/video_file_icon.svg"))
+        icon.setPixmap(QPixmap("GUI/Icons/video_file_icon.svg"))
     elif file_format in ["doc", "docx"]:
-        icon.setPixmap(QPixmap("Icons/doc_file_icon.svg"))
+        icon.setPixmap(QPixmap("GUI/Icons/doc_file_icon.svg"))
     else:
-        icon.setPixmap(QPixmap("Icons/unknown_file_icon.svg"))
+        icon.setPixmap(QPixmap("GUI/Icons/unknown_file_icon.svg"))
 
     frame_layout.addWidget(icon)
 
@@ -459,8 +459,8 @@ def displayFileInsideMessage(parent: QWidget, layout: QBoxLayout, filename: str,
     button = QPushButton(frame)
     button.setObjectName("button")
     button.setFlat(True)
-    button.setIcon(QIcon("Icons/close_file_to_send.svg" if type.value else "Icons/download_file_icon.svg"))
-    button.setStyleSheet("QPushButton:pressed {icon: url('Icons/close_file_to_send_clicked.svg')}" if type.value else "QPushButton:pressed {icon: url('Icons/download_file_icon_clicked.svg')}")
+    button.setIcon(QIcon("GUI/Icons/close_file_to_send.svg" if type.value else "Icons/download_file_icon.svg"))
+    button.setStyleSheet("QPushButton:pressed {icon: url('GUI/Icons/close_file_to_send_clicked.svg')}" if type.value else "QPushButton:pressed {icon: url('Icons/download_file_icon_clicked.svg')}")
     frame_layout.addWidget(button)
     
     layout.addWidget(frame)
@@ -491,11 +491,11 @@ def displayReport(parent: QWidget, layout: QBoxLayout, filename: str, size: int)
     split_file = filename.split(".")
     file_format = split_file[1]
     if file_format == 'pdf':
-        icon.setPixmap(QPixmap("Icons/pdf_report_icon.svg"))
+        icon.setPixmap(QPixmap("GUI/Icons/pdf_report_icon.svg"))
     elif file_format in ["doc", "docx"]:
-        icon.setPixmap(QPixmap("Icons/doc_report_icon.svg"))
+        icon.setPixmap(QPixmap("GUI/Icons/doc_report_icon.svg"))
     else:
-        icon.setPixmap(QPixmap("Icons/unknown_report_icon.svg"))
+        icon.setPixmap(QPixmap("GUI/Icons/unknown_report_icon.svg"))
 
     icon_layout = QHBoxLayout()
     first_layout.addLayout(icon_layout)
@@ -547,8 +547,8 @@ def displayReport(parent: QWidget, layout: QBoxLayout, filename: str, size: int)
     button = QPushButton(frame)
     button.setObjectName("button")
     button.setFlat(True)
-    button.setIcon(QIcon("Icons/close_report_icon.svg"))
-    button.setStyleSheet("QPushButton:pressed {icon: url('Icons/close_report_icon_clicked.svg')}")
+    button.setIcon(QIcon("GUI/Icons/close_report_icon.svg"))
+    button.setStyleSheet("QPushButton:pressed {icon: url('GUI/Icons/close_report_icon_clicked.svg')}")
     second_layout.addWidget(button)
 
     second_layout.addStretch()
@@ -592,11 +592,11 @@ def combobox(parent: QWidget, layout: QBoxLayout, items: list) -> QComboBox:
                 border-color: #ACA8F9;
             }
             QComboBox:down-arrow {
-                image: url(Icons/down_arrow_icon.svg);
+                image: url(GUI/Icons/down_arrow_icon.svg);
                 margin-right: 16px; 
             }
             QComboBox:down-arrow:on {
-                image: url(Icons/down_arrow_icon_on.svg);
+                image: url(GUI/Icons/down_arrow_icon_on.svg);
             }
             QComboBox::drop-down {
                 border: none;
@@ -708,7 +708,7 @@ def attendanceStatus(parent: QWidget, layout: QBoxLayout, status: STATUS) -> QLa
     label.setFrameShape(QFrame.NoFrame)
     label.setScaledContents(True)
     label.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
-    label.setPixmap(QPixmap("Icons/online_icon.svg" if status == STATUS.OnLine else "Icons/offline_icon.svg"))
+    label.setPixmap(QPixmap("GUI/Icons/online_icon.svg" if status == STATUS.OnLine else "Icons/offline_icon.svg"))
 
     layout.addWidget(label)
     return label
@@ -737,7 +737,7 @@ def loginCheckbox(parent: QWidget, layout: QBoxLayout) -> QCheckBox:
             QCheckBox::indicator:checked {
                 background-color: none;
                 border: none;
-                image: url('Icons/checkbox_icon.svg')
+                image: url('GUI/Icons/checkbox_icon.svg')
             }
         """
     )

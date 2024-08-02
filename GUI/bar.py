@@ -8,7 +8,7 @@ from PySide6.QtWidgets import QFrame, QWidget, QBoxLayout,\
 from PySide6.QtGui import QFont, QPalette, QColor, QPixmap
 from PySide6.QtCore import Qt
 
-from components import addButtonWithText, validateButton,\
+from GUI.components import addButtonWithText, validateButton,\
     sidebarButton, separator, searchbarForNavbar, attendanceStatus, \
     user, closeWindowButton, resizeWindowButton, minimizeWindowButton
 
