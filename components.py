@@ -139,6 +139,7 @@ def resizeWindowButton(parent: QWidget, layout: QBoxLayout) -> QPushButton:
     button = QPushButton(parent)
     button.setIcon(QIcon("Icons/unchecked_resize_icon.svg"))
     button.setFlat(True)
+    button.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
     button.setCheckable(True)
     button.setFixedSize(45, 45)
     button.setStyleSheet(
@@ -719,7 +720,6 @@ def attendanceStatus(parent: QWidget, layout: QBoxLayout, status: STATUS) -> QLa
 def loginCheckbox(parent: QWidget, layout: QBoxLayout) -> QCheckBox:
     check = QCheckBox("Se souvenir de moi", parent)
     check.setFont(QFont('Calibri', 14, QFont.Normal, False))
-    # check.setFixedSize(20, 20)
     check.setStyleSheet(
         """
             QCheckBox {
