@@ -1,3 +1,7 @@
+"""
+    # This file contains all the custom constants used in the application.
+"""
+
 from enum import Enum
 
 class MESSAGE_FILE_TYPE(Enum):
