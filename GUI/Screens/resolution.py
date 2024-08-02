@@ -31,8 +31,6 @@ def getDpi() -> float:
 # ::::::::Responsive functions::::::::::::: #
 # Keep proportions
 
-
-
 # ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 # ::::::::display window in center of screen::::::::::::: #
 def centerWindow(window: QMainWindow) -> None:
