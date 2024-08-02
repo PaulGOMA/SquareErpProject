@@ -1,24 +1,28 @@
 import sys
 
-from PySide6.QtGui import QPixmap, QIcon
-from PySide6.QtWidgets import QApplication, QMainWindow, QWidget, QLabel, QHBoxLayout
+from PySide6.QtWidgets import QMainWindow, QWidget, QApplication
+from PySide6.QtCore import Qt
+from resolution import centerWindow
 
 
-class FullScreenWindow(QMainWindow):
+class launchScreen(QMainWindow):
     def __init__(self):
         super().__init__()
         self.setFixedSize(800, 500)
-        self.showMaximized()
+        centerWindow(self)
+        self.setWindowFlag(Qt.WindowType.FramelessWindowHint)
+
         self.centralArea = QWidget()
+        self.centralArea.setStyleSheet(
+            """
+                background-image: url("GUI/Pictures/background_launch_screen.png")
+            """
+        )
         self.setCentralWidget(self.centralArea)
-        # self.label = QLabel(centralArea)
-        # self.label.setPixmap(QPixmap("Pictures/loading_screen_square_erp_project.png"))
-        # layout = QHBoxLayout()
-        # centralArea.setLayout(layout)
-        # layout.addWidget(self.label)
-        # layout.setContentsMargins(0, 0, 0, 0)
+
+        self.show()
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
-    window = FullScreenWindow()
+    w = launchScreen()
     sys.exit(app.exec())
