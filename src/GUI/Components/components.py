@@ -271,7 +271,7 @@ def searchbarForNavbar(parent: QWidget, layout: QBoxLayout) -> QFrame:
     return frame
 
 # text entry field for login screens
-def shortEntryField(parent: QWidget, layout: QBoxLayout, icon: str, placehoder: str, size: SIZE) -> QFrame:
+def entryField(parent: QWidget, layout: QBoxLayout, icon: str, placehoder: str, size: SIZE) -> QFrame:
     frame = QFrame(parent)
     frame.setFixedHeight(38)
     frame.setFixedWidth(163 if size == SIZE.Short else 346)

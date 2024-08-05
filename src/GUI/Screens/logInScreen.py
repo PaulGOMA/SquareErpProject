@@ -10,15 +10,15 @@ from PySide6.QtCore import Qt
 
 from GUI.Screens.resolution import centerWindow
 from GUI.Components.components import entryField, passwordEntryField,\
-    connectionButton, bareButton
+    connectionButton, bareButton, loginCheckbox
 from Utils.enumeration import SIZE
 
 from Assets import icons, pictures
 
-class SignInScreen(QDialog):
+class LogInScreen(QDialog):
     def __init__(self):
         super().__init__()
-        self.setWindowTitle("Page d'inscription")
+        self.setWindowTitle("Page de connxion")
         self.setFixedSize(896, 563)
         centerWindow(self)
 
@@ -33,7 +33,7 @@ class SignInScreen(QDialog):
         self.leftFrame.setFixedSize(448, 563)
         self.leftFrame.setFrameShape(QFrame.NoFrame)
         self.leftFrame.setStyleSheet("background-image: url(':/Pictures/background_login.png');")
-        
+
         self.leftLayout = QVBoxLayout()
         self.leftFrame.setLayout(self.leftLayout)
         self.leftLayout.setAlignment(Qt.AlignCenter)
@@ -51,12 +51,21 @@ class SignInScreen(QDialog):
         
         self.logoLayout.addWidget(self.logo)
 
-        self.text = QLabel(self.leftFrame)
-        self.text.setText("Bienvenue")
-        self.text.setFont(QFont("Montserrat", 40, QFont.Bold))
-        self.text.setStyleSheet("QLabel { color: white; background: none; border: none;}")
-        self.text.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
-        self.leftLayout.addWidget(self.text)
+        self.firstText = QLabel(self.leftFrame)
+        self.firstText.setText("Heureux")
+        self.firstText.setFont(QFont("Montserrat", 20, QFont.Medium))
+        self.firstText.setStyleSheet("QLabel { color: white; background: none; border: none;}")
+        self.firstText.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+        self.leftLayout.addWidget(self.firstText)
+        self.leftLayout.setAlignment(self.firstText, Qt.AlignCenter)
+
+        self.secondText = QLabel(self.leftFrame)
+        self.secondText.setText("de vous revoir")
+        self.secondText.setFont(QFont("Montserrat", 35, QFont.Bold))
+        self.secondText.setStyleSheet("QLabel { color: white; background: none; border: none;}")
+        self.secondText.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+        self.leftLayout.addWidget(self.secondText)
+        self.leftLayout.setAlignment(self.secondText, Qt.AlignCenter)
         self.leftLayout.addStretch(1)
 
         self.mainLayout.setSpacing(0)
@@ -77,41 +86,37 @@ class SignInScreen(QDialog):
         
         self.title = QLabel(self.rightFrame)
         self.titleLayout.addWidget(self.title)
-        self.title.setText("Créez votre compte")
+        self.title.setText("Connectez vous")
         self.title.setFont(QFont("Calibri", 20, QFont.Bold))
         self.title.setStyleSheet("QLabel { color: #5234A5; background: none; border: none;}")
         self.title.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
 
         self.titleLayout.addStretch()
 
-        self.rightLayout.addStretch(2)
+        self.rightLayout.addStretch(1)
         
         self.nameLayout = QHBoxLayout()
         self.rightLayout.addLayout(self.nameLayout)
         
-        entryField(parent=self.rightFrame, layout=self.nameLayout, icon=":/Icons/user.svg", placehoder="Nom", size=SIZE.Short)
-        entryField(parent=self.rightFrame, layout=self.nameLayout, icon=":/Icons/user.svg", placehoder="Prénom", size=SIZE.Short)
+        entryField(parent=self.rightFrame, layout=self.nameLayout, icon=":/Icons/user.svg", placehoder="Nom d'utilisateur", size=SIZE.Long)
 
         self.rightLayout.addStretch(1)
 
-        self.coordinateLayout = QHBoxLayout()
-        self.rightLayout.addLayout(self.coordinateLayout)
-        
-        entryField(parent=self.rightFrame, layout=self.coordinateLayout, icon=":/Icons/mail.svg", placehoder="Adresse mail", size=SIZE.Short)
-        entryField(parent=self.rightFrame, layout=self.coordinateLayout, icon=":/Icons/phone.svg", placehoder="Téléphone", size=SIZE.Short)
+        self.passwordLayout = QHBoxLayout()
+        self.rightLayout.addLayout(self.passwordLayout)
+
+        passwordEntryField(parent=self.rightFrame, layout=self.passwordLayout, placehoder="Mot de passe")
 
         self.rightLayout.addStretch(1)
 
-        self.firstpasswordLayout = QHBoxLayout()
-        self.rightLayout.addLayout(self.firstpasswordLayout)
+        self.textLayout = QHBoxLayout()
+        self.rightLayout.addLayout(self.textLayout)
 
-        passwordEntryField(parent=self.rightFrame, layout=self.firstpasswordLayout, placehoder="Créer un mot de passe")
+        loginCheckbox(parent=self.rightFrame, layout=self.textLayout)
 
-        self.rightLayout.addStretch(1)
+        self.textLayout.addStretch()
 
-        self.secondpasswordLayout = QHBoxLayout()
-        self.rightLayout.addLayout(self.secondpasswordLayout)
-        passwordEntryField(parent=self.rightFrame, layout=self.secondpasswordLayout, placehoder="Confirmez votre mot de passe")
+        bareButton(parent=self.rightFrame, layout=self.textLayout, text="Mot de passe oublié ?")
 
         self.rightLayout.addStretch(1)
 
@@ -119,29 +124,6 @@ class SignInScreen(QDialog):
         self.rightLayout.addLayout(self.buttonLayout)
         connectionButton(parent=self.rightFrame, layout=self.buttonLayout)
 
-        self.rightLayout.addStretch(1)
-
-        self.textLayout = QHBoxLayout()
-        self.rightLayout.addLayout(self.textLayout)
-
-        self.text = QLabel(self.rightFrame)
-        self.textLayout.addWidget(self.text)
-        self.text.setText("Vous avez déjà un compte ?")
-        self.text.setStyleSheet("background-color: none; color: black; border: none;")
-        self.text.setFont(QFont("Montserrat", 10, QFont.Normal))
-        self.text.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
-
-        bareButton(parent=self.rightFrame, layout=self.textLayout, text="Connectez-vous")
-
-        self.textLayout.addStretch()
-
-        self.rightLayout.addStretch(1)
+        self.rightLayout.addStretch(3)
 
         self.show()
-
-
-# if __name__ == "__main__":
-#     app = QApplication(sys.argv)
-#     w = SignInScreen()
-#     w.show()
-#     sys.exit(app.exec())
