@@ -18,7 +18,7 @@ from Assets import icons, pictures
 class SignInScreen(QDialog):
     def __init__(self):
         super().__init__()
-        self.setWindowTitle("SQUARE erp - page d'inscription")
+        self.setWindowTitle("Page d'inscription")
         self.setFixedSize(896, 563)
         centerWindow(self)
 
