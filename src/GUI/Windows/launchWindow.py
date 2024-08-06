@@ -10,7 +10,7 @@ from Utils.responsiveLayout import fitWindowToScreen, centerWindow
 
 from Assets import pictures
 
-class LaunchScreen(QMainWindow):
+class LaunchWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         self.setFixedSize(fitWindowToScreen(width=800, height=500))

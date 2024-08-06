@@ -16,10 +16,10 @@ from Utils.responsiveLayout import fitSizeToScreen, fitValueToScreen,\
 
 from Assets import icons, pictures
 
-class SignInScreen(QDialog):
+class SignInWindow(QDialog):
     def __init__(self):
         super().__init__()
-        self.setWindowTitle("Page d'inscription")
+        self.setWindowTitle("Inscription")
         self.setFixedSize(fitWindowToScreen(width=896, height=563))
         centerWindow(self)
 

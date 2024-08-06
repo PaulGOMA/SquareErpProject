@@ -15,10 +15,10 @@ from Utils.responsiveLayout import centerWindow, fitSizeToScreen, fitValueToScre
 
 from Assets import icons, pictures
 
-class LogInScreen(QDialog):
+class LogInWindow(QDialog):
     def __init__(self):
         super().__init__()
-        self.setWindowTitle("Page de connxion")
+        self.setWindowTitle("Connexion")
         self.setFixedSize(fitWindowToScreen(width=896, height=563))
         centerWindow(self)
 
