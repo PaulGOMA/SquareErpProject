@@ -7,20 +7,23 @@ sys.path.append("..")
 
 
 from PySide6.QtWidgets import QFrame, QWidget, QBoxLayout,\
-    QSizePolicy, QHBoxLayout, QLabel, QVBoxLayout, QButtonGroup
+    QSizePolicy, QHBoxLayout, QLabel, QVBoxLayout, QButtonGroup,\
+    QPushButton
 from PySide6.QtGui import QFont, QPalette, QColor, QPixmap
 from PySide6.QtCore import Qt
 
 from GUI.Components.components import addButtonWithText, validateButton,\
     sidebarButton, separator, searchbarForNavbar, attendanceStatus, \
-    user, closeWindowButton, resizeWindowButton, minimizeWindowButton
-
+    user, closeWindowButton, resizeWindowButton, minimizeWindowButton,\
+    addButtonWithoutText
 from Utils.enumeration import CONNEXION_STATUS as STATUS
+from Utils.responsiveLayout import fitValueToScreen
 
 from Assets import icons, pictures
 
-# ::::::::Headers::::::::::::: #
+# ::::::::BAR::::::::::::: #
 
+# Headers
 def header(parent: QWidget, layout: QBoxLayout, text: str, textButton: str) -> QFrame:
     frame = QFrame(parent)
     frame.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
@@ -40,7 +43,8 @@ def header(parent: QWidget, layout: QBoxLayout, text: str, textButton: str) -> Q
 
     frameLayout.addStretch()
 
-    addButtonWithText(frame, frameLayout, textButton)
+    button = addButtonWithText(frame, frameLayout, textButton)
+    button.setObjectName("button")
     
     layout.addWidget(frame)
     return frame
@@ -91,7 +95,7 @@ def headerWithoutButton(parent: QWidget, layout: QBoxLayout, text: str) -> QFram
     layout.addWidget(frame)
     return frame
 
-# ::::::::Sidebar::::::::::::: #
+# Sidebar
 def sidebar(parent: QWidget, layout: QBoxLayout) -> QFrame:
     frame = QFrame(parent)
     frame.setFixedWidth(186)
@@ -152,7 +156,7 @@ def sidebar(parent: QWidget, layout: QBoxLayout) -> QFrame:
     layout.addWidget(frame)
     return frame
 
-# ::::::::Titlebar::::::::::::: #
+# Titlebar
 def titlebar(parent: QWidget, layout: QBoxLayout, connexionstatus: STATUS, name: str, mail: str) -> QFrame:
     frame = QFrame(parent)
     frame.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
@@ -188,4 +192,59 @@ def titlebar(parent: QWidget, layout: QBoxLayout, connexionstatus: STATUS, name:
     closeButton.setObjectName("closeButton")
 
     layout.addWidget(frame)
+    return frame
+
+
+# ::::::::empty pages::::::::::::: #
+def createEmptypageWithButton(title: str, imagePath: str, textButton: str, firstText: str, secondText: str) -> QFrame:
+    frame = QFrame()
+    frame.setFrameShape(QFrame.NoFrame)
+    frame.setStyleSheet("background-color: none; border: none;")
+    frame.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+
+    frameLayout = QVBoxLayout()
+    frame.setLayout(frameLayout)
+
+    bar = header(parent=frame, layout=frameLayout, text=title, textButton=textButton)
+    button = bar.findChild(QPushButton, "button", Qt.FindDirectChildrenOnly)
+    button.setObjectName("HeaderButton")
+    frameLayout.setAlignment(bar, Qt.AlignTop)
+
+    imageLayout = QHBoxLayout()
+    frameLayout.addLayout(imageLayout)
+    frameLayout.setAlignment(imageLayout, Qt.AlignCenter)
+
+    image = QLabel(frame)
+    image.setPixmap(QPixmap(imagePath))
+    image.setScaledContents(True)
+    image.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+    image.setStyleSheet("background-color: none; border: none;")
+    imageLayout.addWidget(image)
+
+    firstLabel = QLabel(frame)
+    firstLabel.setText(firstText)
+    firstLabel.setFont(QFont("Montserrat", fitValueToScreen(value=20), QFont.Medium))
+    firstLabel.setStyleSheet("QLabel { color: black; background: none; border: none;}")
+    firstLabel.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+    frameLayout.addWidget(firstLabel)
+    frameLayout.setAlignment(firstLabel, Qt.AlignCenter)
+
+    textLayout = QHBoxLayout()
+    frameLayout.addLayout(textLayout)
+    frameLayout.setAlignment(textLayout, Qt.AlignCenter)
+
+    textLayout.addStretch(1)
+
+    secondLabel = QLabel(frame)
+    secondLabel.setText(secondText)
+    secondLabel.setFont(QFont("Montserrat", fitValueToScreen(value=20), QFont.Medium))
+    secondLabel.setStyleSheet("QLabel { color: black; background: none; border: none;}")
+    secondLabel.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+    textLayout.addWidget(secondLabel)
+
+    buttonWithoutText = addButtonWithoutText(parent=frame, layout=textLayout)
+    buttonWithoutText.setObjectName("buttonWithoutText")
+
+    textLayout.addStretch(1)
+
     return frame

@@ -7,7 +7,7 @@ from PySide6.QtCore import Qt
 
 from Utils.responsiveLayout import centerWindow
 from Utils.enumeration import CONNEXION_STATUS as STATUS
-from GUI.Components.bar import sidebar, titlebar
+from src.GUI.Components.widgets import sidebar, titlebar
 
 
 class MainWindow(QMainWindow):
