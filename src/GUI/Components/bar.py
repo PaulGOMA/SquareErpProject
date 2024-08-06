@@ -112,6 +112,7 @@ def sidebar(parent: QWidget, layout: QBoxLayout) -> QFrame:
     frameLayout.setAlignment(logo, Qt.AlignHCenter)
 
     groupbutton = QButtonGroup(frame)
+    groupbutton.setObjectName("groupbutton")
     groupbutton.setExclusive(True)
 
     frameLayout.addStretch(2)
