@@ -2,7 +2,7 @@
     # This file contains all the functions needed to manage screen resolution and resizing. 
 """
 import sys
-from PySide6.QtWidgets import QApplication, QMainWindow
+from PySide6.QtWidgets import QApplication, QWidget
 from PySide6.QtCore import QSize, QSizeF
 
 # ::::::::Screen size recovery function::::::::::::: #
@@ -33,7 +33,7 @@ def getDpi() -> float:
 
 # ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 # ::::::::display window in center of screen::::::::::::: #
-def centerWindow(window: QMainWindow) -> None:
+def centerWindow(window: QWidget) -> None:
     x = (getResolutions().width() - window.width()) // 2
     y = (getResolutions().height() - window.height()) // 2
 

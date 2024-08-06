@@ -8,10 +8,10 @@ from PySide6.QtWidgets import QDialog, QHBoxLayout,\
 from PySide6.QtGui import QPixmap, QFont 
 from PySide6.QtCore import Qt
 
-from GUI.Screens.resolution import centerWindow
 from GUI.Components.components import entryField, passwordEntryField,\
-    connectionButton, bareButton, loginCheckbox
+    connectionButton, bareButton, loginCheckbox, setBackgroundImage
 from Utils.enumeration import SIZE
+from Utils.responsiveLayout import centerWindow, fitSizeToScreen, fitValueToScreen, fitWindowToScreen
 
 from Assets import icons, pictures
 
@@ -19,7 +19,7 @@ class LogInScreen(QDialog):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Page de connxion")
-        self.setFixedSize(896, 563)
+        self.setFixedSize(fitWindowToScreen(width=896, height=563))
         centerWindow(self)
 
         # ::::::::Design ui window::::::::::::: #
@@ -30,9 +30,10 @@ class LogInScreen(QDialog):
 
         self.leftFrame = QFrame(self)
         self.mainLayout.addWidget(self.leftFrame)
-        self.leftFrame.setFixedSize(448, 563)
+        self.leftFrame.setFixedSize(fitSizeToScreen(width=448, height=563))
         self.leftFrame.setFrameShape(QFrame.NoFrame)
-        self.leftFrame.setStyleSheet("background-image: url(':/Pictures/background_login.png');")
+
+        setBackgroundImage(widget=self.leftFrame, imagePath=':/Pictures/background_login.png')
 
         self.leftLayout = QVBoxLayout()
         self.leftFrame.setLayout(self.leftLayout)
@@ -43,7 +44,7 @@ class LogInScreen(QDialog):
         self.logoLayout = QHBoxLayout()
         self.leftLayout.addLayout(self.logoLayout)
         self.logo = QLabel(self.leftFrame)
-        self.logo.setFixedSize(80, 80)
+        self.logo.setFixedSize(fitSizeToScreen(width=80, height=80))
         self.logo.setPixmap(QPixmap(":/Pictures/logo.png"))
         self.logo.setScaledContents(True)
         self.logo.setStyleSheet("QLabel { background: none; border: none;}")
@@ -53,7 +54,7 @@ class LogInScreen(QDialog):
 
         self.firstText = QLabel(self.leftFrame)
         self.firstText.setText("Heureux")
-        self.firstText.setFont(QFont("Montserrat", 20, QFont.Medium))
+        self.firstText.setFont(QFont("Montserrat", fitValueToScreen(value=20), QFont.Medium))
         self.firstText.setStyleSheet("QLabel { color: white; background: none; border: none;}")
         self.firstText.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
         self.leftLayout.addWidget(self.firstText)
@@ -61,7 +62,7 @@ class LogInScreen(QDialog):
 
         self.secondText = QLabel(self.leftFrame)
         self.secondText.setText("de vous revoir")
-        self.secondText.setFont(QFont("Montserrat", 35, QFont.Bold))
+        self.secondText.setFont(QFont("Montserrat", fitValueToScreen(value=35), QFont.Bold))
         self.secondText.setStyleSheet("QLabel { color: white; background: none; border: none;}")
         self.secondText.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
         self.leftLayout.addWidget(self.secondText)
@@ -72,9 +73,9 @@ class LogInScreen(QDialog):
 
         self.rightFrame = QFrame(self)
         self.mainLayout.addWidget(self.rightFrame)
-        self.rightFrame.setFixedSize(448, 563)
+        self.rightFrame.setFixedSize(fitSizeToScreen(width=448, height=563))
         self.rightFrame.setFrameShape(QFrame.NoFrame)
-        self.rightFrame.setStyleSheet("background-color: white; padding-left: 16px; padding-right: 16px;")
+        self.rightFrame.setStyleSheet(f"background-color: white; padding-left: {fitValueToScreen(value=16)}px; padding-right: {fitValueToScreen(value=16)}px;")
 
         self.rightLayout = QVBoxLayout()
         self.rightFrame.setLayout(self.rightLayout)
@@ -87,7 +88,7 @@ class LogInScreen(QDialog):
         self.title = QLabel(self.rightFrame)
         self.titleLayout.addWidget(self.title)
         self.title.setText("Connectez vous")
-        self.title.setFont(QFont("Calibri", 20, QFont.Bold))
+        self.title.setFont(QFont("Calibri", fitValueToScreen(value=20), QFont.Bold))
         self.title.setStyleSheet("QLabel { color: #5234A5; background: none; border: none;}")
         self.title.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
 
