@@ -15,9 +15,9 @@ from PySide6.QtCore import Qt
 from GUI.Components.components import addButtonWithText, validateButton,\
     sidebarButton, separator, searchbarForNavbar, attendanceStatus, \
     user, closeWindowButton, resizeWindowButton, minimizeWindowButton,\
-    addButtonWithoutText
-from Utils.enumeration import CONNEXION_STATUS as STATUS
-from Utils.responsiveLayout import fitValueToScreen
+    addButtonWithoutText, contactAcronym, contactDetails
+from Utils.enumeration import CONNEXION_STATUS as STATUS, SIZE
+from Utils.responsiveLayout import fitValueToScreen, fitSizeToScreen
 
 from Assets import icons, pictures
 
@@ -31,11 +31,11 @@ def header(parent: QWidget, layout: QBoxLayout, text: str, textButton: str) -> Q
 
     frameLayout = QHBoxLayout()
     frame.setLayout(frameLayout)
-    frameLayout.setContentsMargins(12, 12, 12, 12)
+    frameLayout.setContentsMargins(fitValueToScreen(12), fitValueToScreen(12), fitValueToScreen(12), fitValueToScreen(12))
 
     title = QLabel(frame)
     title.setText(text)
-    title.setFont(QFont("Montserrat", 14, QFont.DemiBold))
+    title.setFont(QFont("Montserrat", fitValueToScreen(14), QFont.DemiBold))
     palette = title.palette()
     palette.setColor(QPalette.WindowText, QColor("#5234a5"))  # Couleur du texte
     title.setPalette(palette)
@@ -56,11 +56,11 @@ def headerWithValidateButton(parent: QWidget, layout: QBoxLayout, text: str) -> 
 
     frameLayout = QHBoxLayout()
     frame.setLayout(frameLayout)
-    frameLayout.setContentsMargins(12, 12, 12, 12)
+    frameLayout.setContentsMargins(fitValueToScreen(12), fitValueToScreen(12), fitValueToScreen(12), fitValueToScreen(12))
 
     title = QLabel(frame)
     title.setText(text)
-    title.setFont(QFont("Montserrat", 14, QFont.DemiBold))
+    title.setFont(QFont("Montserrat", fitValueToScreen(14), QFont.DemiBold))
     palette = title.palette()
     palette.setColor(QPalette.WindowText, QColor("#5234a5"))
     title.setPalette(palette)
@@ -80,11 +80,11 @@ def headerWithoutButton(parent: QWidget, layout: QBoxLayout, text: str) -> QFram
 
     frameLayout = QHBoxLayout()
     frame.setLayout(frameLayout)
-    frameLayout.setContentsMargins(12, 12, 12, 12)
+    frameLayout.setContentsMargins(fitValueToScreen(12), fitValueToScreen(12), fitValueToScreen(12), fitValueToScreen(12))
 
     title = QLabel(frame)
     title.setText(text)
-    title.setFont(QFont("Montserrat", 14, QFont.DemiBold))
+    title.setFont(QFont("Montserrat", fitValueToScreen(14), QFont.DemiBold))
     palette = title.palette()
     palette.setColor(QPalette.WindowText, QColor("#5234a5"))
     title.setPalette(palette)
@@ -98,20 +98,20 @@ def headerWithoutButton(parent: QWidget, layout: QBoxLayout, text: str) -> QFram
 # Sidebar
 def sidebar(parent: QWidget, layout: QBoxLayout) -> QFrame:
     frame = QFrame(parent)
-    frame.setFixedWidth(186)
+    frame.setFixedWidth(fitSizeToScreen(width=186, height=None))
     frame.setStyleSheet("background-color: #5234A5;")
     frame.setFrameShape(QFrame.NoFrame)
     frame.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Expanding)
 
     frameLayout = QVBoxLayout()
     frame.setLayout(frameLayout)
-    frameLayout.setContentsMargins(0, 24, 0, 0)
+    frameLayout.setContentsMargins(0, fitValueToScreen(24), 0, 0)
     
     logo = QLabel(frame)
     logo.setPixmap(QPixmap(":/Pictures/full_logo.png"))
     logo.setScaledContents(True)
     logo.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
-    logo.setFixedSize(140, 50)
+    logo.setFixedSize(fitSizeToScreen(width=140, height=50))
     frameLayout.addWidget(logo)
     frameLayout.setAlignment(logo, Qt.AlignHCenter)
 
@@ -138,7 +138,7 @@ def sidebar(parent: QWidget, layout: QBoxLayout) -> QFrame:
 
     frameLayout.addStretch(2)
 
-    separator(parent=frame, layout=frameLayout)
+    separator(parent=frame, layout=frameLayout, color="#ffffff")
 
     frameLayout.addStretch(2)
 
@@ -165,7 +165,7 @@ def titlebar(parent: QWidget, layout: QBoxLayout, connexionstatus: STATUS, name:
 
     frameLayout = QHBoxLayout()
     frame.setLayout(frameLayout)
-    frameLayout.setContentsMargins(32, 0, 0, 0)
+    frameLayout.setContentsMargins(fitValueToScreen(32), 0, 0, 0)
 
     searchbar = searchbarForNavbar(frame, frameLayout)
     searchbar.setObjectName("searchbar")
@@ -194,6 +194,38 @@ def titlebar(parent: QWidget, layout: QBoxLayout, connexionstatus: STATUS, name:
     layout.addWidget(frame)
     return frame
 
+
+# Message bar
+def messageBar(parent: QWidget, layout: QBoxLayout, connexionstatus: STATUS, fName: str, lName: str) -> QFrame:
+    frame = QFrame(parent)
+    frame.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
+    frame.setStyleSheet("background-color: white;")
+
+    frameLayout = QHBoxLayout()
+    frame.setLayout(frameLayout)
+    frameLayout.setContentsMargins(fitValueToScreen(12), fitValueToScreen(12), fitValueToScreen(12), fitValueToScreen(12))
+
+    contactAcronym(parent=frame, layout=frameLayout, fName=fName, lName=lName, size=SIZE.Short)
+
+    username = QLabel(frame)
+    username.setText(f"{fName.capitalize() + " " + lName.upper()}")
+    username.setFont(QFont("Montserrat", fitValueToScreen(13), QFont.DemiBold))
+    palette = username.palette()
+    palette.setColor(QPalette.WindowText, QColor("#3d3d3d"))
+    username.setPalette(palette)
+    frameLayout.addWidget(username)
+
+    if connexionstatus == STATUS.OnLine:
+        status = QFrame(frame)
+        status.setFrameShape(QFrame.NoFrame)
+        status.setFixedSize(fitSizeToScreen(width=12, height=12))
+        status.setStyleSheet(f"background-color: #28FF98; border-radius: {fitValueToScreen(6)}; border: none;")
+        frameLayout.addWidget(status)
+
+    frameLayout.addStretch()
+    
+    layout.addWidget(frame)
+    return frame
 
 # ::::::::empty pages::::::::::::: #
 def createEmptypageWithButton(title: str, imagePath: str, textButton: str, firstText: str, secondText: str) -> QFrame:
@@ -247,4 +279,66 @@ def createEmptypageWithButton(title: str, imagePath: str, textButton: str, first
 
     textLayout.addStretch(1)
 
+    return frame
+
+
+# ::::::::Contact::::::::::::: #
+def contact(parent: QWidget, layout: QBoxLayout, fName: str, lName: str, mail: str, phone: str, job: str, field: str) -> QFrame:
+    frame = QFrame(parent)
+    frame.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Expanding)
+    frame.setFrameShape(QFrame.NoFrame)
+    frame.setStyleSheet("background-color: white; border: none;")
+
+    frameLayout = QVBoxLayout()
+    frame.setLayout(frameLayout)
+
+    frameLayout.addStretch(2)
+
+    acronymLayout = QHBoxLayout()
+    frameLayout.addLayout(acronymLayout)
+
+    acronym = contactAcronym(parent=frame, layout=acronymLayout, fName=fName, lName=lName, size=SIZE.Long)
+    acronymLayout.addWidget(acronym)
+
+    nameLayout = QHBoxLayout()
+    nameLayout.setAlignment(Qt.AlignCenter)
+    frameLayout.addLayout(nameLayout)
+
+    username = QLabel(frame)
+    username.setText(f"{fName.capitalize() + " " + lName.upper()}")
+    username.setFont(QFont("Montserrat", fitValueToScreen(value=24), QFont.Medium))
+    username.setStyleSheet("background-color: none; border: none; color: #3d3d3d")
+    nameLayout.addWidget(username)
+
+    jobLayout = QHBoxLayout()
+    jobLayout.setAlignment(Qt.AlignCenter)
+    frameLayout.addLayout(jobLayout)
+
+    userjob = QLabel(frame)
+    userjob.setText(job)
+    userjob.setFont(QFont("Montserrat", fitValueToScreen(value=13), QFont.Medium, True))
+    userjob.setStyleSheet("background-color: none; border: none; color: #989898")
+    jobLayout.addWidget(userjob)
+
+    frameLayout.addStretch(1)
+
+    separator(parent=frame, layout=frameLayout, color="#888888")
+
+    frameLayout.addStretch(1)
+
+    title = QLabel(frame)
+    title.setText("Détails du contact")
+    title.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+    title.setFont(QFont("Montserrat", fitValueToScreen(value=20), QFont.Medium))
+    title.setStyleSheet("background-color: none; border: none; color: #3d3d3d")
+    frameLayout.addWidget(title)
+
+    frameLayout.addStretch(1)
+
+    contactDetails(parent=frame, layout=frameLayout, mail=mail, phone=phone, job=job, field=field)
+
+    frameLayout.addStretch(4)
+
+    layout.addWidget(frame)
+    
     return frame

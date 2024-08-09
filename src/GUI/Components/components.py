@@ -10,7 +10,8 @@ sys.path.append("..")
 from PySide6.QtWidgets import QWidget, QHBoxLayout, QStyle, \
     QPushButton, QBoxLayout, QSizePolicy, QFrame, QLineEdit, \
     QLabel, QVBoxLayout, QComboBox, QStyledItemDelegate, \
-    QTableView, QAbstractItemView, QButtonGroup, QCheckBox
+    QTableView, QAbstractItemView, QButtonGroup, QCheckBox,\
+    QFormLayout
 from PySide6.QtGui import QIcon, QFont, Qt, QPixmap, QColor, QPalette,\
     QBrush
 from PySide6.QtCore import QAbstractTableModel
@@ -675,10 +676,11 @@ def displayTable(parent: QWidget, layout: QBoxLayout, model: CustomTableModel) -
 
 # ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 # ::::::::separator::::::::::::: #
-def separator(parent: QWidget, layout: QBoxLayout) -> QFrame:
+def separator(parent: QWidget, layout: QBoxLayout, color: str) -> QFrame:
     frame = QFrame(parent)
-    frame.setFrameShape(QFrame.Shape.HLine)
+    frame.setFrameShape(QFrame.Shape.HLine if type(layout) == QVBoxLayout else QFrame.Shape.VLine)
     frame.setFrameShadow(QFrame.Shadow.Plain)
+    frame.setStyleSheet(f"border-top: 1px solid {color}")
 
     layout.addWidget(frame)
     return frame
@@ -765,3 +767,146 @@ def setBackgroundImage(widget: QWidget, imagePath: str) -> None:
     palette.setBrush(QPalette.Window, QBrush(pixmap.scaled(widget.size(), Qt.IgnoreAspectRatio, Qt.SmoothTransformation)))
     widget.setPalette(palette)
     widget.setAutoFillBackground(True)
+
+# ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+# ::::::::display contact::::::::::::: #
+
+# contact acronym
+def contactAcronym(parent: QWidget, layout: QBoxLayout, fName: str, lName: str, size: SIZE) -> QFrame:
+    frame = QFrame(parent)
+    frame.setFixedSize(fitSizeToScreen(width=72, height=72) if size == SIZE.Long else fitSizeToScreen(width=48, height=48))
+    frame.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+    frame.setStyleSheet(
+        f"""
+            background-color: #5234A5; 
+            border-radius: {fitValueToScreen(value=36)}px; 
+            border: {fitValueToScreen(value=2)}px solid #525252;
+
+        """ if size == SIZE.Long else 
+        f"""
+            background-color: #5234A5; 
+            color: white; 
+            border-radius: {fitValueToScreen(value=24)}px; 
+            border: {fitValueToScreen(value=2)}px solid #525252;
+
+        """)
+    
+    frameLayout = QHBoxLayout()
+    frame.setLayout(frameLayout)
+    
+    label = QLabel(frame)
+    label.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+    label.setText((fName[0] + lName[0]).upper())
+    label.setFont(QFont('Calibri', fitValueToScreen(value=28) if size == SIZE.Long else fitValueToScreen(value=16) , QFont.Medium, False))
+    label.setStyleSheet(" background-color: none; color: white; border: none;")
+
+    frameLayout.addWidget(label)
+    frameLayout.setAlignment(label, Qt.AlignCenter)
+    layout.addWidget(frame)
+    return frame
+
+# contact details
+def contactDetails(parent: QWidget, layout: QBoxLayout, mail: str, phone: str, job: str, field: str) -> QFrame:
+    frame = QFrame(parent)
+    frame.setFrameShape(QFrame.NoFrame)
+    frame.setStyleSheet("background-color: none; border: none;")
+    frame.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+
+    frameLayout = QFormLayout()
+    frameLayout.setHorizontalSpacing(fitValueToScreen(value=16))
+    frameLayout.setContentsMargins(0, 0, 0, 0)
+    frame.setLayout(frameLayout)
+
+    font_title = QFont('Calibri', fitValueToScreen(value=16), QFont.Medium, False)
+    font_content = QFont('Calibri', fitValueToScreen(value=14), QFont.Medium, True)
+
+    mail_icon = QLabel(frame)
+    mail_icon.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+    mail_icon.setScaledContents(True)
+    mail_icon.setPixmap(QPixmap(":/Icons/mail_contact.svg"))
+
+    mail_layout = QVBoxLayout()
+    mail_layout.setContentsMargins(0, 0, 0, 0)
+
+    mail_title = QLabel(frame)
+    mail_title.setText("Adresse mail")
+    mail_title.setFont(font_title)
+    mail_title.setStyleSheet("background-color: none; color: black; border: none;")
+    mail_layout.addWidget(mail_title)
+
+    mail_content = QLabel(frame)
+    mail_content.setText(mail)
+    mail_content.setFont(font_content)
+    mail_content.setStyleSheet("background-color: none; color: #5d5d5d; border: none;")
+    mail_layout.addWidget(mail_content)
+
+    frameLayout.addRow(mail_icon, mail_layout)
+
+    phone_icon = QLabel(frame)
+    phone_icon.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+    phone_icon.setScaledContents(True)
+    phone_icon.setPixmap(QPixmap(":/Icons/phone_contact.svg"))
+
+    phone_layout = QVBoxLayout()
+    phone_layout.setContentsMargins(0, 0, 0, 0)
+
+    phone_title = QLabel(frame)
+    phone_title.setText("Adresse phone")
+    phone_title.setFont(font_title)
+    phone_title.setStyleSheet("background-color: none; color: black; border: none;")
+    phone_layout.addWidget(phone_title)
+
+    phone_content = QLabel(frame)
+    phone_content.setText(phone)
+    phone_content.setFont(font_content)
+    phone_content.setStyleSheet("background-color: none; color: #5d5d5d; border: none;")
+    phone_layout.addWidget(phone_content)
+
+    frameLayout.addRow(phone_icon, phone_layout)
+
+    job_icon = QLabel(frame)
+    job_icon.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+    job_icon.setScaledContents(True)
+    job_icon.setPixmap(QPixmap(":/Icons/job_contact.svg"))
+
+    job_layout = QVBoxLayout()
+    job_layout.setContentsMargins(0, 0, 0, 0)
+
+    job_title = QLabel(frame)
+    job_title.setText("Poste")
+    job_title.setFont(font_title)
+    job_title.setStyleSheet("background-color: none; color: black; border: none;")
+    job_layout.addWidget(job_title)
+
+    job_content = QLabel(frame)
+    job_content.setText(job)
+    job_content.setFont(font_content)
+    job_content.setStyleSheet("background-color: none; color: #5d5d5d; border: none;")
+    job_layout.addWidget(job_content)
+
+    frameLayout.addRow(job_icon, job_layout)
+
+    field_icon = QLabel(frame)
+    field_icon.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+    field_icon.setScaledContents(True)
+    field_icon.setPixmap(QPixmap(":/Icons/field_contact.svg"))
+
+    field_layout = QVBoxLayout()
+    field_layout.setContentsMargins(0, 0, 0, 0)
+
+    field_title = QLabel(frame)
+    field_title.setText("Adresse field")
+    field_title.setFont(font_title)
+    field_title.setStyleSheet("background-color: none; color: black; border: none;")
+    field_layout.addWidget(field_title)
+
+    field_content = QLabel(frame)
+    field_content.setText(field)
+    field_content.setFont(font_content)
+    field_content.setStyleSheet("background-color: none; color: #5d5d5d; border: none;")
+    field_layout.addWidget(field_content)
+
+    frameLayout.addRow(field_icon, field_layout)
+
+    layout.addWidget(frame)
+    return frame
