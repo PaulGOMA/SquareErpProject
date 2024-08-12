@@ -7,6 +7,7 @@
         <file alias="logo.png">C:/Users/paulg/Documents/MesPprojets/SquareErpProject/src/Assets/Pictures/logo_login_page.png</file>
         <file alias="no_location.png">C:/Users/paulg/Documents/MesPprojets/SquareErpProject/src/Assets/Pictures/no_location_found.png</file>
         <file alias="no_task.png">C:/Users/paulg/Documents/MesPprojets/SquareErpProject/src/Assets/Pictures/No_task_found.png</file>
+        <file alias="maintenance.png">C:/Users/paulg/Documents/MesPprojets/SquareErpProject/src/Assets/Pictures/page_in_maintenance.png</file>
         <file alias="no_report.png">C:/Users/paulg/Documents/MesPprojets/SquareErpProject/src/Assets/Pictures/no_report_found.png</file>
     </qresource>
 </RCC>

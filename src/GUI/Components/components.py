@@ -11,7 +11,7 @@ from PySide6.QtWidgets import QWidget, QHBoxLayout, QStyle, \
     QPushButton, QBoxLayout, QSizePolicy, QFrame, QLineEdit, \
     QLabel, QVBoxLayout, QComboBox, QStyledItemDelegate, \
     QTableView, QAbstractItemView, QButtonGroup, QCheckBox,\
-    QFormLayout
+    QFormLayout, QListWidgetItem, QListWidget
 from PySide6.QtGui import QIcon, QFont, Qt, QPixmap, QColor, QPalette,\
     QBrush
 from PySide6.QtCore import QAbstractTableModel
@@ -23,6 +23,11 @@ from Utils.responsiveLayout import fitSizeToScreen, fitValueToScreen
 
 from Assets import icons
 
+
+class CustomListWidgetDelegate(QStyledItemDelegate):
+    def paint(self, painter, option, index):
+        option.state &= ~QStyle.State_HasFocus
+        super().paint(painter, option, index)
 
 # ::::::::Buttons::::::::::::: #
 
@@ -649,6 +654,7 @@ class CustomTableModel(QAbstractTableModel):
 def displayTable(parent: QWidget, layout: QBoxLayout, model: CustomTableModel) -> QTableView:
     table = QTableView(parent)
     table.setModel(model)
+    table.setItemDelegate(CustomListWidgetDelegate(table))
     table.setFont(QFont('Calibri', fitValueToScreen(value=14), QFont.Medium, False))
     table.setGridStyle(Qt.NoPen)
     table.setSelectionMode(QAbstractItemView.SingleSelection)
@@ -660,13 +666,15 @@ def displayTable(parent: QWidget, layout: QBoxLayout, model: CustomTableModel) -
                 color: #3d3d3d;                
                 selection-color: #ffffff;
                 selection-background-color: #E1E2FE;
+                border: none;
             }
             QHeaderView:section{
-                background-color: #744BE0;
+                background-color: #5234A5;
             }
             QTableView::item:selected{
                 background-color: #E1E2FE;
-                border: 1px solid #E1E2FE;
+                color: #5234A5;
+                border: none;
             }
         """
     )
@@ -910,3 +918,67 @@ def contactDetails(parent: QWidget, layout: QBoxLayout, mail: str, phone: str, j
 
     layout.addWidget(frame)
     return frame
+
+# ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+# ::::::::display list view::::::::::::: #
+
+def listWidget(parent: QWidget, layout: QBoxLayout) -> QListWidget:
+    list = QListWidget(parent)
+    list.setItemDelegate(CustomListWidgetDelegate(list))
+    list.setStyleSheet(
+        f"""
+            QListWidget::item {{
+                border: {fitValueToScreen(value=1)}px solid transparent;
+                background-color: transparent;
+            }}
+            QListWidget::item:hover {{
+                background-color: #E1E2FE;
+            }}
+            QListWidget::item:selected {{
+                border-left: {fitValueToScreen(value=3)}px solid #5234a5;
+                background-color: #E1E2FE;
+            }}
+        """
+    )
+
+    layout.addWidget(list)
+
+    return list
+
+def messageItem(parent: QListWidget, fName: str, lName: str, txt: str) -> None:
+    frame = QFrame()
+    frame.setFrameShape(QFrame.NoFrame)
+    frame.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
+    frame.setStyleSheet("background-color: none; border: none;")
+    
+    frameLayout = QHBoxLayout()
+    frame.setLayout(frameLayout)
+
+    contactAcronym(parent=frame, layout=frameLayout, fName=fName, lName=lName, size=SIZE.Short)
+
+    frameLayout.addStretch(1)
+
+    contentLayout = QVBoxLayout()
+    contentLayout.setContentsMargins(0, 0, 0, 0)
+    frameLayout.addLayout(contentLayout)
+
+    contactName = QLabel(frame)
+    contactName.setText(f"{fName.capitalize() + " " + lName.upper()}")
+    contactName.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+    contactName.setFont(QFont("Montserrat", fitValueToScreen(value=10), QFont.DemiBold))
+    contactName.setStyleSheet("background-color: none; border: none; color: #3d3d3d")
+    contentLayout.addWidget(contactName)
+
+    text = QLabel(frame)
+    text.setText(txt)
+    text.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+    text.setFont(QFont("Montserrat", fitValueToScreen(value=10), QFont.Normal))
+    text.setStyleSheet("background-color: none; border: none; color: #3d3d3d")
+    contentLayout.addWidget(text)
+
+    frameLayout.addStretch(4)
+
+    item = QListWidgetItem(parent)
+    item.setSizeHint(frame.sizeHint())
+
+    parent.setItemWidget(item, frame)

@@ -2,12 +2,14 @@ import sys
 sys.path.append("..")
 
 from PySide6.QtWidgets import QMainWindow, QWidget, QHBoxLayout,\
-    QVBoxLayout
-from PySide6.QtCore import Qt
+    QVBoxLayout, QButtonGroup, QAbstractButton, QBoxLayout, QStackedWidget
+from PySide6.QtCore import Qt, Slot
 
 from Utils.responsiveLayout import centerWindow
 from Utils.enumeration import CONNEXION_STATUS as STATUS
-from src.GUI.Components.widgets import sidebar, titlebar
+from GUI.Components.widgets import sidebar, titlebar
+from GUI.Pages.pageManager import stackPage
+from Assets import pictures
 
 
 class MainWindow(QMainWindow):
@@ -36,5 +38,21 @@ class MainWindow(QMainWindow):
         self.titlebar = titlebar(parent=self.centralArea, layout=self.mainLayout, connexionstatus=STATUS.OffLine, name="Paul GOMA", mail="paulgoma07@gmail.com")
         self.mainLayout.setAlignment(self.titlebar, Qt.AlignTop)
 
+        self.pages = stackPage(layout=self.mainLayout)
+        self.pages.setCurrentIndex(0)
+
+        self.groupbutton = self.sidebar.findChild(QButtonGroup, "groupbutton", Qt.FindDirectChildrenOnly)
+        self.groupbutton.buttonClicked.connect(self.displayPage)
+
         self.showMaximized()
+
+
+    @Slot()
+    def displayPage(self, button: QAbstractButton):
+        sender = self.sender()
+        print(sender.checkedId())
+        if sender.checkedId() != 7:
+            self.pages.setCurrentIndex(sender.checkedId())
+        else:
+            print("sortie de l'application")
 
