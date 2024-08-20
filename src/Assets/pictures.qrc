@@ -9,5 +9,6 @@
         <file alias="no_task.png">C:/Users/paulg/Documents/MesPprojets/SquareErpProject/src/Assets/Pictures/No_task_found.png</file>
         <file alias="maintenance.png">C:/Users/paulg/Documents/MesPprojets/SquareErpProject/src/Assets/Pictures/page_in_maintenance.png</file>
         <file alias="no_report.png">C:/Users/paulg/Documents/MesPprojets/SquareErpProject/src/Assets/Pictures/no_report_found.png</file>
+        <file alias="icon.png">C:/Users/paulg/Documents/MesPprojets/SquareErpProject/src/Assets/Pictures/logo.png</file>
     </qresource>
 </RCC>

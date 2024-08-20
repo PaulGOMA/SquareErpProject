@@ -13,8 +13,8 @@ from PySide6.QtWidgets import QWidget, QHBoxLayout, QStyle, \
     QTableView, QAbstractItemView, QButtonGroup, QCheckBox,\
     QFormLayout, QListWidgetItem, QListWidget
 from PySide6.QtGui import QIcon, QFont, Qt, QPixmap, QColor, QPalette,\
-    QBrush
-from PySide6.QtCore import QAbstractTableModel
+    QBrush, QRegularExpressionValidator
+from PySide6.QtCore import QAbstractTableModel, QRegularExpression
 
 from Utils.enumeration import MESSAGE_FILE_TYPE as TYPE, PROGRESS,\
     CONNEXION_STATUS as STATUS, SIZE
@@ -96,9 +96,14 @@ def sidebarButton(parent: QWidget, text: str, uncheckedIconPath: str, checkedIco
             color: #CAC9FC;
             border: none;
             padding-left: {fitValueToScreen(value=12)}px;}}
-        QPushButton:checked, QPushButton:hover {{
+        QPushButton:checked{{
             icon: url({checkedIconPath});
             border-left: {fitValueToScreen(value=3)}px solid white;
+            background-color: #ACA8F9; 
+            color: white;}}
+        QPushButton:hover {{
+            icon: url({checkedIconPath});
+            border: none;
             background-color: #ACA8F9; 
             color: white;}}
         """
@@ -189,7 +194,7 @@ def connectionButton(parent: QWidget, layout: QBoxLayout) -> QPushButton:
     button.setFlat(True)
     button.setStyleSheet(
         """
-        QPushButton {background-color: #5234A5;border: none;}
+        QPushButton {background-color: #5234A5;border: none; color: white;}
         QPushButton:pressed {background-color: #44317e;}
         """
     )
@@ -280,7 +285,7 @@ def searchbarForNavbar(parent: QWidget, layout: QBoxLayout) -> QFrame:
     return frame
 
 # text entry field for login screens
-def entryField(parent: QWidget, layout: QBoxLayout, icon: str, placehoder: str, size: SIZE) -> QFrame:
+def entryField(parent: QWidget, layout: QBoxLayout, icon: str, placehoder: str, size: SIZE, regex: str, maxLength: int) -> QFrame:
     frame = QFrame(parent)
     frame.setFixedHeight(fitSizeToScreen(width=None, height=38))
     frame.setFixedWidth(fitSizeToScreen(width=163, height=None) if size == SIZE.Short else fitSizeToScreen(width=346, height=None))
@@ -305,6 +310,8 @@ def entryField(parent: QWidget, layout: QBoxLayout, icon: str, placehoder: str, 
     line_edit.setFrame(QFrame.NoFrame)
     line_edit.setStyleSheet("background-color: transparent; color: #3d3d3d;")
     line_edit.setFont(QFont("Montserrat", fitValueToScreen(value=10), QFont.Normal))
+    line_edit.setValidator(QRegularExpressionValidator(QRegularExpression(regex)))
+    line_edit.setMaxLength(maxLength)
     frame_layout.addWidget(line_edit)
 
     frame_layout.addStretch()
@@ -334,17 +341,22 @@ def passwordEntryField(parent: QWidget, layout: QBoxLayout, placehoder: str) -> 
     line_edit.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
     line_edit.setPlaceholderText(placehoder)
     line_edit.setFrame(QFrame.NoFrame)
+    line_edit.setEchoMode(QLineEdit.Password)
     line_edit.setStyleSheet("background-color: transparent; color: #3d3d3d;")
     line_edit.setFont(QFont("Montserrat", fitValueToScreen(value=10), QFont.Normal))
+    line_edit.setValidator(QRegularExpressionValidator(QRegularExpression(r"^[a-zA-Z0-9\s!@#$%^&*()_+{}\[\]:;\"'<>,.?\/\\|-]*$")))
+    line_edit.setMaxLength(30)   
     frame_layout.addWidget(line_edit)
 
     button = QPushButton(frame)
     button.setObjectName("button")
     button.setFlat(True)
     button.setCheckable(True)
-    button.setIcon(QIcon(":/Icons/eye_opened.svg"))
-    button.setStyleSheet("QPushButton:checked {icon: url(':/Icons/eye_closed.svg')}")
+    button.setIcon(QIcon(":/Icons/eye_closed.svg"))
+    button.setStyleSheet("QPushButton:checked {icon: url(':/Icons/eye_opened.svg')}")
     frame_layout.addWidget(button)
+
+    button.toggled.connect(lambda checked: line_edit.setEchoMode(QLineEdit.Normal) if checked else line_edit.setEchoMode(QLineEdit.Password))
 
     layout.addWidget(frame)
     return frame

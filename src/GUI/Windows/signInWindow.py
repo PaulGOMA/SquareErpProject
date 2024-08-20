@@ -4,15 +4,18 @@ import sys
 sys.path.append("..")
 
 from PySide6.QtWidgets import QDialog, QHBoxLayout,\
-    QFrame, QVBoxLayout, QLabel, QSizePolicy
-from PySide6.QtGui import QPixmap, QFont 
-from PySide6.QtCore import Qt
+    QFrame, QVBoxLayout, QLabel, QSizePolicy, QLineEdit
+from PySide6.QtGui import QPixmap, QFont, QIcon
+    
+from PySide6.QtCore import Qt, Slot
 
 from GUI.Components.components import entryField, passwordEntryField,\
     connectionButton, bareButton, setBackgroundImage
+from GUI.Components.widgets import display_message_error
 from Utils.enumeration import SIZE
 from Utils.responsiveLayout import fitSizeToScreen, fitValueToScreen,\
     centerWindow, fitWindowToScreen
+from Utils.checkField import *
 
 from Assets import icons, pictures
 
@@ -21,7 +24,10 @@ class SignInWindow(QDialog):
         super().__init__()
         self.setWindowTitle("Inscription")
         self.setFixedSize(fitWindowToScreen(width=896, height=563))
+        self.setWindowIcon(QIcon(":/Pictures/icon.png"))
         centerWindow(self)
+
+        self.dataList = [''] * 6
 
         # ::::::::Design ui window::::::::::::: #
 
@@ -91,35 +97,51 @@ class SignInWindow(QDialog):
         self.nameLayout = QHBoxLayout()
         self.rightLayout.addLayout(self.nameLayout)
         
-        entryField(parent=self.rightFrame, layout=self.nameLayout, icon=":/Icons/user.svg", placehoder="Nom", size=SIZE.Short)
-        entryField(parent=self.rightFrame, layout=self.nameLayout, icon=":/Icons/user.svg", placehoder="Prénom", size=SIZE.Short)
+        self.lastName = entryField(parent=self.rightFrame, layout=self.nameLayout, icon=":/Icons/user.svg", placehoder="Nom", size=SIZE.Short, regex=r"^[a-zA-Z'-]*$", maxLength=15)
+        self.lastName_lineEdit = self.lastName.findChild(QLineEdit, "line_edit", Qt.FindDirectChildrenOnly)
+        self.lastName_lineEdit.textChanged.connect(lambda text : self.addToList(0, text))
+    
+        self.firstName = entryField(parent=self.rightFrame, layout=self.nameLayout, icon=":/Icons/user.svg", placehoder="Prénom", size=SIZE.Short, regex=r"^[a-zA-Z'-]*$", maxLength=25)
+        self.firstName_lineEdit = self.firstName.findChild(QLineEdit, "line_edit", Qt.FindDirectChildrenOnly)
+        self.firstName_lineEdit.textChanged.connect(lambda text : self.addToList(1, text))
 
         self.rightLayout.addStretch(1)
 
         self.coordinateLayout = QHBoxLayout()
         self.rightLayout.addLayout(self.coordinateLayout)
         
-        entryField(parent=self.rightFrame, layout=self.coordinateLayout, icon=":/Icons/mail.svg", placehoder="Adresse mail", size=SIZE.Short)
-        entryField(parent=self.rightFrame, layout=self.coordinateLayout, icon=":/Icons/phone.svg", placehoder="Téléphone", size=SIZE.Short)
+        self.mail = entryField(parent=self.rightFrame, layout=self.coordinateLayout, icon=":/Icons/mail.svg", placehoder="Adresse mail", size=SIZE.Short, regex=r"^[a-zA-Z0-9!#$%&'*+/=?^_`{|}~.-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$", maxLength=100)
+        self.mail_lineEdit = self.mail.findChild(QLineEdit, "line_edit", Qt.FindDirectChildrenOnly)
+        self.mail_lineEdit.textChanged.connect(lambda text : self.addToList(2, text))
+
+        self.phone = entryField(parent=self.rightFrame, layout=self.coordinateLayout, icon=":/Icons/phone.svg", placehoder="Téléphone", size=SIZE.Short, regex=r"^\+?[0-9]{1,20}$", maxLength=30)
+        self.phone_lineEdit = self.phone.findChild(QLineEdit, "line_edit", Qt.FindDirectChildrenOnly)
+        self.phone_lineEdit.textChanged.connect(lambda text : self.addToList(3, text))
 
         self.rightLayout.addStretch(1)
 
         self.firstpasswordLayout = QHBoxLayout()
         self.rightLayout.addLayout(self.firstpasswordLayout)
 
-        passwordEntryField(parent=self.rightFrame, layout=self.firstpasswordLayout, placehoder="Créer un mot de passe")
+        self.password = passwordEntryField(parent=self.rightFrame, layout=self.firstpasswordLayout, placehoder="Créer un mot de passe")
+        self.password_lineEdit = self.password.findChild(QLineEdit, "line_edit", Qt.FindDirectChildrenOnly)
+        self.password_lineEdit.textChanged.connect(lambda text : self.addToList(4, text))
 
         self.rightLayout.addStretch(1)
 
         self.secondpasswordLayout = QHBoxLayout()
         self.rightLayout.addLayout(self.secondpasswordLayout)
-        passwordEntryField(parent=self.rightFrame, layout=self.secondpasswordLayout, placehoder="Confirmez votre mot de passe")
+
+        self.confirmPassword = passwordEntryField(parent=self.rightFrame, layout=self.secondpasswordLayout, placehoder="Confirmez votre mot de passe")
+        self.confirmPassword_lineEdit = self.confirmPassword.findChild(QLineEdit, "line_edit", Qt.FindDirectChildrenOnly)
+        self.confirmPassword_lineEdit.textChanged.connect(lambda text : self.addToList(5, text))
 
         self.rightLayout.addStretch(1)
 
         self.buttonLayout = QHBoxLayout()
         self.rightLayout.addLayout(self.buttonLayout)
-        connectionButton(parent=self.rightFrame, layout=self.buttonLayout)
+        self.button = connectionButton(parent=self.rightFrame, layout=self.buttonLayout)
+        self.button.clicked.connect(self.checkDataEntry)
 
         self.rightLayout.addStretch(1)
 
@@ -133,17 +155,34 @@ class SignInWindow(QDialog):
         self.text.setFont(QFont("Montserrat", fitValueToScreen(value=10), QFont.Normal))
         self.text.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
 
-        bareButton(parent=self.rightFrame, layout=self.textLayout, text="Connectez-vous")
+        self.textButton = bareButton(parent=self.rightFrame, layout=self.textLayout, text="Connectez-vous")
 
         self.textLayout.addStretch()
 
         self.rightLayout.addStretch(1)
 
+
         self.show()
 
 
-# if __name__ == "__main__":
-#     app = QApplication(sys.argv)
-#     w = SignInScreen()
-#     w.show()
-#     sys.exit(app.exec())
+    @Slot()
+    def addToList(self, index: int, text: str):
+        self.dataList[index] = text
+
+    @Slot()
+    def checkDataEntry(self):
+        try:
+            check_all_fields_filled(li=self.dataList)
+            if self.dataList[0] or self.dataList[1] or self.dataList[2] or self.dataList[3] or self.dataList[4] or self.dataList[5] == "":
+                raise DataEntryError("Veuillez remplir tous les champs")
+            check_email_format(email=self.dataList[2])
+            check_phone_format(number=self.dataList[3])
+            check_password_complexity(password=self.dataList[4])
+            check_password_differs_from_name(password=self.dataList[4], fName=self.dataList[1], lName=self.dataList[0])
+            check_password_length(password=self.dataList[4])
+            check_passwords_match(password=self.dataList[4], conf_pwd=self.dataList[5])
+        except DataEntryError as e :
+            display_message_error(title=str(e.title), message=str(e.message))
+        else:
+            print("Tous les champs sont corrects")
+

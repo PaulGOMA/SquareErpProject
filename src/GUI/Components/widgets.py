@@ -8,8 +8,8 @@ sys.path.append("..")
 
 from PySide6.QtWidgets import QFrame, QWidget, QBoxLayout,\
     QSizePolicy, QHBoxLayout, QLabel, QVBoxLayout, QButtonGroup,\
-    QPushButton
-from PySide6.QtGui import QFont, QPalette, QColor, QPixmap
+    QPushButton, QMessageBox
+from PySide6.QtGui import QFont, QPalette, QColor, QPixmap, QIcon
 from PySide6.QtCore import Qt
 
 from GUI.Components.components import addButtonWithText, validateButton,\
@@ -423,3 +423,28 @@ def contact(parent: QWidget, layout: QBoxLayout, fName: str, lName: str, mail: s
     layout.addWidget(frame)
     
     return frame
+
+# ::::::::Pop up::::::::::::: #
+def displayMessageError(title: str, message: str) -> QMessageBox:
+    box_error = QMessageBox()
+    box_error.setWindowIcon(QIcon(":/Pictures/icon.png"))
+    box_error.setIcon(QMessageBox.Critical)
+    box_error.setWindowTitle(title)
+    box_error.setText(message)
+    box_error.exec()
+
+    return box_error
+
+def closeApp() -> QMessageBox:
+    box = QMessageBox()
+    box.setWindowTitle("Fermeture de l'application")
+    box.setWindowIcon(QIcon(":/Pictures/icon.png"))
+    box.setIcon(QMessageBox.Question)
+    box.setText("Souhaitez-vous fermer l'application ?")
+    acceptButton = box.addButton("Oui", QMessageBox.AcceptRole)
+    rejectButton = box.addButton("Non", QMessageBox.RejectRole)
+
+    acceptButton.clicked.connect(box.accept)
+    rejectButton.clicked.connect(box.reject)
+
+    return box
