@@ -3,19 +3,28 @@ sys.path.append("..")
 
 from PySide6.QtWidgets import QMainWindow, QWidget, QHBoxLayout,\
     QVBoxLayout, QButtonGroup, QAbstractButton,\
-    QPushButton, QSizePolicy
+    QPushButton, QSizePolicy, QLabel
 from PySide6.QtCore import Qt, Slot
 
-from Utils.responsiveLayout import centerWindow, getResolutions
+from Utils.responsiveLayout import centerWindow
 from Utils.enumeration import CONNEXION_STATUS as STATUS
-from GUI.Components.widgets import sidebar, titlebar, closeApp
+from Utils.worker import WorkerWithConnexionStatus, WorkerWithString
+from GUI.Components.widgets import sidebar, closeApp, TitleBar
 from GUI.Pages.pageManager import stackPage
+from Handler.internet import InternetManager
+from Handler.threads import ThreadManager
+from Handler.users import UserManager
 from Assets import pictures
 
 
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
+
+        self.InternetManager = InternetManager()
+        self.ThreadManager = ThreadManager()
+
+
         self.setWindowFlag(Qt.WindowType.FramelessWindowHint)
         self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         centerWindow(self)
@@ -37,17 +46,22 @@ class MainWindow(QMainWindow):
         self.mainLayout.setContentsMargins(0, 0, 0, 0)
         self.mainLayout.setSpacing(0)
 
-        self.titlebar = titlebar(parent=self.centralArea, layout=self.mainLayout, connexionstatus=STATUS.OffLine, name="Paul GOMA", mail="paulgoma07@gmail.com")
-        self.mainLayout.setAlignment(self.titlebar, Qt.AlignTop)
+        self.titleBar = TitleBar(parent=self.centralArea, Layout=self.mainLayout)
 
-        self.closeButton = self.titlebar.findChild(QPushButton, "closeButton", Qt.FindDirectChildrenOnly)
-        self.closeButton.clicked.connect(self.closeApp)
+        self.WorkerIconConnection = WorkerWithConnexionStatus(Target=self.getConnexionState)
+        self.WorkerIconConnection.updatePageSignal.connect(self.titleBar.attendanceStatus) 
+        self.ThreadManager.addThread(target=self.WorkerIconConnection.run, label="internetConnection", useStopevent=True)
+        self.ThreadManager.startThreadByLabel(label="internetConnection")
 
-        self.hideScreen = self.titlebar.findChild(QPushButton, "minimizeButton", Qt.FindDirectChildrenOnly)
-        self.hideScreen.clicked.connect(self.showMinimized)
-
-        self.resizeButton = self.titlebar.findChild(QPushButton, "resizeButton", Qt.FindDirectChildrenOnly)
-        self.resizeButton.toggled.connect(self.resizeWindow)
+        self.WorkerUsername = WorkerWithString(Target=UserManager.getUsername)
+        self.WorkerUsername.updatePageSignal.connect(self.setUsername)
+        self.ThreadManager.addThread(target=self.WorkerUsername.run, label="Username", useStopevent=True)
+        self.ThreadManager.startThreadByLabel(label="Username")
+        
+        self.hideButton = self.titleBar.hideButton
+        self.hideButton.clicked.connect(self.showMinimized)
+        self.titleBar.resizeButton.toggled.connect(self.resizeWindow)
+        self.titleBar.closeButton.clicked.connect(self.closeApp)
 
         self.pages = stackPage(layout=self.mainLayout)
         self.pages.setCurrentIndex(0)
@@ -57,6 +71,17 @@ class MainWindow(QMainWindow):
 
         self.show()
 
+    @Slot()
+    def getConnexionState(self) -> STATUS:
+        if self.InternetManager.isInternetAcces() and self.InternetManager.isWifiConnected():
+            return STATUS.OnLine
+        else:
+            return STATUS.OffLine
+        
+    
+    @Slot()
+    def setUsername(self) -> None:
+        self.titleBar.name = UserManager.email
 
     @Slot()
     def displayPage(self, button: QAbstractButton):

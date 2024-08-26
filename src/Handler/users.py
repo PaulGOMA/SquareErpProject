@@ -14,20 +14,20 @@ class UsersManager:
         self.MySQLConnector.set_authentification(True)
 
 # ::::::::::::::::::::::::::: Gestion Users :::::::::::::::::::::::::::::::::::::::::::::::::::::::
-    def get_user_name(self) -> str:
-        if self.InternetManager.is_internet_accès() and self.InternetManager.is_wifi_connected():
+    def getUsername(self) -> str:
+        if self.InternetManager.isInternetAcces() and self.InternetManager.isWifiConnected():
             self.MySQLConnector.set_user(self._email)
             self.MySQLConnector.set_password(self._password)
             try:
                 self.MySQLConnector.connect()
-                return self.MySQLConnector.execute_query("SELECT get_user_name()")[0][0]
+                return self.MySQLConnector.execute_query("SELECT getUserName()")[0][0]
             except:
                 return 'Accès refusé'
         else:
             return 'Hors ligne'
 
-    def get_message_notify(self) -> int:
-        if self.InternetManager.is_internet_accès() and self.InternetManager.is_wifi_connected():
+    def getMessageNotify(self) -> int:
+        if self.InternetManager.isInternetAcces() and self.InternetManager.isWifiConnected():
             self.MySQLConnector.set_user(self._email)
             self.MySQLConnector.set_password(self._password)
             try:
@@ -38,7 +38,7 @@ class UsersManager:
         else:
             return -1
 
-    def get_update(self) -> int:
+    def getUpdate(self) -> int:
         print(1)
         return 1
 

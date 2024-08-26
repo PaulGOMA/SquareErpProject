@@ -10,14 +10,14 @@ class InternetManager:
         # Initialisation des librairies si nécessaire
         self.InternetGetConnectedState = ctypes.windll.Wininet.InternetGetConnectedState
 
-    def is_internet_accès(self, url="https://www.google.com"):
+    def isInternetAcces(self, url="https://www.google.com"):
         try:
             response = requests.get(url, timeout=5)
             return response.status_code == 200
         except requests.exceptions.RequestException:
             return False
 
-    def is_wifi_connected(self):
+    def isWifiConnected(self):
         return self.InternetGetConnectedState(0, 0) != 0
 
     def geocode_location(self, location_name):

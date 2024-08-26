@@ -10,14 +10,15 @@ from PySide6.QtWidgets import QFrame, QWidget, QBoxLayout,\
     QSizePolicy, QHBoxLayout, QLabel, QVBoxLayout, QButtonGroup,\
     QPushButton, QMessageBox
 from PySide6.QtGui import QFont, QPalette, QColor, QPixmap, QIcon
-from PySide6.QtCore import Qt
+from PySide6.QtCore import Qt, Slot
 
 from GUI.Components.components import addButtonWithText, validateButton,\
-    sidebarButton, separator, searchbarForNavbar, attendanceStatus, \
-    user, closeWindowButton, resizeWindowButton, minimizeWindowButton,\
+    sidebarButton, separator, SearchBar,attendanceStatus,\
+    user, TitleBarButton,\
     addButtonWithoutText, contactAcronym, contactDetails
 from Utils.enumeration import CONNEXION_STATUS as STATUS, SIZE
 from Utils.responsiveLayout import fitValueToScreen, fitSizeToScreen
+
 
 from Assets import icons, pictures
 
@@ -164,43 +165,52 @@ def sidebar(parent: QWidget, layout: QBoxLayout) -> QFrame:
     layout.addWidget(frame)
     return frame
 
-# Titlebar
-def titlebar(parent: QWidget, layout: QBoxLayout, connexionstatus: STATUS, name: str, mail: str) -> QFrame:
-    frame = QFrame(parent)
-    frame.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
-    frame.setFrameShape(QFrame.NoFrame)
-    frame.setStyleSheet("background-color: white;")
 
-    frameLayout = QHBoxLayout()
-    frame.setLayout(frameLayout)
-    frameLayout.setContentsMargins(fitValueToScreen(32), 0, 0, 0)
+class TitleBar(QFrame):
+    """
+    # This class is used to create the application's title bar
+    """
 
-    searchbar = searchbarForNavbar(frame, frameLayout)
-    searchbar.setObjectName("searchbar")
+    # Class attribute
+    background = "white"
+    
 
-    frameLayout.addStretch(12)
+    def __init__(self, parent: QWidget, Layout: QBoxLayout):
+        super().__init__(parent)
 
-    status = attendanceStatus(frame, frameLayout, connexionstatus)
-    status.setObjectName("status")
+        self.name = "Paul Goma"
+        self.mail = "Paulgoma07@gmail.com"
+        
 
-    frameLayout.addStretch(1)
+        self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
+        self.setFrameShape(QFrame.NoFrame)
+        self.setStyleSheet(f"background-color: {TitleBar.background};")
 
-    person =user(frame, frameLayout, name, mail)
-    person.setObjectName("person")
+        self.frameLayout = QHBoxLayout()
+        self.frameLayout.setContentsMargins(fitValueToScreen(32), 0, 0, 0) 
+        self.setLayout(self.frameLayout)
 
-    frameLayout.addStretch(1)
+        self.searchbar = SearchBar(self, self.frameLayout)
+        self.searchbar.searchbarForTitleBar()
 
-    minimizeButton = minimizeWindowButton(frame, frameLayout)
-    minimizeButton.setObjectName("minimizeButton")
+        self.frameLayout.addStretch(12)
 
-    resizeButton = resizeWindowButton(frame, frameLayout)
-    resizeButton.setObjectName("resizeButton")
+        self.status = attendanceStatus(self, self.frameLayout)
+        self.frameLayout.addStretch(1)
+        self.user = user(self, self.frameLayout, self.name, self.mail)
+        self.frameLayout.addStretch(1)
 
-    closeButton = closeWindowButton(frame, frameLayout)
-    closeButton.setObjectName("closeButton")
 
-    layout.addWidget(frame)
-    return frame
+        self.hideButton  = TitleBarButton(self, self.frameLayout).hideWindowButton()
+        self.resizeButton  = TitleBarButton(self, self.frameLayout).resizeWindowButton()
+        self.closeButton  = TitleBarButton(self, self.frameLayout).closeWindowButton()
+
+        self.Layout = Layout
+        self.Layout.addWidget(self)
+    
+    
+    def attendanceStatus(self, status: STATUS) -> QLabel:
+        self.status.setPixmap(QPixmap(":/Icons/online.svg" if status == STATUS.OnLine else ":/Icons/offline.svg"))
 
 
 # Message bar

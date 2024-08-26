@@ -15,7 +15,7 @@ class WindowManager:
             self.set_current_index(0)  # Afficher la première fenêtre
             sys.exit(self.app.exec())  # Lancer la boucle d'événements
 
-    def set_current_index(self, new_index, exit=True):
+    def setCurrentIndex(self, new_index, exit=True):
         if 0 <= new_index < len(self.window_classes):  # Vérifier que l'index est valide
             if self.current_window:
                 self.current_window.close() if exit else self.current_window.hide()  # Fermer la fenêtre courante
@@ -23,7 +23,7 @@ class WindowManager:
             self.current_window = self.window_classes[self.current_index]()  # Créer une nouvelle instance de la fenêtre
             #self.current_window.show()  # Afficher la nouvelle fenêtre
 
-    def get_current_index(self):
+    def getCurrentIndex(self):
         return self.current_index
 
     def add_window(self, window_class):

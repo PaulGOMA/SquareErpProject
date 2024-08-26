@@ -30,6 +30,110 @@ class CustomListWidgetDelegate(QStyledItemDelegate):
         super().paint(painter, option, index)
 
 # ::::::::Buttons::::::::::::: #
+class StandardButon(QPushButton):
+    """
+    # This class implements standard button used in the application as add button or validate button.
+
+    ## Class attribute
+
+    ( *color* ) mainBackgroundColor : *str*
+    ( *color* ) mainBackgroundColorPressed : *str*
+    ( *color* ) mainTextColor : *str*
+    ( *color* ) secondTextColor : *str*
+    ( *color* ) secondTextColorPressed : *str*
+    
+    ## Methods
+
+    ####  StandardButon(parent: QWidget, Layout: QBoxLayout) -> StandardButon
+
+    *Constructs a button with the given parent and layout*
+
+    #### ButtonWithText(txt: str) -> QPushButton
+
+    *Constructs a button with the given text*
+
+    #### ButtonWithoutText() -> QPushButton
+
+    *Used to build the add button*
+
+    #### connectionButton() -> QPushButton
+
+    *Used to build the connection button for connection pages*
+
+    #### bareButton(text: str) -> QPushButton
+
+    *Used to build button without background*
+    """
+
+    # Class attribute
+    mainBackgroundColor = "#5234A5"
+    mainBackgroundColorPressed = "#44317e"
+    mainTextColor = "white"
+    secondTextColor = "#8676F3"
+    secondTextColorPressed = "#744be0"
+
+
+    def __init__(self, parent: QWidget, Layout: QBoxLayout, Width: int=None, Height: int=None):
+        super().__init__(parent)
+
+        self.Width = Width
+        self.Height = Height
+
+        self.setFlat(True)
+        self.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+        self.setFont(QFont("Montserrat", fitValueToScreen(value=11), QFont.DemiBold))
+
+        if self.Width and self.Height is not None:
+            self.setFixedSize(fitSizeToScreen(self.Width, self.Height))
+            self.setStyleSheet(
+            f"""
+            QPushButton {{background-color: {StandardButon.backgroundColor};border: none;}}
+            QPushButton:pressed {{background-color: {StandardButon.backgroundColorPressed}; text-decoration: underline;}}
+            """
+            )
+        else:
+            self.setStyleSheet(
+            f"""
+            QPushButton {{background-color: {StandardButon.backgroundColor}; {StandardButon.mainTextColor}; border: none; 
+                padding-top: {fitValueToScreen(value=10)}px; padding-right: {fitValueToScreen(value=20)}px; padding-bottom: {fitValueToScreen(value=10)}px; padding-left: {fitValueToScreen(value=20)}px;}}
+            QPushButton:pressed {{background-color: {StandardButon.backgroundColorPressed}; color: white;}}
+            """
+            )
+
+        self.Layout = Layout
+        Layout.addWidget(self)
+
+    def ButtonWithoutText(self) -> QPushButton:
+        self.setIcon(QIcon(":/Icons/plus.svg"))
+
+        return self
+
+
+    def ButtonWithText(self, text: str="Valider") -> QPushButton:
+        self.setIcon(QIcon(":/Icons/validate.svg" if text == "Valider" else ":/Icons/plus.svg"))
+        self.setLayoutDirection(Qt.RightToLeft)
+        self.setText(text)
+
+        return self
+
+    def connectionButton(self) -> QPushButton:
+        self.setText("Valider")
+
+        return self
+
+    
+    def bareButton(self, text: str) -> QPushButton:
+        self.setText(text)
+        self.setFont(QFont("Montserrat", fitValueToScreen(value=10), QFont.Medium))
+        self.setStyleSheet(
+            f"""
+            QPushButton {{color: {StandardButon.secondTextColor};border: none;}}
+            QPushButton:pressed {{color: {StandardButon.secondTextColorPressed};}}
+            """
+        )
+
+        return self
+
 
 # Add new element button
 def addButtonWithoutText(parent: QWidget, layout: QBoxLayout) -> QPushButton:
@@ -81,6 +185,102 @@ def validateButton(parent: QWidget, layout: QBoxLayout) -> QPushButton:
     return button
 
 # Side bar button
+class GroupButton(QPushButton):
+    """
+    # This class implements buttons used by side bar or navigation bar.
+
+    ## Class attribute
+
+    ( *color* ) mainBorderColor : *str*
+    ( *color* ) secondBorderCor : *str*
+    ( *color* ) backgroundColorPressed : *str*
+    ( *color* ) mainTextColor : *str*
+    ( *color* ) mainTextColorPressed : *str*
+    ( *color* ) secondTextColor : *str*
+    ( *color* ) secondTextColorPressed : *str*
+    
+    ## Methods
+
+    ####  GroupButton(parent: QWidget, text: str, Layout: QBoxLayout, Group: QButtonGroup, Width: int=None, Height: int=None) -> GroupButton
+
+    *Constructs a button with the given parameters*
+
+    #### sidebarButton(self, uncheckedIconPath: str, checkedIconPath: str) -> QPushButton
+
+    *Used to build the side bar buttons*
+
+    #### sidebarButtonForReport(self) -> QPushButton
+
+    *Used to build the side bar buttons without icon for Report page*
+
+    """
+
+    # Class attribute
+    mainBorderColor = "white"
+    secondBorderCor = "#5234a5"
+    backgroundColorPressed = "#ACA8F9"
+    mainTextColor = "#CAC9FC"
+    mainTextColorPressed = "white"
+    secondTextColor = "#5234a5"
+    secondTextColorPressed = "white"
+
+    def __init__(self, parent: QWidget, text: str, Layout: QBoxLayout, Group: QButtonGroup, Width: int=None, Height: int=None):
+        super().__init__(text, parent)
+
+        self.Width = Width
+        self.Height = Height
+
+        self.setFlat(True)
+        self.setCheckable(True)
+        if self.Width and self.Height is not None:
+            self.setFixedSize(fitSizeToScreen(self.Width, self.Height))
+
+        self.Group = Group
+        self.Group.addButton(self)
+
+        self.Layout = Layout
+        self.Layout.addWidget(self)
+
+    def sidebarButton(self, uncheckedIconPath: str, checkedIconPath: str) -> QPushButton:
+        self.setIcon(QIcon(uncheckedIconPath))
+        self.setFont(QFont("Montserrat", fitValueToScreen(value=14), QFont.Normal))
+        self.setStyleSheet(
+            f"""
+            QPushButton {{
+                background-color: none; 
+                text-align: left;
+                color: {GroupButton.mainTextColor};
+                border-left: {fitValueToScreen(value=3)}px solid none;
+                padding-left: {fitValueToScreen(value=12)}px;}}
+            QPushButton:checked, QPushButton:hover{{
+                icon: url({checkedIconPath});
+                border-left: {fitValueToScreen(value=3)}px solid {GroupButton.mainBorderColor}; 
+                background-color: {GroupButton.backgroundColorPressed}
+                color: {GroupButton.mainTextColorPressed};}}
+            """
+        ) 
+
+        return self
+
+    def sidebarButtonForReport(self) -> QPushButton:
+        self.setFont(QFont("Montserrat", fitValueToScreen(value=14), QFont.Medium))
+        self.setStyleSheet(
+            f"""
+            QPushButton {{
+                background-color: none; 
+                text-align: left;
+                color: {GroupButton.secondTextColor};
+                border: none;
+                padding-left: {fitValueToScreen(value=16)}px;}}
+            QPushButton:checked, QPushButton:hover {{
+                border-left: {fitValueToScreen(value=3)}px solid {GroupButton.secondBorderCor};
+                background-color: #ACA8F9; 
+                color: {GroupButton.secondTextColorPressed};}}
+            """
+        )
+
+        return self
+
 def sidebarButton(parent: QWidget, text: str, uncheckedIconPath: str, checkedIconPath: str, layout: QBoxLayout, group: QButtonGroup) -> QPushButton:
     button = QPushButton(QIcon(uncheckedIconPath), text, parent)
     button.setFlat(True)
@@ -94,7 +294,7 @@ def sidebarButton(parent: QWidget, text: str, uncheckedIconPath: str, checkedIco
             background-color: none; 
             text-align: left;
             color: #CAC9FC;
-            border: none;
+            border-left: {fitValueToScreen(value=3)}px solid none;
             padding-left: {fitValueToScreen(value=12)}px;}}
         QPushButton:checked{{
             icon: url({checkedIconPath});
@@ -138,6 +338,86 @@ def sidebarButtonForReport(parent: QWidget, text: str, layout: QBoxLayout, group
     return button
 
 # title bar buttons
+class TitleBarButton(QPushButton):
+    """
+    # This class implements buttons used by side bar or navigation bar.
+
+    ## Class attribute
+
+    ( *color* ) mainBackgroundColor : *str*
+    ( *color* ) secondBackgroundColor : *str*
+
+    ## Methods
+
+    ####  TitleBarButton(parent: QWidget, Layout: QBoxLayout) -> TitleBarButton
+
+    *Constructs a button with the given parent and layout*
+
+    #### closeWindowButton() -> QPushButton
+
+    *Used to build the title bar button to close window*
+
+    #### resizeWindowButton() -> QPushButton
+
+    *Used to build the title bar button to resize window*
+
+    #### hideWindowButton() -> QPushButton
+
+    *Used to build the title bar button to hide the window*
+
+    """
+
+    # Class attribute
+    mainBackgroundColor = "#EFEFFE"
+    secondBackgroundColor = "#E81123"
+
+    def __init__(self, parent: QWidget, Layout: QBoxLayout):
+        super().__init__(parent)
+
+        self.setFlat(True)
+        self.setFixedSize(fitSizeToScreen(width=45, height=45))
+
+        self.Layout = Layout
+        self.Layout.addWidget(self)
+
+    def closeWindowButton(self) -> QPushButton:
+        self.setIcon(QIcon(":/Icons/unchecked_close.svg"))
+        self.setStyleSheet(
+            f"""
+            QPushButton {{background-color: none; border: none;}}
+            QPushButton:pressed, QPushButton:hover {{
+                background-color: {TitleBarButton.secondBackgroundColor};
+                icon: url(":/Icons/checked_close.svg");
+            }}
+            """
+        )
+
+        return self
+    
+    def resizeWindowButton(self) -> QPushButton:
+        self.setIcon(QIcon(":/Icons/unchecked_resize.svg"))
+        self.setCheckable(True)
+        self.setStyleSheet(
+            f"""
+            QPushButton {{background-color: none; border: none;}}
+            QPushButton:hover {{background-color: {TitleBarButton.mainBackgroundColor}; border: none;}}
+            QPushButton:checked {{icon: url(":/Icons/checked_resize.svg");}}
+            """
+        )
+
+        return self
+
+    def hideWindowButton(self) -> QPushButton:
+        self.setIcon(QIcon(":/Icons/minimize.svg"))
+        self.setStyleSheet(
+            f"""
+            QPushButton {{background-color: none; border: none;}}
+            QPushButton:hover {{background-color: {TitleBarButton.mainBackgroundColor}; border: none;}}
+            """
+        )
+
+        return self
+
 def closeWindowButton(parent: QWidget, layout: QBoxLayout) -> QPushButton:
     button = QPushButton(parent)
     button.setIcon(QIcon(":/Icons/unchecked_close.svg"))
@@ -219,70 +499,77 @@ def bareButton(parent: QWidget, layout: QBoxLayout, text: str) -> QPushButton:
 
     layout.addWidget(button)
     return button
-
 # ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 # ::::::::text entry field::::::::::::: #
 
-# Search bar 
-def searchbar(parent: QWidget, layout: QBoxLayout, text: str) -> QFrame:
-    frame = QFrame(parent)
-    frame.setFixedSize(fitSizeToScreen(width=204, height=52))
-    frame.setStyleSheet(f"QFrame {{background-color: transparent; border: {fitValueToScreen(value=3)}px solid #e1e2fe;}}")
+class SearchBar(QFrame):
+    """
+    # This class implements all the search bars used in the application.
 
-    frame_layout = QHBoxLayout()
-    frame.setLayout(frame_layout)
+    ## Class attribute
 
-    button = QPushButton(frame)
-    button.setObjectName("button")
-    button.setFlat(True)
-    button.setIcon(QIcon(":/Icons/search.svg"))
-    button.setIconSize(fitSizeToScreen(width=26, height=22))
-    button.setStyleSheet("QPushButton:pressed {icon: url(':/Icons/search_clicked.svg')}")
-    frame_layout.addWidget(button)
+    ( *color* ) borderColor : *str*
+    ( *color* ) textColor : *str*
 
-    frame_layout.addStretch()
+    ## Methods
 
-    line_edit = QLineEdit(frame)
-    line_edit.setObjectName("line_edit")
-    line_edit.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
-    line_edit.setPlaceholderText(text)
-    line_edit.setFrame(QFrame.NoFrame)
-    line_edit.setStyleSheet("background-color: transparent; color: #3d3d3d;")
-    line_edit.setFont(QFont("Montserrat", fitValueToScreen(value=11), QFont.Normal))
-    frame_layout.addWidget(line_edit)
+    ####  SearchBar(parent: QWidget, Layout: QBoxLayout) -> SearchBar
 
-    layout.addWidget(frame)
-    return frame
+    *Constructs a search bar with the given parent and layout*
 
+    #### searchbar(txt: str) -> QFrame
 
-def searchbarForNavbar(parent: QWidget, layout: QBoxLayout) -> QFrame:
-    frame = QFrame(parent)
-    frame.setFixedSize(fitSizeToScreen(width=424, height=40))
-    frame.setStyleSheet(f"QFrame {{background-color: transparent; border: {fitValueToScreen(value=2)}px solid #e1e2fe;}}")
+    *Constructs a classic search bar with the given text as placeholder*
 
-    frame_layout = QHBoxLayout()
-    frame.setLayout(frame_layout)
+    #### searchbarForTitleBar() -> QFrame
 
-    line_edit = QLineEdit(frame)
-    line_edit.setObjectName("line_edit")
-    line_edit.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
-    line_edit.setPlaceholderText("Recherchez...")
-    line_edit.setFrame(QFrame.NoFrame)
-    line_edit.setStyleSheet("background-color: transparent; color: #3d3d3d;")
-    line_edit.setFont(QFont("Montserrat", fitValueToScreen(value=10), QFont.Normal))
-    frame_layout.addWidget(line_edit)
+    *Used to build the title bar search bar*
 
-    frame_layout.addStretch()
+    """
 
-    button = QPushButton(frame)
-    button.setObjectName("button")
-    button.setFlat(True)
-    button.setIcon(QIcon(":/Icons/search.svg"))
-    button.setStyleSheet("QPushButton:pressed {icon: url(':/Icons/search_clicked.svg')}")
-    frame_layout.addWidget(button)
+    # Class attribute
+    borderColor = "#e1e2fe"
+    textColor = "#3d3d3d"
 
-    layout.addWidget(frame)
-    return frame
+    def __init__(self, parent: QWidget, Layout: QBoxLayout):
+        super().__init__(parent)
+        self.setStyleSheet(f"QFrame {{background-color: transparent; border: {fitValueToScreen(value=2)}px solid {SearchBar.borderColor};}}")
+
+        self.frameLayout = QHBoxLayout()
+        self.setLayout(self.frameLayout) 
+
+        self.button = QPushButton(self)
+        self.button.setFlat(True)
+        self.button.setIcon(QIcon(":/Icons/search.svg"))
+        self.button.setStyleSheet("QPushButton:pressed {icon: url(':/Icons/search_clicked.svg')}")
+
+        self.lineEdit = QLineEdit(self)
+        self.lineEdit.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
+        self.lineEdit.setFrame(QFrame.NoFrame)
+        self.lineEdit.setStyleSheet(f"background-color: transparent; color: {SearchBar.textColor};")
+        self.lineEdit.setFont(QFont("Montserrat", fitValueToScreen(value=10), QFont.Normal))   
+
+        self.Layout = Layout
+        self.Layout.addWidget(self)
+
+    def searchbar(self, text: str) -> QFrame:
+        self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
+        
+        self.lineEdit.setPlaceholderText(text)
+
+        self.frameLayout.addWidget(self.button)
+        self.frameLayout.addWidget(self.lineEdit)
+        self.frameLayout.addStretch()
+
+    def searchbarForTitleBar(self) -> QFrame:
+        self.setFixedSize(fitSizeToScreen(width=424, height=40))
+
+        self.lineEdit.setPlaceholderText("Recherchez...")
+
+        self.frameLayout.addWidget(self.lineEdit)
+        self.frameLayout.addStretch()
+        self.frameLayout.addWidget(self.button)
+# ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 # text entry field for login screens
 def entryField(parent: QWidget, layout: QBoxLayout, icon: str, placehoder: str, size: SIZE, regex: str, maxLength: int) -> QFrame:
@@ -738,12 +1025,12 @@ def user(parent: QWidget, layout: QBoxLayout, username: str, usermail: str) -> Q
 
 # ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 # ::::::::attendance status::::::::::::: #
-def attendanceStatus(parent: QWidget, layout: QBoxLayout, status: STATUS) -> QLabel:
+def attendanceStatus(parent: QWidget, layout: QBoxLayout) -> QLabel:
     label = QLabel(parent)
     label.setFrameShape(QFrame.NoFrame)
     label.setScaledContents(True)
     label.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
-    label.setPixmap(QPixmap(":/Icons/online.svg" if status == STATUS.OnLine else ":/Icons/offline.svg"))
+    # label.setPixmap(QPixmap(":/Icons/online.svg" if status == STATUS.OnLine else ":/Icons/offline.svg"))
 
     layout.addWidget(label)
     return label

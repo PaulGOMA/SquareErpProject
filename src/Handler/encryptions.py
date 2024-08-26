@@ -1,3 +1,6 @@
+import sys
+sys.path.append("..")
+
 import os
 import base64
 from cryptography.hazmat.primitives import hashes, padding as sym_padding

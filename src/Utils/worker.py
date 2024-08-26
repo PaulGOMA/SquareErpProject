@@ -5,19 +5,21 @@ import time
 
 from PySide6.QtCore import QObject, Signal
 
-class Worker_with_int(QObject):
-    update_page_signal = Signal(int)
+from Utils.enumeration import CONNEXION_STATUS as STATUS
+
+class WorkerWithInt(QObject):
+    updatePageSignal = Signal(int)
     def __init__(self, Target=None):
         super().__init__()
         self.Target = Target
     def run(self, stop_event):
         while stop_event is None or not stop_event.is_set():
-            self.update_page_signal.emit(self.Target())
+            self.updatePageSignal.emit(self.Target())
             time.sleep(1)
 
 
-class Worker_with_string(QObject):
-    update_page_signal = Signal(str)
+class WorkerWithString(QObject):
+    updatePageSignal = Signal(str)
 
     def __init__(self, Target=None):
         super().__init__()
@@ -25,11 +27,11 @@ class Worker_with_string(QObject):
 
     def run(self, stop_event):
         while stop_event is None or not stop_event.is_set():
-            self.update_page_signal.emit(self.Target())
+            self.updatePageSignal.emit(self.Target())
             time.sleep(1)
 
-class Worker_with_list(QObject):
-    update_page_signal = Signal(list)
+class WorkerWithList(QObject):
+    updatePageSignal = Signal(list)
 
     def __init__(self, Target=None):
         super().__init__()
@@ -37,5 +39,17 @@ class Worker_with_list(QObject):
 
     def run(self, stop_event):
         while stop_event is None or not stop_event.is_set():
-            self.update_page_signal.emit(self.Target())
+            self.updatePageSignal.emit(self.Target())
+            time.sleep(1)
+
+class WorkerWithConnexionStatus(QObject):
+    updatePageSignal = Signal(STATUS)
+
+    def __init__(self, Target=None):
+        super().__init__()
+        self.Target = Target
+
+    def run(self, stop_event):
+        while stop_event is None or not stop_event.is_set():
+            self.updatePageSignal.emit(self.Target())
             time.sleep(1)
