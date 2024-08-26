@@ -4,7 +4,7 @@ sys.path.append("..")
 from PySide6.QtWidgets import QMainWindow, QWidget, QHBoxLayout,\
     QVBoxLayout, QButtonGroup, QAbstractButton,\
     QPushButton, QSizePolicy, QLabel
-from PySide6.QtCore import Qt, Slot
+from PySide6.QtCore import Qt, Slot, QPoint
 
 from Utils.responsiveLayout import centerWindow
 from Utils.enumeration import CONNEXION_STATUS as STATUS
@@ -20,6 +20,9 @@ from Assets import pictures
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
+
+        self.oldPos = None
+        self.resizing = False
 
         self.InternetManager = InternetManager()
         self.ThreadManager = ThreadManager()
@@ -49,7 +52,7 @@ class MainWindow(QMainWindow):
         self.titleBar = TitleBar(parent=self.centralArea, Layout=self.mainLayout)
 
         self.WorkerIconConnection = WorkerWithConnexionStatus(Target=self.getConnexionState)
-        self.WorkerIconConnection.updatePageSignal.connect(self.titleBar.attendanceStatus) 
+        self.WorkerIconConnection.updatePageSignal.connect(self.titleBar.setStatus) 
         self.ThreadManager.addThread(target=self.WorkerIconConnection.run, label="internetConnection", useStopevent=True)
         self.ThreadManager.startThreadByLabel(label="internetConnection")
 
@@ -57,11 +60,6 @@ class MainWindow(QMainWindow):
         self.WorkerUsername.updatePageSignal.connect(self.setUsername)
         self.ThreadManager.addThread(target=self.WorkerUsername.run, label="Username", useStopevent=True)
         self.ThreadManager.startThreadByLabel(label="Username")
-        
-        self.hideButton = self.titleBar.hideButton
-        self.hideButton.clicked.connect(self.showMinimized)
-        self.titleBar.resizeButton.toggled.connect(self.resizeWindow)
-        self.titleBar.closeButton.clicked.connect(self.closeApp)
 
         self.pages = stackPage(layout=self.mainLayout)
         self.pages.setCurrentIndex(0)
@@ -69,7 +67,39 @@ class MainWindow(QMainWindow):
         self.groupbutton = self.sidebar.findChild(QButtonGroup, "groupbutton", Qt.FindDirectChildrenOnly)
         self.groupbutton.buttonClicked.connect(self.displayPage)
 
-        self.show()
+        self.showMaximized()
+
+
+    def mousePressEvent(self, event):
+        if event.button() == Qt.LeftButton:
+            self.oldPos = event.position().toPoint()
+            if self.isOnEdge(event.position().toPoint()):
+                self.resizing = True
+
+    def mouseMoveEvent(self, event):
+        if not self.oldPos:
+            return
+        if self.resizing:
+            self.resizeWindow(event)
+        else:
+            delta = QPoint(event.position().toPoint() - self.oldPos)
+            self.move(self.pos() + delta)
+
+    def mouseReleaseEvent(self, event):
+        self.oldPos = None
+        self.resizing = False
+
+    def isOnEdge(self, pos):
+        margin = 10
+        rect = self.rect()
+        return pos.x() < margin or pos.x() > rect.width() - margin or pos.y() < margin or pos.y() > rect.height() - margin
+    
+    def resizeWindow(self, event):
+        delta = event.position().toPoint() - self.oldPos
+        new_width = self.width() + delta.x()
+        new_height = self.height() + delta.y()
+        self.setFixedSize(new_width, new_height)
+        self.oldPos = event.position().toPoint()
 
     @Slot()
     def getConnexionState(self) -> STATUS:
@@ -92,18 +122,17 @@ class MainWindow(QMainWindow):
         else:
             print("sortie de l'application")
 
-    @Slot()
-    def closeApp(self):
-        dialog = closeApp()
-        if dialog.exec():
-            self.close()
-
-    @Slot()
-    def resizeWindow(self, checked: bool):
-        if checked:
-            self.showNormal()
-        else:
-            self.showMaximized()    
+    # @Slot()
+    # def Deconnexion():
+    #     # dialog = Notification_Dialog_exit(text="Voulez-vous vraiment terminer votre session ?", path="../PICTURES/LOGO/Genius_erp.png")
+    #     dialog = closeApp()
+    #     dialog.setText("Voulez-vous vraiment terminer votre session ?")
+    
+    #     if dialog.exec():
+    #         WindowManager.set_current_index(1)
+    #         WindowManager.current_window.Push_button.clicked.connect(lambda: Loggin(
+    #             WindowManager.current_window.ID_text.text(), WindowManager.current_window.Pwd_text.text()))
+    #         WindowManager.current_window.forgot_label.mousePressEvent = lambda event: Forgot_pwd() 
 
 
 

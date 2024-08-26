@@ -8,14 +8,13 @@ sys.path.append("..")
 
 from PySide6.QtWidgets import QFrame, QWidget, QBoxLayout,\
     QSizePolicy, QHBoxLayout, QLabel, QVBoxLayout, QButtonGroup,\
-    QPushButton, QMessageBox
+    QPushButton, QMessageBox, QStyle
 from PySide6.QtGui import QFont, QPalette, QColor, QPixmap, QIcon
 from PySide6.QtCore import Qt, Slot
 
 from GUI.Components.components import addButtonWithText, validateButton,\
-    sidebarButton, separator, SearchBar,attendanceStatus,\
-    user, TitleBarButton,\
-    addButtonWithoutText, contactAcronym, contactDetails
+    sidebarButton, separator, SearchBar,attendanceStatus, user,\
+    TitleBarButton, addButtonWithoutText, contactAcronym, contactDetails
 from Utils.enumeration import CONNEXION_STATUS as STATUS, SIZE
 from Utils.responsiveLayout import fitValueToScreen, fitSizeToScreen
 
@@ -200,17 +199,40 @@ class TitleBar(QFrame):
         self.user = user(self, self.frameLayout, self.name, self.mail)
         self.frameLayout.addStretch(1)
 
-
-        self.hideButton  = TitleBarButton(self, self.frameLayout).hideWindowButton()
-        self.resizeButton  = TitleBarButton(self, self.frameLayout).resizeWindowButton()
-        self.closeButton  = TitleBarButton(self, self.frameLayout).closeWindowButton()
+        self.hideButton  = TitleBarButton(self, self.frameLayout)
+        self.hideButton.setIcon(self.style().standardIcon(QStyle.SP_TitleBarMinButton))
+        self.hideButton.clicked.connect(parent.parent().showMinimized)
+        self.resizeButton  = TitleBarButton(self, self.frameLayout)
+        self.resizeButton.setIcon(self.style().standardIcon(QStyle.SP_TitleBarMaxButton))
+        self.resizeButton.clicked.connect(self.resizeWindow)
+        self.closeButton  = TitleBarButton(self, self.frameLayout, True)
+        self.closeButton.setIcon(self.style().standardIcon(QStyle.SP_TitleBarCloseButton))
+        self.closeButton.clicked.connect(self.closeApp)
 
         self.Layout = Layout
         self.Layout.addWidget(self)
     
     
-    def attendanceStatus(self, status: STATUS) -> QLabel:
+    def setStatus(self, status: STATUS) -> QLabel:
         self.status.setPixmap(QPixmap(":/Icons/online.svg" if status == STATUS.OnLine else ":/Icons/offline.svg"))
+
+    @Slot()
+    def closeApp(self):
+        dialog = closeApp()
+        if dialog.exec():
+            self.parent().parent().close()
+
+
+    @Slot()
+    def resizeWindow(self): 
+        if self.parent().parent().isMaximized():
+            self.resizeButton.setIcon(self.style().standardIcon(QStyle.SP_TitleBarNormalButton))
+            self.parent().parent().showNormal()
+        else:
+            self.resizeButton.setIcon(self.style().standardIcon(QStyle.SP_TitleBarMaxButton))
+            self.parent().parent().showMaximized() 
+    
+
 
 
 # Message bar

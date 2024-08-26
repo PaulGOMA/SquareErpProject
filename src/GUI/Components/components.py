@@ -11,7 +11,7 @@ from PySide6.QtWidgets import QWidget, QHBoxLayout, QStyle, \
     QPushButton, QBoxLayout, QSizePolicy, QFrame, QLineEdit, \
     QLabel, QVBoxLayout, QComboBox, QStyledItemDelegate, \
     QTableView, QAbstractItemView, QButtonGroup, QCheckBox,\
-    QFormLayout, QListWidgetItem, QListWidget
+    QFormLayout, QListWidgetItem, QListWidget, QStyle, QApplication
 from PySide6.QtGui import QIcon, QFont, Qt, QPixmap, QColor, QPalette,\
     QBrush, QRegularExpressionValidator
 from PySide6.QtCore import QAbstractTableModel, QRegularExpression
@@ -22,6 +22,7 @@ from Utils.enumeration import MESSAGE_FILE_TYPE as TYPE, PROGRESS,\
 from Utils.responsiveLayout import fitSizeToScreen, fitValueToScreen
 
 from Assets import icons
+
 
 
 class CustomListWidgetDelegate(QStyledItemDelegate):
@@ -338,100 +339,23 @@ def sidebarButtonForReport(parent: QWidget, text: str, layout: QBoxLayout, group
     return button
 
 # title bar buttons
-class TitleBarButton(QPushButton):
+def TitleBarButton(parent: QWidget, layout: QBoxLayout, isClosedButton: bool=False) -> QPushButton:
     """
-    # This class implements buttons used by side bar or navigation bar.
-
-    ## Class attribute
-
-    ( *color* ) mainBackgroundColor : *str*
-    ( *color* ) secondBackgroundColor : *str*
-
-    ## Methods
-
-    ####  TitleBarButton(parent: QWidget, Layout: QBoxLayout) -> TitleBarButton
-
-    *Constructs a button with the given parent and layout*
-
-    #### closeWindowButton() -> QPushButton
-
-    *Used to build the title bar button to close window*
-
-    #### resizeWindowButton() -> QPushButton
-
-    *Used to build the title bar button to resize window*
-
-    #### hideWindowButton() -> QPushButton
-
-    *Used to build the title bar button to hide the window*
-
+        # This function implements buttons used by title bar.
     """
 
-    # Class attribute
     mainBackgroundColor = "#EFEFFE"
-    secondBackgroundColor = "#E81123"
+    secondBackgroundColor = "#E81123"    
 
-    def __init__(self, parent: QWidget, Layout: QBoxLayout):
-        super().__init__(parent)
-
-        self.setFlat(True)
-        self.setFixedSize(fitSizeToScreen(width=45, height=45))
-
-        self.Layout = Layout
-        self.Layout.addWidget(self)
-
-    def closeWindowButton(self) -> QPushButton:
-        self.setIcon(QIcon(":/Icons/unchecked_close.svg"))
-        self.setStyleSheet(
-            f"""
-            QPushButton {{background-color: none; border: none;}}
-            QPushButton:pressed, QPushButton:hover {{
-                background-color: {TitleBarButton.secondBackgroundColor};
-                icon: url(":/Icons/checked_close.svg");
-            }}
-            """
-        )
-
-        return self
-    
-    def resizeWindowButton(self) -> QPushButton:
-        self.setIcon(QIcon(":/Icons/unchecked_resize.svg"))
-        self.setCheckable(True)
-        self.setStyleSheet(
-            f"""
-            QPushButton {{background-color: none; border: none;}}
-            QPushButton:hover {{background-color: {TitleBarButton.mainBackgroundColor}; border: none;}}
-            QPushButton:checked {{icon: url(":/Icons/checked_resize.svg");}}
-            """
-        )
-
-        return self
-
-    def hideWindowButton(self) -> QPushButton:
-        self.setIcon(QIcon(":/Icons/minimize.svg"))
-        self.setStyleSheet(
-            f"""
-            QPushButton {{background-color: none; border: none;}}
-            QPushButton:hover {{background-color: {TitleBarButton.mainBackgroundColor}; border: none;}}
-            """
-        )
-
-        return self
-
-def closeWindowButton(parent: QWidget, layout: QBoxLayout) -> QPushButton:
     button = QPushButton(parent)
-    button.setIcon(QIcon(":/Icons/unchecked_close.svg"))
     button.setFlat(True)
     button.setFixedSize(fitSizeToScreen(width=45, height=45))
     button.setStyleSheet(
-        """
-        QPushButton {background-color: none; border: none;}
-        QPushButton:pressed, QPushButton:hover {
-            background-color: #E81123;
-            icon: url(":/Icons/checked_close.svg");
-        }
-        """
-    )
+            f"""
+            QPushButton {{background-color: none; border: none;}}
+            QPushButton:hover {{background-color: {secondBackgroundColor if isClosedButton else mainBackgroundColor}; border: none;}}
+            """
+        )
     layout.addWidget(button)
     return button
 
@@ -1281,3 +1205,5 @@ def messageItem(parent: QListWidget, fName: str, lName: str, txt: str) -> None:
     item.setSizeHint(frame.sizeHint())
 
     parent.setItemWidget(item, frame)
+
+# ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
