@@ -8,13 +8,13 @@ sys.path.append("..")
 
 from PySide6.QtWidgets import QFrame, QWidget, QBoxLayout,\
     QSizePolicy, QHBoxLayout, QLabel, QVBoxLayout, QButtonGroup,\
-    QPushButton, QMessageBox, QStyle
+    QMessageBox, QStyle
 from PySide6.QtGui import QFont, QPalette, QColor, QPixmap, QIcon
 from PySide6.QtCore import Qt, Slot
 
-from GUI.Components.components import addButtonWithText, validateButton,\
-    sidebarButton, separator, SearchBar,attendanceStatus, user,\
-    TitleBarButton, addButtonWithoutText, contactAcronym, contactDetails
+from GUI.Components.components import StandardButton,\
+    separator, SearchBar,attendanceStatus, user,\
+    TitleBarButton, contactAcronym, contactDetails, GroupButton
 from Utils.enumeration import CONNEXION_STATUS as STATUS, SIZE
 from Utils.responsiveLayout import fitValueToScreen, fitSizeToScreen
 
@@ -23,147 +23,112 @@ from Assets import icons, pictures
 
 # ::::::::BAR::::::::::::: #
 
-# Headers
-def header(parent: QWidget, layout: QBoxLayout, text: str, textButton: str) -> QFrame:
-    frame = QFrame(parent)
-    frame.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
-    frame.setStyleSheet("background-color: white;")
+class Header(QFrame):
+    """
+    # This class implements standard header used in the application.
 
-    frameLayout = QHBoxLayout()
-    frame.setLayout(frameLayout)
-    frameLayout.setContentsMargins(fitValueToScreen(12), fitValueToScreen(12), fitValueToScreen(12), fitValueToScreen(12))
+    ## Class attribute
 
-    title = QLabel(frame)
-    title.setText(text)
-    title.setFont(QFont("Montserrat", fitValueToScreen(14), QFont.DemiBold))
-    palette = title.palette()
-    palette.setColor(QPalette.WindowText, QColor("#5234a5"))  # Couleur du texte
-    title.setPalette(palette)
-    frameLayout.addWidget(title)
-
-    frameLayout.addStretch()
-
-    button = addButtonWithText(frame, frameLayout, textButton)
-    button.setObjectName("button")
+    ( *color* ) backgroundColor : *str*
+    ( *color* ) textColor : *str*
     
-    layout.addWidget(frame)
-    return frame
+    ## Methods
 
-def headerWithValidateButton(parent: QWidget, layout: QBoxLayout, text: str) -> QFrame:
-    frame = QFrame(parent)
-    frame.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
-    frame.setStyleSheet("background-color: white;")
+    ####  Header(parent: QWidget, Layout: QBoxLayout, text: str) -> QFrame
 
-    frameLayout = QHBoxLayout()
-    frame.setLayout(frameLayout)
-    frameLayout.setContentsMargins(fitValueToScreen(12), fitValueToScreen(12), fitValueToScreen(12), fitValueToScreen(12))
+    *Constructs an header with the given parent, layout and text*
 
-    title = QLabel(frame)
-    title.setText(text)
-    title.setFont(QFont("Montserrat", fitValueToScreen(14), QFont.DemiBold))
-    palette = title.palette()
-    palette.setColor(QPalette.WindowText, QColor("#5234a5"))
-    title.setPalette(palette)
-    frameLayout.addWidget(title)
+    #### headerWithButton(textButton: str=None) -> QFrame
 
-    frameLayout.addStretch()
+    *Constructs an header whith a button*
+    """
 
-    validateButton(frame, frameLayout)
+    #Class attribute
+    backgroundColor = "white"
+    textColor = "#5234a5"
+
+    def __init__(self, parent: QWidget, Layout: QBoxLayout, text: str):
+        super().__init__(parent)
+
+        self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
+        self.setStyleSheet(f"background-color: {Header.backgroundColor};")
+
+        self.frameLayout = QHBoxLayout()
+        self.setLayout(self.frameLayout)
+        self.frameLayout.setContentsMargins(fitValueToScreen(12), fitValueToScreen(12), fitValueToScreen(12), fitValueToScreen(12))  
+
+        self.title = QLabel(self)
+        self.title.setText(text)
+        self.title.setFont(QFont("Montserrat", fitValueToScreen(14), QFont.DemiBold))
+        palette = self.title.palette()
+        palette.setColor(QPalette.WindowText, QColor(Header.textColor))
+        self.title.setPalette(palette)
+        self.frameLayout.addWidget(self.title)  
+
+        self.frameLayout.addStretch()   
+
+        Layout.addWidget(self)
+
+    def headerWithButton(self, textButton: str=None) -> QFrame:
+        self.frameLayout.addStretch() 
+        self.button = StandardButton(self, self.frameLayout).ButtonWithText(textButton)
+
+        return self
     
-    layout.addWidget(frame)
-    return frame
+class Sidebar(QFrame):
+    """
+    # This class is used to create the application's side bar
+    """
 
-def headerWithoutButton(parent: QWidget, layout: QBoxLayout, text: str) -> QFrame:
-    frame = QFrame(parent)
-    frame.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
-    frame.setStyleSheet("background-color: white;")
+    # Class attribute
+    backgroundColor = "#5234A5"
+    separatorColor = "white"
 
-    frameLayout = QHBoxLayout()
-    frame.setLayout(frameLayout)
-    frameLayout.setContentsMargins(fitValueToScreen(12), fitValueToScreen(12), fitValueToScreen(12), fitValueToScreen(12))
+    def __init__(self, parent: QWidget, Layout: QBoxLayout):
+        super().__init__(parent)
 
-    title = QLabel(frame)
-    title.setText(text)
-    title.setFont(QFont("Montserrat", fitValueToScreen(14), QFont.DemiBold))
-    palette = title.palette()
-    palette.setColor(QPalette.WindowText, QColor("#5234a5"))
-    title.setPalette(palette)
-    frameLayout.addWidget(title)
+        self.setFixedWidth(fitSizeToScreen(width=186, height=None))
+        self.setStyleSheet(f"background-color: {Sidebar.backgroundColor};")
+        self.setFrameShape(QFrame.NoFrame)
+        self.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Expanding)
 
-    frameLayout.addStretch()
-    
-    layout.addWidget(frame)
-    return frame
+        self.frameLayout = QVBoxLayout()
+        self.setLayout(self.frameLayout)
+        self.frameLayout.setContentsMargins(0, fitValueToScreen(24), 0, 0)
+        self.frameLayout.setSpacing(0)
 
-# Sidebar
-def sidebar(parent: QWidget, layout: QBoxLayout) -> QFrame:
-    frame = QFrame(parent)
-    frame.setFixedWidth(fitSizeToScreen(width=186, height=None))
-    frame.setStyleSheet("background-color: #5234A5;")
-    frame.setFrameShape(QFrame.NoFrame)
-    frame.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Expanding)
+        self.logo = QLabel(self)
+        self.logo.setPixmap(QPixmap(":/Pictures/full_logo.png"))
+        self.logo.setScaledContents(True)
+        self.logo.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+        self.logo.setFixedSize(fitSizeToScreen(width=140, height=50))
+        self.frameLayout.addWidget(self.logo)
+        self.frameLayout.setAlignment(self.logo, Qt.AlignHCenter) 
 
-    frameLayout = QVBoxLayout()
-    frame.setLayout(frameLayout)
-    frameLayout.setContentsMargins(0, fitValueToScreen(24), 0, 0)
-    frameLayout.setSpacing(0)
-    
-    logo = QLabel(frame)
-    logo.setPixmap(QPixmap(":/Pictures/full_logo.png"))
-    logo.setScaledContents(True)
-    logo.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
-    logo.setFixedSize(fitSizeToScreen(width=140, height=50))
-    frameLayout.addWidget(logo)
-    frameLayout.setAlignment(logo, Qt.AlignHCenter)
+        self.groupbutton = QButtonGroup(self)
+        self.groupbutton.setObjectName("groupbutton")
+        self.groupbutton.setExclusive(True)
 
-    groupbutton = QButtonGroup(frame)
-    groupbutton.setObjectName("groupbutton")
-    groupbutton.setExclusive(True)
+        self.frameLayout.addStretch(3)
 
-    frameLayout.addStretch(3)
+        self.dashboard = GroupButton(self, "Dashboard", self.frameLayout, self.groupbutton, 0).sidebarButton(uncheckedIconPath=":/Icons/unchecked_dashboard.svg", checkedIconPath=":/Icons/checked_dashboard.svg")
+        self.report = GroupButton(self, "Rapport", self.frameLayout, self.groupbutton, 1).sidebarButton(uncheckedIconPath=":/Icons/unchecked_reporting.svg", checkedIconPath=":/Icons/checked_reporting.svg")
+        self.tracking = GroupButton(self, "Suivi", self.frameLayout, self.groupbutton, 2).sidebarButton(uncheckedIconPath=":/Icons/unchecked_collection.svg", checkedIconPath=":/Icons/checked_collection.svg")
+        self.location = GroupButton(self, "Site", self.frameLayout, self.groupbutton, 3).sidebarButton(uncheckedIconPath=":/Icons/unchecked_map.svg", checkedIconPath=":/Icons/checked_map.svg")
+        self.graph = GroupButton(self, "Analyse", self.frameLayout, self.groupbutton, 4).sidebarButton(uncheckedIconPath=":/Icons/unchecked_tracking.svg", checkedIconPath=":/Icons/checked_tracking.svg")
 
-    dashboard = sidebarButton(parent=frame, text="  Dashboard", uncheckedIconPath=":/Icons/unchecked_dashboard.svg", checkedIconPath=":/Icons/checked_dashboard.svg", layout=frameLayout, group=groupbutton)
-    dashboard.setChecked(True)
-    dashboard.setObjectName("dashboard")
-    groupbutton.setId(dashboard, 0)
+        self.frameLayout.addStretch(4)
 
-    report = sidebarButton(parent=frame, text="  Rapport", uncheckedIconPath=":/Icons/unchecked_reporting.svg", checkedIconPath=":/Icons/checked_reporting.svg", layout=frameLayout, group=groupbutton)
-    report.setObjectName("report")
-    groupbutton.setId(report, 1)
+        separator(self, self.frameLayout, Sidebar.separatorColor)
 
-    tracking = sidebarButton(parent=frame, text="  Suivi", uncheckedIconPath=":/Icons/unchecked_collection.svg", checkedIconPath=":/Icons/checked_collection.svg", layout=frameLayout, group=groupbutton)
-    tracking.setObjectName("tracking")
-    groupbutton.setId(tracking, 2)
+        self.message = GroupButton(self, "Message", self.frameLayout, self.groupbutton, 5).sidebarButton(uncheckedIconPath=":/Icons/unchecked_message.svg", checkedIconPath=":/Icons/checked_message.svg")
+        self.admin = GroupButton(self, "Administration", self.frameLayout, self.groupbutton, 6).sidebarButton(uncheckedIconPath=":/Icons/unchecked_admin.svg", checkedIconPath=":/Icons/checked_admin.svg")
+        self.logOut = GroupButton(self, "Déconnexion", self.frameLayout, self.groupbutton, 7).sidebarButton(uncheckedIconPath=":/Icons/unchecked_logout.svg", checkedIconPath=":/Icons/checked_logout.svg")
 
-    location = sidebarButton(parent=frame, text="  Site", uncheckedIconPath=":/Icons/unchecked_map.svg", checkedIconPath=":/Icons/checked_map.svg", layout=frameLayout, group=groupbutton)
-    location.setObjectName("location")
-    groupbutton.setId(location, 3)
+        self.frameLayout.addStretch(2)
 
-    graph = sidebarButton(parent=frame, text="  Analyse", uncheckedIconPath=":/Icons/unchecked_tracking.svg", checkedIconPath=":/Icons/checked_tracking.svg", layout=frameLayout, group=groupbutton)
-    graph.setObjectName("graph")
-    groupbutton.setId(graph, 4)
-
-    frameLayout.addStretch(4)
-
-    separator(parent=frame, layout=frameLayout, color="#ffffff")
-
-    message = sidebarButton(parent=frame, text="  Message", uncheckedIconPath=":/Icons/unchecked_message.svg", checkedIconPath=":/Icons/checked_message.svg", layout=frameLayout, group=groupbutton)
-    message.setObjectName("message")
-    groupbutton.setId(message, 5)
-
-    admin = sidebarButton(parent=frame, text="  Admistration", uncheckedIconPath=":/Icons/unchecked_admin.svg", checkedIconPath=":/Icons/checked_admin.svg", layout=frameLayout, group=groupbutton)
-    admin.setObjectName("admin")
-    groupbutton.setId(admin, 6)
-
-    logOut = sidebarButton(parent=frame, text="  Déconnexion", uncheckedIconPath=":/Icons/unchecked_logout.svg", checkedIconPath=":/Icons/checked_logout.svg", layout=frameLayout, group=groupbutton)
-    logOut.setObjectName("logOut")
-    groupbutton.setId(logOut, 7)
-
-    frameLayout.addStretch(2)
-
-    layout.addWidget(frame)
-    return frame
-
+        Layout.addWidget(self)
+        
 
 class TitleBar(QFrame):
     """
@@ -218,7 +183,7 @@ class TitleBar(QFrame):
 
     @Slot()
     def closeApp(self):
-        dialog = closeApp()
+        dialog = closeApp(deconnection=False)
         if dialog.exec():
             self.parent().parent().close()
 
@@ -232,8 +197,6 @@ class TitleBar(QFrame):
             self.resizeButton.setIcon(self.style().standardIcon(QStyle.SP_TitleBarMaxButton))
             self.parent().parent().showMaximized() 
     
-
-
 
 # Message bar
 def messageBar(parent: QWidget, layout: QBoxLayout, connexionstatus: STATUS, fName: str, lName: str) -> QFrame:
@@ -268,132 +231,78 @@ def messageBar(parent: QWidget, layout: QBoxLayout, connexionstatus: STATUS, fNa
     return frame
 
 # ::::::::Pages::::::::::::: #
+class EmptyPage(QFrame):
+    """
+    # This class implements an empty page to inform that there is no data or that it is under maintenance.
 
-# empty page
-def createEmptypageWithButton(title: str, imagePath: str, textButton: str, firstText: str, secondText: str) -> QFrame:
-    frame = QFrame()
-    frame.setFrameShape(QFrame.NoFrame)
-    frame.setStyleSheet("background-color: none; border: none;")
-    frame.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+    ## Methods
 
-    frameLayout = QVBoxLayout()
-    frame.setLayout(frameLayout)
+    ####  EmptyPage(title: str, imagePath: str, text: str) -> QFrame
 
-    bar = header(parent=frame, layout=frameLayout, text=title, textButton=textButton)
-    button = bar.findChild(QPushButton, "button", Qt.FindDirectChildrenOnly)
-    button.setObjectName("HeaderButton")
-    frameLayout.setAlignment(bar, Qt.AlignTop)
+    *Constructs an empty page with the given title, image and text*
 
-    imageLayout = QHBoxLayout()
-    frameLayout.addLayout(imageLayout)
-    frameLayout.setAlignment(imageLayout, Qt.AlignCenter)
+    #### emptyPageWithButton(textButton: str, secondText: str) -> QFrame
 
-    image = QLabel(frame)
-    image.setPixmap(QPixmap(imagePath))
-    image.setScaledContents(True)
-    image.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
-    image.setStyleSheet("background-color: none; border: none;")
-    imageLayout.addWidget(image)
+    *Constructs an empty page whith a button to add data*
+    """
 
-    firstLabel = QLabel(frame)
-    firstLabel.setText(firstText)
-    firstLabel.setFont(QFont("Montserrat", fitValueToScreen(value=20), QFont.Medium))
-    firstLabel.setStyleSheet("QLabel { color: black; background: none; border: none;}")
-    firstLabel.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
-    frameLayout.addWidget(firstLabel)
-    frameLayout.setAlignment(firstLabel, Qt.AlignCenter)
+    def __init__(self, title: str, imagePath: str, text: str):
+        super().__init__()
 
-    textLayout = QHBoxLayout()
-    frameLayout.addLayout(textLayout)
-    frameLayout.setAlignment(textLayout, Qt.AlignCenter)
+        self.setFrameShape(QFrame.NoFrame)
+        self.setStyleSheet("background-color: none; border: none;")
+        self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
 
-    textLayout.addStretch(1)
+        self.frameLayout = QVBoxLayout()
+        self.setLayout(self.frameLayout)
 
-    secondLabel = QLabel(frame)
-    secondLabel.setText(secondText)
-    secondLabel.setFont(QFont("Montserrat", fitValueToScreen(value=20), QFont.Medium))
-    secondLabel.setStyleSheet("QLabel { color: black; background: none; border: none;}")
-    secondLabel.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
-    textLayout.addWidget(secondLabel)
+        self.header = Header(self, self.frameLayout, title)
+        self.frameLayout.setAlignment(self.header, Qt.AlignTop)
 
-    buttonWithoutText = addButtonWithoutText(parent=frame, layout=textLayout)
-    buttonWithoutText.setObjectName("buttonWithoutText")
+        self.imageLayout = QHBoxLayout()
+        self.frameLayout.addLayout(self.imageLayout)
+        self.frameLayout.setAlignment(self.imageLayout, Qt.AlignCenter)
 
-    textLayout.addStretch(1)
+        self.image = QLabel(self)
+        self.image.setPixmap(QPixmap(imagePath))
+        self.image.setScaledContents(True)
+        self.image.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+        self.image.setStyleSheet("background-color: none; border: none;")
+        self.imageLayout.addWidget(self.image)
 
-    frameLayout.addStretch()
+        self.label = QLabel(self)
+        self.label.setText(text)
+        self.label.setFont(QFont("Montserrat", fitValueToScreen(value=20), QFont.Medium))
+        self.label.setStyleSheet("QLabel { color: black; background: none; border: none;}")
+        self.label.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+        self.frameLayout.addWidget(self.label)
+        self.frameLayout.setAlignment(self.label, Qt.AlignCenter)
 
-    return frame
+        self.frameLayout.addStretch()
 
-# page in maintenance
-def displayPageInMaintenance(title: str) -> QFrame:
-    frame = QFrame()
-    frame.setFrameShape(QFrame.NoFrame)
-    frame.setStyleSheet("background-color: none; border: none;")
-    frame.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+    def emptyPageWithButton(self, textButton: str, secondText: str) -> QFrame:
+        self.header.headerWithButton(textButton)
 
-    frameLayout = QVBoxLayout()
-    frame.setLayout(frameLayout)
+        self.textLayout = QHBoxLayout()
+        self.frameLayout.addLayout(self.textLayout)
+        self.frameLayout.setAlignment(self.textLayout, Qt.AlignCenter)
 
-    headerWithoutButton(parent=frame, layout=frameLayout, text=title)
+        self.textLayout.addStretch(1)
+        
+        self.secondLabel = QLabel(self)
+        self.secondLabel.setText(secondText)
+        self.secondLabel.setFont(QFont("Montserrat", fitValueToScreen(value=20), QFont.Medium))
+        self.secondLabel.setStyleSheet("QLabel { color: black; background: none; border: none;}")
+        self.secondLabel.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+        self.textLayout.addWidget(self.secondLabel)
 
-    imageLayout = QHBoxLayout()
-    frameLayout.addLayout(imageLayout)
-    frameLayout.setAlignment(imageLayout, Qt.AlignCenter)
+        self.button = StandardButton(self, self.textLayout, 45, 45).ButtonWithoutText()
 
-    image = QLabel(frame)
-    image.setPixmap(QPixmap(":/Pictures/maintenance.png"))
-    image.setScaledContents(True)
-    image.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
-    image.setStyleSheet("background-color: none; border: none;")
-    imageLayout.addWidget(image)
+        self.textLayout.addStretch(1)
 
-    label = QLabel(frame)
-    label.setText("Section en cours de création")
-    label.setFont(QFont("Montserrat", fitValueToScreen(value=20), QFont.Medium))
-    label.setStyleSheet("QLabel { color: black; background: none; border: none;}")
-    label.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
-    frameLayout.addWidget(label)
-    frameLayout.setAlignment(label, Qt.AlignCenter)
+        self.frameLayout.addStretch(2)
 
-    frameLayout.addStretch()
-
-    return frame
-
-# no task page
-def noTaskPage() -> QFrame:
-    frame = QFrame()
-    frame.setFrameShape(QFrame.NoFrame)
-    frame.setStyleSheet("background-color: none; border: none;")
-    frame.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-
-    frameLayout = QVBoxLayout()
-    frame.setLayout(frameLayout)
-
-    headerWithoutButton(parent=frame, layout=frameLayout, text="Suivi des missions et interventions")
-
-    imageLayout = QHBoxLayout()
-    frameLayout.addLayout(imageLayout)
-    frameLayout.setAlignment(imageLayout, Qt.AlignCenter)
-
-    image = QLabel(frame)
-    image.setPixmap(QPixmap(":/Pictures/no_task.png"))
-    image.setScaledContents(True)
-    image.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
-    image.setStyleSheet("background-color: none; border: none;")
-    imageLayout.addWidget(image)
-
-    label = QLabel(frame)
-    label.setText("Aucune mission en vue")
-    label.setFont(QFont("Montserrat", fitValueToScreen(value=20), QFont.Medium))
-    label.setStyleSheet("QLabel { color: black; background: none; border: none;}")
-    label.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
-    frameLayout.addWidget(label)
-    frameLayout.setAlignment(label, Qt.AlignCenter)
-
-    frameLayout.addStretch()
-
-    return frame
+        return self
 
 # ::::::::Contact::::::::::::: #
 def contact(parent: QWidget, layout: QBoxLayout, fName: str, lName: str, mail: str, phone: str, job: str, field: str) -> QFrame:
@@ -457,19 +366,19 @@ def contact(parent: QWidget, layout: QBoxLayout, fName: str, lName: str, mail: s
     return frame
 
 # ::::::::Pop up::::::::::::: #
-def displayMessageError(title: str, message: str) -> QMessageBox:
+def PopUp(title: str, message: str, icon: QMessageBox.Icon) -> QMessageBox:
     box_error = QMessageBox()
     box_error.setWindowIcon(QIcon(":/Pictures/icon.png"))
-    box_error.setIcon(QMessageBox.Critical)
+    box_error.setIcon(icon)
     box_error.setWindowTitle(title)
     box_error.setText(message)
     box_error.exec()
 
     return box_error
 
-def closeApp() -> QMessageBox:
+def closeApp(deconnection: bool) -> QMessageBox:
     box = QMessageBox()
-    box.setWindowTitle("Fermeture de l'application")
+    box.setWindowTitle("Voulez-vous vraiment terminer votre session ?" if deconnection else "Fermeture de l'application")
     box.setWindowIcon(QIcon(":/Pictures/icon.png"))
     box.setIcon(QMessageBox.Question)
     box.setText("Souhaitez-vous fermer l'application ?")

@@ -2,15 +2,14 @@ import sys
 sys.path.append("..")
 
 from PySide6.QtWidgets import QMainWindow, QWidget, QHBoxLayout,\
-    QVBoxLayout, QButtonGroup, QAbstractButton,\
-    QPushButton, QSizePolicy, QLabel
+    QVBoxLayout, QAbstractButton, QSizePolicy
 from PySide6.QtCore import Qt, Slot, QPoint
 
 from Utils.responsiveLayout import centerWindow
 from Utils.enumeration import CONNEXION_STATUS as STATUS
 from Utils.worker import WorkerWithConnexionStatus, WorkerWithString
-from GUI.Components.widgets import sidebar, closeApp, TitleBar
-from GUI.Pages.pageManager import stackPage
+from GUI.Components.widgets import Sidebar, TitleBar
+from GUI.Pages.pageManager import PagerManager
 from Handler.internet import InternetManager
 from Handler.threads import ThreadManager
 from Handler.users import UserManager
@@ -27,7 +26,6 @@ class MainWindow(QMainWindow):
         self.InternetManager = InternetManager()
         self.ThreadManager = ThreadManager()
 
-
         self.setWindowFlag(Qt.WindowType.FramelessWindowHint)
         self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         centerWindow(self)
@@ -41,8 +39,9 @@ class MainWindow(QMainWindow):
         self.rootLayout.setContentsMargins(0, 0, 0, 0)
         self.rootLayout.setSpacing(0)
 
-        self.sidebar = sidebar(parent=self.centralArea, layout=self.rootLayout)
+        self.sidebar = Sidebar(parent=self.centralArea, Layout=self.rootLayout)
         self.rootLayout.setAlignment(self.sidebar, Qt.AlignLeft)
+        self.sidebar.dashboard.setChecked(True)
 
         self.mainLayout = QVBoxLayout()
         self.rootLayout.addLayout(self.mainLayout)
@@ -50,6 +49,12 @@ class MainWindow(QMainWindow):
         self.mainLayout.setSpacing(0)
 
         self.titleBar = TitleBar(parent=self.centralArea, Layout=self.mainLayout)
+
+        self.pages = PagerManager(self.mainLayout)
+        self.pages.setCurrentIndex(0)
+
+        self.groupbutton = self.sidebar.groupbutton
+        self.groupbutton.buttonClicked.connect(self.displayPage)
 
         self.WorkerIconConnection = WorkerWithConnexionStatus(Target=self.getConnexionState)
         self.WorkerIconConnection.updatePageSignal.connect(self.titleBar.setStatus) 
@@ -60,12 +65,6 @@ class MainWindow(QMainWindow):
         self.WorkerUsername.updatePageSignal.connect(self.setUsername)
         self.ThreadManager.addThread(target=self.WorkerUsername.run, label="Username", useStopevent=True)
         self.ThreadManager.startThreadByLabel(label="Username")
-
-        self.pages = stackPage(layout=self.mainLayout)
-        self.pages.setCurrentIndex(0)
-
-        self.groupbutton = self.sidebar.findChild(QButtonGroup, "groupbutton", Qt.FindDirectChildrenOnly)
-        self.groupbutton.buttonClicked.connect(self.displayPage)
 
         self.showMaximized()
 
@@ -116,23 +115,10 @@ class MainWindow(QMainWindow):
     @Slot()
     def displayPage(self, button: QAbstractButton):
         sender = self.sender()
-        print(sender.checkedId())
         if sender.checkedId() != 7:
             self.pages.setCurrentIndex(sender.checkedId())
-        else:
-            print("sortie de l'application")
 
-    # @Slot()
-    # def Deconnexion():
-    #     # dialog = Notification_Dialog_exit(text="Voulez-vous vraiment terminer votre session ?", path="../PICTURES/LOGO/Genius_erp.png")
-    #     dialog = closeApp()
-    #     dialog.setText("Voulez-vous vraiment terminer votre session ?")
-    
-    #     if dialog.exec():
-    #         WindowManager.set_current_index(1)
-    #         WindowManager.current_window.Push_button.clicked.connect(lambda: Loggin(
-    #             WindowManager.current_window.ID_text.text(), WindowManager.current_window.Pwd_text.text()))
-    #         WindowManager.current_window.forgot_label.mousePressEvent = lambda event: Forgot_pwd() 
+
 
 
 

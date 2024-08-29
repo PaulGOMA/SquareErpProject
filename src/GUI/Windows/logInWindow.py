@@ -4,20 +4,21 @@ import sys
 sys.path.append("..")
 
 from PySide6.QtWidgets import QDialog, QHBoxLayout,\
-    QFrame, QVBoxLayout, QLabel, QSizePolicy, QLineEdit
+    QFrame, QVBoxLayout, QLabel, QSizePolicy, QMessageBox
 from PySide6.QtGui import QPixmap, QFont, QIcon 
 from PySide6.QtCore import Qt, Slot
 
-from GUI.Components.components import entryField, passwordEntryField,\
-    connectionButton, bareButton, loginCheckbox, setBackgroundImage
-from GUI.Components.widgets import displayMessageError
-from Utils.enumeration import SIZE
-from Utils.responsiveLayout import centerWindow, fitSizeToScreen, fitValueToScreen, fitWindowToScreen
-
+from GUI.Components.components import entryField, StandardButton, \
+    loginCheckbox, setBackgroundImage
+from GUI.Components.widgets import PopUp
+from Utils.enumeration import SIZE, ERROR_TITLE
+from Utils.responsiveLayout import centerWindow, \
+    fitSizeToScreen, fitValueToScreen, fitWindowToScreen
+from Utils.errors import error
 from Utils.checkField import *
 
 
-from Assets import icons, pictures
+from Assets import pictures
 
 class LogInWindow(QDialog):
     def __init__(self):
@@ -105,19 +106,21 @@ class LogInWindow(QDialog):
         
         self.nameLayout = QHBoxLayout()
         self.rightLayout.addLayout(self.nameLayout)
+
+        self.entrymail = entryField(parent=self.rightFrame, Layout=self.nameLayout)
         
-        self.mail = entryField(parent=self.rightFrame, layout=self.nameLayout, icon=":/Icons/mail.svg", placehoder="Email ID", size=SIZE.Long, regex=r"^[a-zA-Z0-9!#$%&'*+/=?^_`{|}~.-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$", maxLength=100)
-        self.mail_lineEdit = self.mail.findChild(QLineEdit, "line_edit", Qt.FindDirectChildrenOnly)
-        self.mail_lineEdit.textChanged.connect(lambda text : self.addToList(0, text))
+        self.mail = self.entrymail.entrymail(SIZE.Long)
+        self.mail.lineEdit.textChanged.connect(lambda text : self.addToList(0, text))
 
         self.rightLayout.addStretch(1)
 
         self.passwordLayout = QHBoxLayout()
         self.rightLayout.addLayout(self.passwordLayout)
 
-        self.password = passwordEntryField(parent=self.rightFrame, layout=self.passwordLayout, placehoder="Mot de passe")
-        self.password_lineEdit = self.password.findChild(QLineEdit, "line_edit", Qt.FindDirectChildrenOnly)
-        self.password_lineEdit.textChanged.connect(lambda text : self.addToList(1, text))
+        self.entrypassword = entryField(parent=self.rightFrame, Layout=self.passwordLayout)
+
+        self.password = self.entrypassword.entrypassword(False)
+        self.password.lineEdit.textChanged.connect(lambda text : self.addToList(1, text))
 
         self.rightLayout.addStretch(1)
 
@@ -128,13 +131,13 @@ class LogInWindow(QDialog):
 
         self.textLayout.addStretch()
 
-        bareButton(parent=self.rightFrame, layout=self.textLayout, text="Mot de passe oublié ?")
+        self.barebutton = StandardButton(parent=self.rightFrame, Layout=self.textLayout).bareButton("Mot de passe oublié ?")
 
         self.rightLayout.addStretch(1)
 
         self.buttonLayout = QHBoxLayout()
         self.rightLayout.addLayout(self.buttonLayout)
-        connectionButton(parent=self.rightFrame, layout=self.buttonLayout)
+        self.connectionButton = StandardButton(parent=self.rightFrame, Layout=self.buttonLayout, Width=346, Height=38).connectionButton()
 
         self.rightLayout.addStretch(3)
 
@@ -144,20 +147,3 @@ class LogInWindow(QDialog):
     @Slot()
     def addToList(self, index: int, text: str):
         self.dataList[index] = text
-
-    @Slot()
-    def checkDataEntry(self):
-        try:
-            check_all_fields_filled(li=self.dataList)
-            if self.dataList[0] or self.dataList[1] or self.dataList[2] or self.dataList[3] or self.dataList[4] or self.dataList[5] == "":
-                raise DataEntryError("Veuillez remplir tous les champs")
-            check_email_format(email=self.dataList[2])
-            check_phone_format(number=self.dataList[3])
-            check_password_complexity(password=self.dataList[4])
-            check_password_differs_from_name(password=self.dataList[4], fName=self.dataList[1], lName=self.dataList[0])
-            check_password_length(password=self.dataList[4])
-            check_passwords_match(password=self.dataList[4], conf_pwd=self.dataList[5])
-        except DataEntryError as e :
-            displayMessageError(title=str(e.title), message=str(e.message))
-        else:
-            print("Tous les champs sont corrects")

@@ -31,7 +31,7 @@ class CustomListWidgetDelegate(QStyledItemDelegate):
         super().paint(painter, option, index)
 
 # ::::::::Buttons::::::::::::: #
-class StandardButon(QPushButton):
+class StandardButton(QPushButton):
     """
     # This class implements standard button used in the application as add button or validate button.
 
@@ -45,7 +45,7 @@ class StandardButon(QPushButton):
     
     ## Methods
 
-    ####  StandardButon(parent: QWidget, Layout: QBoxLayout) -> StandardButon
+    ####  StandardButton(parent: QWidget, Layout: QBoxLayout) -> StandardButton
 
     *Constructs a button with the given parent and layout*
 
@@ -88,16 +88,16 @@ class StandardButon(QPushButton):
             self.setFixedSize(fitSizeToScreen(self.Width, self.Height))
             self.setStyleSheet(
             f"""
-            QPushButton {{background-color: {StandardButon.backgroundColor};border: none;}}
-            QPushButton:pressed {{background-color: {StandardButon.backgroundColorPressed}; text-decoration: underline;}}
+            QPushButton {{background-color: {StandardButton.mainBackgroundColor};border: none;}}
+            QPushButton:pressed {{background-color: {StandardButton.mainBackgroundColorPressed};}}
             """
             )
         else:
             self.setStyleSheet(
             f"""
-            QPushButton {{background-color: {StandardButon.backgroundColor}; {StandardButon.mainTextColor}; border: none; 
+            QPushButton {{background-color: {StandardButton.mainBackgroundColor}; {StandardButton.mainTextColor}; border: none; 
                 padding-top: {fitValueToScreen(value=10)}px; padding-right: {fitValueToScreen(value=20)}px; padding-bottom: {fitValueToScreen(value=10)}px; padding-left: {fitValueToScreen(value=20)}px;}}
-            QPushButton:pressed {{background-color: {StandardButon.backgroundColorPressed}; color: white;}}
+            QPushButton:pressed {{background-color: {StandardButton.mainBackgroundColorPressed}; color: white;}}
             """
             )
 
@@ -110,10 +110,10 @@ class StandardButon(QPushButton):
         return self
 
 
-    def ButtonWithText(self, text: str="Valider") -> QPushButton:
-        self.setIcon(QIcon(":/Icons/validate.svg" if text == "Valider" else ":/Icons/plus.svg"))
+    def ButtonWithText(self, text: str=None) -> QPushButton:
+        self.setIcon(QIcon(":/Icons/validate.svg" if text is None else ":/Icons/plus.svg"))
         self.setLayoutDirection(Qt.RightToLeft)
-        self.setText(text)
+        self.setText(text+" " if text is not None else "Valider ")
 
         return self
 
@@ -128,62 +128,12 @@ class StandardButon(QPushButton):
         self.setFont(QFont("Montserrat", fitValueToScreen(value=10), QFont.Medium))
         self.setStyleSheet(
             f"""
-            QPushButton {{color: {StandardButon.secondTextColor};border: none;}}
-            QPushButton:pressed {{color: {StandardButon.secondTextColorPressed};}}
+            QPushButton {{color: {StandardButton.secondTextColor};border: none;}}
+            QPushButton:pressed {{color: {StandardButton.secondTextColorPressed};}}
             """
         )
 
         return self
-
-
-# Add new element button
-def addButtonWithoutText(parent: QWidget, layout: QBoxLayout) -> QPushButton:
-    button = QPushButton(parent)
-    button.setIcon(QIcon(":/Icons/plus.svg"))
-    button.setFlat(True)
-    button.setFixedSize(fitSizeToScreen(width=44, height=44))
-    button.setStyleSheet(
-        """
-        QPushButton {background-color: #5234A5;border: none;}
-        QPushButton:pressed {background-color: #44317e; text-decoration: underline;}
-        """
-    )
-    layout.addWidget(button)
-    return button
-
-
-def addButtonWithText(parent: QWidget, layout: QBoxLayout, text: str) -> QPushButton:
-    button = QPushButton(QIcon(":/Icons/plus.svg"), text, parent)
-    button.setFlat(True)
-    button.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
-    button.setFont(QFont("Montserrat", fitValueToScreen(value=11), QFont.DemiBold))
-    button.setLayoutDirection(Qt.RightToLeft)
-    button.setStyleSheet(
-        f"""
-        QPushButton {{background-color: #5234a5; color: white; border: none; 
-            padding-top: {fitValueToScreen(value=10)}px; padding-right: {fitValueToScreen(value=20)}px; padding-bottom: {fitValueToScreen(value=10)}px; padding-left: {fitValueToScreen(value=20)}px;}}
-        QPushButton:pressed {{background-color: #44317e; color: white;}}
-        """
-    )
-    layout.addWidget(button)
-    return button
-
-# Validate button
-def validateButton(parent: QWidget, layout: QBoxLayout) -> QPushButton:
-    button = QPushButton(QIcon(":/Icons/validate.svg"), "Valider ", parent)
-    button.setFlat(True)
-    button.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
-    button.setFont(QFont("Montserrat", fitValueToScreen(value=11), QFont.DemiBold))
-    button.setLayoutDirection(Qt.RightToLeft)
-    button.setStyleSheet(
-        f"""
-        QPushButton {{background-color: #5234a5; color: white; border: none; 
-            padding-top: {fitValueToScreen(value=10)}px; padding-right: {fitValueToScreen(value=20)}px; padding-bottom: {fitValueToScreen(value=10)}px; padding-left: {fitValueToScreen(value=20)}px;}}
-        QPushButton:pressed {{background-color: #44317e; color: white;}}
-        """
-    )
-    layout.addWidget(button)
-    return button
 
 # Side bar button
 class GroupButton(QPushButton):
@@ -225,24 +175,22 @@ class GroupButton(QPushButton):
     secondTextColor = "#5234a5"
     secondTextColorPressed = "white"
 
-    def __init__(self, parent: QWidget, text: str, Layout: QBoxLayout, Group: QButtonGroup, Width: int=None, Height: int=None):
-        super().__init__(text, parent)
+    def __init__(self, parent: QWidget, text: str, Layout: QBoxLayout, Group: QButtonGroup, id: int):
+        super().__init__("  "+text, parent)
 
-        self.Width = Width
-        self.Height = Height
-
+        self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
         self.setFlat(True)
         self.setCheckable(True)
-        if self.Width and self.Height is not None:
-            self.setFixedSize(fitSizeToScreen(self.Width, self.Height))
 
         self.Group = Group
         self.Group.addButton(self)
+        self.Group.setId(self, id)
 
         self.Layout = Layout
         self.Layout.addWidget(self)
 
     def sidebarButton(self, uncheckedIconPath: str, checkedIconPath: str) -> QPushButton:
+        self.setFixedHeight(fitSizeToScreen(width=None, height=51))
         self.setIcon(QIcon(uncheckedIconPath))
         self.setFont(QFont("Montserrat", fitValueToScreen(value=14), QFont.Normal))
         self.setStyleSheet(
@@ -251,12 +199,14 @@ class GroupButton(QPushButton):
                 background-color: none; 
                 text-align: left;
                 color: {GroupButton.mainTextColor};
-                border-left: {fitValueToScreen(value=3)}px solid none;
+                border-left: {fitValueToScreen(value=3)}px solid transparent;
                 padding-left: {fitValueToScreen(value=12)}px;}}
-            QPushButton:checked, QPushButton:hover{{
+            QPushButton:checked{{
                 icon: url({checkedIconPath});
+                border-top: {fitValueToScreen(value=3)}px solid transparent; 
                 border-left: {fitValueToScreen(value=3)}px solid {GroupButton.mainBorderColor}; 
-                background-color: {GroupButton.backgroundColorPressed}
+                background-color: {GroupButton.backgroundColorPressed};
+                padding-left: {fitValueToScreen(value=12)}px;
                 color: {GroupButton.mainTextColorPressed};}}
             """
         ) 
@@ -264,6 +214,7 @@ class GroupButton(QPushButton):
         return self
 
     def sidebarButtonForReport(self) -> QPushButton:
+        self.setFixedHeight(fitSizeToScreen(width=None, height=58))
         self.setFont(QFont("Montserrat", fitValueToScreen(value=14), QFont.Medium))
         self.setStyleSheet(
             f"""
@@ -281,37 +232,6 @@ class GroupButton(QPushButton):
         )
 
         return self
-
-def sidebarButton(parent: QWidget, text: str, uncheckedIconPath: str, checkedIconPath: str, layout: QBoxLayout, group: QButtonGroup) -> QPushButton:
-    button = QPushButton(QIcon(uncheckedIconPath), text, parent)
-    button.setFlat(True)
-    button.setCheckable(True)
-    button.setMaximumWidth(fitSizeToScreen(width=186, height=None))
-    button.setFixedHeight(fitSizeToScreen(width=None, height=51))
-    button.setFont(QFont("Montserrat", fitValueToScreen(value=14), QFont.Normal))
-    button.setStyleSheet(
-        f"""
-        QPushButton {{
-            background-color: none; 
-            text-align: left;
-            color: #CAC9FC;
-            border-left: {fitValueToScreen(value=3)}px solid none;
-            padding-left: {fitValueToScreen(value=12)}px;}}
-        QPushButton:checked{{
-            icon: url({checkedIconPath});
-            border-left: {fitValueToScreen(value=3)}px solid white;
-            background-color: #ACA8F9; 
-            color: white;}}
-        QPushButton:hover {{
-            icon: url({checkedIconPath});
-            border: none;
-            background-color: #ACA8F9; 
-            color: white;}}
-        """
-    )
-    group.addButton(button)
-    layout.addWidget(button)
-    return button
 
 def sidebarButtonForReport(parent: QWidget, text: str, layout: QBoxLayout, group: QButtonGroup) -> QPushButton:
     button = QPushButton(text, parent)
@@ -359,70 +279,6 @@ def TitleBarButton(parent: QWidget, layout: QBoxLayout, isClosedButton: bool=Fal
     layout.addWidget(button)
     return button
 
-def resizeWindowButton(parent: QWidget, layout: QBoxLayout) -> QPushButton:
-    button = QPushButton(parent)
-    button.setIcon(QIcon(":/Icons/unchecked_resize.svg"))
-    button.setFlat(True)
-    button.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
-    button.setCheckable(True)
-    button.setFixedSize(fitSizeToScreen(width=45, height=45))
-    button.setStyleSheet(
-        """
-        QPushButton {background-color: none; border: none;}
-        QPushButton:hover {background-color: #EFEFFE; border: none;}
-        QPushButton:checked {icon: url(":/Icons/checked_resize.svg");}
-        """
-    )
-    layout.addWidget(button)
-    return button
-
-def minimizeWindowButton(parent: QWidget, layout: QBoxLayout) -> QPushButton:
-    button = QPushButton(parent)
-    button.setIcon(QIcon(":/Icons/minimize.svg"))
-    button.setFlat(True)
-    button.setFixedSize(fitSizeToScreen(width=45, height=45))
-    button.setStyleSheet(
-        """
-        QPushButton {background-color: none; border: none;}
-        QPushButton:hover {background-color: #EFEFFE; border: none;}
-        """
-    )
-    layout.addWidget(button)
-    return button
-
-# Connection button
-def connectionButton(parent: QWidget, layout: QBoxLayout) -> QPushButton:
-    button = QPushButton(parent)
-    button.setText("Valider")
-    button.setFixedSize(fitSizeToScreen(width=346, height=38))
-    button.setFlat(True)
-    button.setStyleSheet(
-        """
-        QPushButton {background-color: #5234A5;border: none; color: white;}
-        QPushButton:pressed {background-color: #44317e;}
-        """
-    )
-    button.setFont(QFont("Montserrat", fitValueToScreen(value=16), QFont.DemiBold))
-
-    layout.addWidget(button)
-    return button
-
-# Button without background and border
-def bareButton(parent: QWidget, layout: QBoxLayout, text: str) -> QPushButton:
-    button = QPushButton(parent)
-    button.setText(text)
-    button.setFlat(True)
-    button.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
-    button.setFont(QFont("Montserrat", fitValueToScreen(value=10), QFont.Medium))
-    button.setStyleSheet(
-        """
-        QPushButton {color: #8676F3;border: none;}
-        QPushButton:pressed {color: #744be0;}
-        """
-    )
-
-    layout.addWidget(button)
-    return button
 # ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 # ::::::::text entry field::::::::::::: #
 
@@ -495,83 +351,142 @@ class SearchBar(QFrame):
         self.frameLayout.addWidget(self.button)
 # ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
-# text entry field for login screens
-def entryField(parent: QWidget, layout: QBoxLayout, icon: str, placehoder: str, size: SIZE, regex: str, maxLength: int) -> QFrame:
-    frame = QFrame(parent)
-    frame.setFixedHeight(fitSizeToScreen(width=None, height=38))
-    frame.setFixedWidth(fitSizeToScreen(width=163, height=None) if size == SIZE.Short else fitSizeToScreen(width=346, height=None))
-    frame.setStyleSheet(f"QFrame {{border-bottom: {fitValueToScreen(value=1)}px solid #8676F3; background-color: transparent; padding: 0px;}}")
+class entryField(QFrame):
+    """
+    # This class implements all the entry fields used in the log in and sign in page.
 
-    frame_layout = QHBoxLayout()
-    frame_layout.setContentsMargins(0, 0, 0, fitValueToScreen(value=4))
-    frame.setLayout(frame_layout)
+    ## Class attribute
 
-    label = QLabel(frame)
-    label.setPixmap(QPixmap(icon))
-    label.setFrameShape(QFrame.NoFrame)
-    label.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
-    label.setStyleSheet("background: none; border: none;")
-    label.setScaledContents(True)
-    frame_layout.addWidget(label)
+    ( *color* ) borderColor : *str*
+    ( *color* ) textColor : *str*
+    ( *color* ) backgroundColor : *str*
 
-    line_edit = QLineEdit(frame)
-    line_edit.setObjectName("line_edit")
-    line_edit.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
-    line_edit.setPlaceholderText(placehoder)
-    line_edit.setFrame(QFrame.NoFrame)
-    line_edit.setStyleSheet("background-color: transparent; color: #3d3d3d;")
-    line_edit.setFont(QFont("Montserrat", fitValueToScreen(value=10), QFont.Normal))
-    line_edit.setValidator(QRegularExpressionValidator(QRegularExpression(regex)))
-    line_edit.setMaxLength(maxLength)
-    frame_layout.addWidget(line_edit)
+    ## Methods
 
-    frame_layout.addStretch()
+    ####  entryField(parent: QWidget, Layout: QBoxLayout) -> SearchBar
 
-    layout.addWidget(frame)
-    return frame
+    *Constructs an entry field with the given parent and layout*
 
-def passwordEntryField(parent: QWidget, layout: QBoxLayout, placehoder: str) -> QFrame:
-    frame = QFrame(parent)
-    frame.setFixedSize(fitSizeToScreen(width=346, height=38))
-    frame.setStyleSheet(f"QFrame {{border-bottom: {fitValueToScreen(value=1)}px solid #8676F3; background-color: transparent; padding: 0px;}}")
+    #### entryname(self, lastname: bool) -> QFrame
 
-    frame_layout = QHBoxLayout()
-    frame_layout.setContentsMargins(0, 0, 0, fitValueToScreen(value=6))
-    frame.setLayout(frame_layout)
+    *Build a text field for names*
 
-    label = QLabel(frame)
-    label.setPixmap(QPixmap(":/Icons/lock.svg"))
-    label.setFrameShape(QFrame.NoFrame)
-    label.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
-    label.setStyleSheet("background: none; border: none;")
-    label.setScaledContents(True)
-    frame_layout.addWidget(label)
+    #### entrynumber(self) -> QFrame
 
-    line_edit = QLineEdit(frame)
-    line_edit.setObjectName("line_edit")
-    line_edit.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
-    line_edit.setPlaceholderText(placehoder)
-    line_edit.setFrame(QFrame.NoFrame)
-    line_edit.setEchoMode(QLineEdit.Password)
-    line_edit.setStyleSheet("background-color: transparent; color: #3d3d3d;")
-    line_edit.setFont(QFont("Montserrat", fitValueToScreen(value=10), QFont.Normal))
-    line_edit.setValidator(QRegularExpressionValidator(QRegularExpression(r"^[a-zA-Z0-9\s!@#$%^&*()_+{}\[\]:;\"'<>,.?\/\\|-]*$")))
-    line_edit.setMaxLength(30)   
-    frame_layout.addWidget(line_edit)
+    *Build a text field for phone numbers*
 
-    button = QPushButton(frame)
-    button.setObjectName("button")
-    button.setFlat(True)
-    button.setCheckable(True)
-    button.setIcon(QIcon(":/Icons/eye_closed.svg"))
-    button.setStyleSheet("QPushButton:checked {icon: url(':/Icons/eye_opened.svg')}")
-    frame_layout.addWidget(button)
+    #### entrymail(self, size: SIZE) -> QFrame
 
-    button.toggled.connect(lambda checked: line_edit.setEchoMode(QLineEdit.Normal) if checked else line_edit.setEchoMode(QLineEdit.Password))
+    *Build a text field for mails*
 
-    layout.addWidget(frame)
-    return frame
+    #### entrypassword(self, confirmation: bool) -> QFrame
 
+    *Build a text field for passwords*
+
+    """
+
+    # Class attribute
+    borderColor = "#8676F3"
+    backgroundColor = "transparent"
+    textColor = "#3d3d3d"
+
+    def __init__(self, parent: QWidget, Layout: QBoxLayout):
+        super().__init__(parent)
+
+        self.icon = ""
+        self.maxLength = 0
+        self.placehoder = ""
+        self.regex = ""
+
+        self.setFixedHeight(fitSizeToScreen(width=None, height=38))
+        self.setFixedWidth(fitSizeToScreen(width=163, height=None))
+        self.setStyleSheet(f"QFrame {{border-bottom: {fitValueToScreen(value=1)}px solid {entryField.borderColor}; background-color: {entryField.backgroundColor}; padding: 0px;}}")
+
+        self.frameLayout = QHBoxLayout()
+        self.frameLayout.setContentsMargins(0, 0, 0, fitValueToScreen(value=4))
+        self.setLayout(self.frameLayout)
+
+        self.label = QLabel(self)
+        self.label.setPixmap(QPixmap(self.icon))
+        self.label.setFrameShape(QFrame.NoFrame)
+        self.label.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+        self.label.setStyleSheet("background: none; border: none;")
+        self.label.setScaledContents(True)
+        self.frameLayout.addWidget(self.label)    
+
+        self.lineEdit = QLineEdit(self)
+        self.lineEdit.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
+        self.lineEdit.setPlaceholderText(self.placehoder)
+        self.lineEdit.setFrame(QFrame.NoFrame)
+        self.lineEdit.setStyleSheet(f"background-color: transparent; color: {entryField.textColor};")
+        self.lineEdit.setFont(QFont("Montserrat", fitValueToScreen(value=10), QFont.Normal))
+        self.lineEdit.setValidator(QRegularExpressionValidator(QRegularExpression(self.regex)))
+        self.lineEdit.setMaxLength(self.maxLength)
+        self.frameLayout.addWidget(self.lineEdit)
+
+        self.frameLayout.addStretch()
+
+        Layout.addWidget(self)
+
+    def entryname(self, lastname: bool) -> QFrame:
+        self.icon = ":/Icons/user.svg"
+        self.label.setPixmap(QPixmap(self.icon))
+        self.placehoder = "Nom" if lastname else "Prénom"
+        self.lineEdit.setPlaceholderText(self.placehoder)
+        self.regex = r"^[a-zA-Z'-]*$"
+        self.lineEdit.setValidator(QRegularExpressionValidator(QRegularExpression(self.regex)))
+        self.maxLength= 15 if lastname else 25
+        self.lineEdit.setMaxLength(self.maxLength)
+
+        return self
+    
+    def entrynumber(self) -> QFrame:
+        self.icon = ":/Icons/phone.svg"
+        self.label.setPixmap(QPixmap(self.icon))
+        self.placehoder = "Téléphone"
+        self.lineEdit.setPlaceholderText(self.placehoder)
+        self.regex = r"^\+?[0-9]{1,20}$"
+        self.lineEdit.setValidator(QRegularExpressionValidator(QRegularExpression(self.regex)))
+        self.maxLength= 30
+        self.lineEdit.setMaxLength(self.maxLength)
+
+        return self
+
+    def entrymail(self, size: SIZE) -> QFrame:
+        self.setFixedWidth(fitSizeToScreen(width=163, height=None) if size == SIZE.Short else fitSizeToScreen(width=346, height=None))
+        self.icon = ":/Icons/mail.svg"
+        self.label.setPixmap(QPixmap(self.icon))
+        self.placehoder = "Adresse mail"
+        self.lineEdit.setPlaceholderText(self.placehoder)
+        self.regex = r"^[a-zA-Z0-9!#$%&'*+/=?^_`{|}~.-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
+        self.lineEdit.setValidator(QRegularExpressionValidator(QRegularExpression(self.regex)))
+        self.maxLength=100 if size == SIZE.Long else 30
+        self.lineEdit.setMaxLength(self.maxLength)
+
+        return self
+
+    def entrypassword(self, confirmation: bool) -> QFrame:
+        self.setFixedWidth(fitSizeToScreen(width=346, height=None))
+        self.icon = ":/Icons/lock.svg"
+        self.label.setPixmap(QPixmap(self.icon))
+        self.placehoder = "Confirmez votre mot de passe" if confirmation else "Mot de passe"
+        self.lineEdit.setPlaceholderText(self.placehoder)
+        self.lineEdit.setEchoMode(QLineEdit.Password)
+        self.regex = r"^[a-zA-Z0-9!#$%&'*+/=?^_`{|}~.-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
+        self.lineEdit.setValidator(QRegularExpressionValidator(QRegularExpression(self.regex)))
+        self.maxLength= 30
+        self.lineEdit.setMaxLength(self.maxLength)
+
+        self.button = QPushButton(self)
+        self.button.setFlat(True)
+        self.button.setCheckable(True)
+        self.button.setIcon(QIcon(":/Icons/eye_closed.svg"))
+        self.button.setStyleSheet("QPushButton:checked {icon: url(':/Icons/eye_opened.svg')}")
+        self.frameLayout.addWidget(self.button)
+
+        self.button.toggled.connect(lambda checked: self.lineEdit.setEchoMode(QLineEdit.Normal) if checked else self.lineEdit.setEchoMode(QLineEdit.Password))
+
+        return self
 # ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 # ::::::::progress::::::::::::: #
 def progress(parent: QWidget, layout: QBoxLayout, progress: PROGRESS) -> QFrame:

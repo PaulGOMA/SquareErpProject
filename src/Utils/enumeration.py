@@ -21,3 +21,12 @@ class CONNEXION_STATUS(Enum):
 class SIZE(Enum):
     Short = 0
     Long = 1
+
+class ERROR_TITLE(Enum):
+    SelectedFileError = "Erreur de fichier sélectionné"
+    DataEntryError = "Erreur de donnée saisie"
+    InscriptionError = "Erreur d'inscription de l'utilisateur"
+    FileSystemError = "Erreur du système de fichier"
+    ServerConnectionError = "Erreur de connexion au serveur"
+    AccountRecoveryError = "Erreur de récupération du compte"
+    InternetConnectionError = "Erreur de connecxion de internet"

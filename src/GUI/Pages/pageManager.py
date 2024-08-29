@@ -3,35 +3,32 @@ sys.path.append("..")
 
 from PySide6.QtWidgets import QStackedLayout, QBoxLayout
 
-from GUI.Components.widgets import displayPageInMaintenance, createEmptypageWithButton, \
-    noTaskPage
+from GUI.Components.widgets import EmptyPage
 from Assets import pictures
 
-def stackPage(layout: QBoxLayout) -> QStackedLayout:
-    stack = QStackedLayout()
 
-    dashboardPage = displayPageInMaintenance(title="Dashboard")
-    reportPage = createEmptypageWithButton(title="Rapport", imagePath=":/Pictures/no_report.png", \
-                                            textButton="Nouveau rapport ", firstText="Aucun rapport ou document trouvé", \
-                                                secondText="Créer un nouveau rapport")
-    trackingPage = noTaskPage()
-    locationPage = createEmptypageWithButton(title="Sites d’inspections", imagePath=":/Pictures/no_location.png", \
-                                            textButton="Nouveau site ", firstText="La liste des sites est vide",\
-                                                secondText="Créer un nouveau site")
-    graphPage = displayPageInMaintenance("Graphes et analyses")
-    messagePage = createEmptypageWithButton(title="Messages", imagePath=":/Pictures/empty_message.png",\
-                                            textButton="Nouveau message ", firstText="Aucun méssage en vu",\
-                                                secondText="Démarrer une nouvelle conversation")
-    adminPage = displayPageInMaintenance(title="Administration")
+class PagerManager(QStackedLayout):
+    """
+    # This class is used to manage the application's page display.
+    """
 
-    stack.insertWidget(0, dashboardPage)
-    stack.insertWidget(1, reportPage)
-    stack.insertWidget(2, trackingPage)
-    stack.insertWidget(3, locationPage)
-    stack.insertWidget(4, graphPage)
-    stack.insertWidget(5, messagePage)
-    stack.insertWidget(6, adminPage)
+    def __init__(self, Layout: QBoxLayout):
+        super().__init__()
 
-    layout.addLayout(stack)
+        self.dashboardPage = EmptyPage("Dashboard", ":/Pictures/maintenance.png", "Section en cours de création")
+        self.reportPage = EmptyPage("Rapport", ":/Pictures/no_report.png", "Aucun rapport ou document trouvé").emptyPageWithButton("Nouveau rapport", "Créer un nouveau site")
+        self.trackingPage = EmptyPage("Suivi des missions et interventions", ":/Pictures/no_task.png", "Aucune mission en vue")
+        self.locationPage = EmptyPage("Sites d'inspections", ":/Pictures/no_location.png", "La liste des sites est vide").emptyPageWithButton("Nouveau site", "Créer un nouveau site")
+        self.graphPage = EmptyPage("Graphes et analyses", ":/Pictures/maintenance.png", "Section en cours de création")
+        self.messagePage = EmptyPage("Messages", ":/Pictures/empty_message.png", "Aucun méssage en vu").emptyPageWithButton("Nouveau message ", "Démarrer une nouvelle conversation")
+        self.adminPage = EmptyPage("Administration", ":/Pictures/maintenance.png", "Section en cours de création")
 
-    return stack
+        self.insertWidget(0, self.dashboardPage)
+        self.insertWidget(1, self.reportPage)
+        self.insertWidget(2, self.trackingPage)
+        self.insertWidget(3, self.locationPage)
+        self.insertWidget(4, self.graphPage)
+        self.insertWidget(5, self.messagePage)
+        self.insertWidget(6, self.adminPage)
+
+        Layout.addLayout(self)
