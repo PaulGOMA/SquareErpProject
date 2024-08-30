@@ -64,5 +64,9 @@
         <file alias="phone_contact.svg">C:/Users/paulg/Documents/MesPprojets/SquareErpProject/src/Assets/Icons/phone_contact_icon.svg</file>
         <file alias="job_contact.svg">C:/Users/paulg/Documents/MesPprojets/SquareErpProject/src/Assets/Icons/job_contact_icon.svg</file>
         <file alias="field_contact.svg">C:/Users/paulg/Documents/MesPprojets/SquareErpProject/src/Assets/Icons/field_contact_icon.svg</file>
+        <file alias="database_connected.svg">C:/Users/paulg/Documents/MesPprojets/SquareErpProject/src/Assets/Icons/database_connected_icon.svg</file>
+        <file alias="database_not_connected.svg">C:/Users/paulg/Documents/MesPprojets/SquareErpProject/src/Assets/Icons/database_not_connected_icon.svg</file>
+        <file alias="notified_icon.svg">C:/Users/paulg/Documents/MesPprojets/SquareErpProject/src/Assets/Icons/notified_icon.svg</file>
+        <file alias="not_notified_icon.svg">C:/Users/paulg/Documents/MesPprojets/SquareErpProject/src/Assets/Icons/not_notified_icon.svg</file>
     </qresource>
 </RCC>

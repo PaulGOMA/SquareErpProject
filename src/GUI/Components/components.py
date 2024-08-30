@@ -11,7 +11,7 @@ from PySide6.QtWidgets import QWidget, QHBoxLayout, QStyle, \
     QPushButton, QBoxLayout, QSizePolicy, QFrame, QLineEdit, \
     QLabel, QVBoxLayout, QComboBox, QStyledItemDelegate, \
     QTableView, QAbstractItemView, QButtonGroup, QCheckBox,\
-    QFormLayout, QListWidgetItem, QListWidget, QStyle, QApplication
+    QFormLayout, QListWidgetItem, QListWidget, QStyle
 from PySide6.QtGui import QIcon, QFont, Qt, QPixmap, QColor, QPalette,\
     QBrush, QRegularExpressionValidator
 from PySide6.QtCore import QAbstractTableModel, QRegularExpression
@@ -274,6 +274,7 @@ def TitleBarButton(parent: QWidget, layout: QBoxLayout, isClosedButton: bool=Fal
             f"""
             QPushButton {{background-color: none; border: none;}}
             QPushButton:hover {{background-color: {secondBackgroundColor if isClosedButton else mainBackgroundColor}; border: none;}}
+            QPushButton:pressed{{background-color: #cac9fc}}
             """
         )
     layout.addWidget(button)

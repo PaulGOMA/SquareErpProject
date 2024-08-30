@@ -147,7 +147,6 @@ class SignInWindow(QDialog):
         self.buttonLayout = QHBoxLayout()
         self.rightLayout.addLayout(self.buttonLayout)
         self.button = StandardButton(parent=self.rightFrame, Layout=self.buttonLayout, Width=346, Height=38).connectionButton()
-        self.button.clicked.connect(self.checkDataEntry)
 
         self.rightLayout.addStretch(1)
 

@@ -8,9 +8,9 @@ sys.path.append("..")
 
 from PySide6.QtWidgets import QFrame, QWidget, QBoxLayout,\
     QSizePolicy, QHBoxLayout, QLabel, QVBoxLayout, QButtonGroup,\
-    QMessageBox, QStyle
+    QMessageBox, QStyle, QStatusBar
 from PySide6.QtGui import QFont, QPalette, QColor, QPixmap, QIcon
-from PySide6.QtCore import Qt, Slot
+from PySide6.QtCore import Qt, Slot, QSize
 
 from GUI.Components.components import StandardButton,\
     separator, SearchBar,attendanceStatus, user,\
@@ -154,10 +154,15 @@ class TitleBar(QFrame):
         self.frameLayout.setContentsMargins(fitValueToScreen(32), 0, 0, 0) 
         self.setLayout(self.frameLayout)
 
-        self.searchbar = SearchBar(self, self.frameLayout)
-        self.searchbar.searchbarForTitleBar()
+        self.searchbar = SearchBar(self, self.frameLayout).searchbarForTitleBar()
 
         self.frameLayout.addStretch(12)
+
+        self.notification = TitleBarButton(self, self.frameLayout)
+        self.notification.setIconSize(fitSizeToScreen(25, 29))
+        self.notification.setIcon(QIcon(":/Icons/not_notified_icon.svg"))
+
+        self.frameLayout.addStretch(1)
 
         self.status = attendanceStatus(self, self.frameLayout)
         self.frameLayout.addStretch(1)
@@ -177,7 +182,14 @@ class TitleBar(QFrame):
         self.Layout = Layout
         self.Layout.addWidget(self)
     
-    
+    @Slot()
+    def setNotification(self, number: int):
+        if number == 0:
+            self.notification.setIcon(QIcon(":/Icons/not_notified_icon.svg"))
+        elif number > 0:
+            self.notification.setIcon(QIcon(":/Icons/notified_icon.svg"))
+
+    @Slot()
     def setStatus(self, status: STATUS) -> QLabel:
         self.status.setPixmap(QPixmap(":/Icons/online.svg" if status == STATUS.OnLine else ":/Icons/offline.svg"))
 
@@ -196,7 +208,59 @@ class TitleBar(QFrame):
         else:
             self.resizeButton.setIcon(self.style().standardIcon(QStyle.SP_TitleBarMaxButton))
             self.parent().parent().showMaximized() 
+
+class Statusbar(QStatusBar):
+    """
+    This class is used to create the application's status bar
+    """
+
+    # Class attributes
+    backgroundColor = "white"
+    borderColor = "#f6f6f6"
+    textColor = "#525252"
+
+    def __init__(self):
+        super().__init__()
+
+        self.setStyleSheet(f"background-color: {Statusbar.backgroundColor}; padding-right: {fitValueToScreen(value=10)}px;")
+
+        self.internetAccess = self.createFrame()
+        self.databaseAccess = self.createFrame()
+
+    def setInternetConnection(self, status: STATUS):
+        self.icon.setPixmap(QPixmap(":/Icons/online.svg" if status == STATUS.OnLine else ":/Icons/offline.svg"))
+        self.text.setText("Accès internet" if status == STATUS.OnLine else "Pas d'accès internet")
+
+    def setDatabaseConnection(self, status: STATUS):
+        self.icon.setPixmap(QPixmap(":/Icons/database_connected.svg" if status == STATUS.OnLine else ":/Icons/database_not_connected.svg"))
+        self.text.setText("Connection réussie" if status == STATUS.OnLine else "Accès refusé")        
+
     
+    def createFrame(self) -> QFrame:
+        frame = QFrame(self)
+        frame.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+        frame.setStyleSheet("background-color: none; border: none;")
+
+        Layout = QHBoxLayout()
+        Layout.setContentsMargins(0, 0, 0, 0)
+        frame.setLayout(Layout)
+
+        self.icon = QLabel(self)
+        self.icon.setStyleSheet("background-color: none; border-left: none;")
+        self.icon.setScaledContents(True)
+        self.icon.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+        Layout.addWidget(self.icon)
+
+        self.text = QLabel(self)
+        self.text.setStyleSheet(f"background-color: none; border-left: none; color: {Statusbar.textColor}")
+        self.text.setFont(QFont('Calibri', fitValueToScreen(value=12), QFont.Normal, False))
+        self.text.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+        Layout.addWidget(self.text)
+
+        self.addPermanentWidget(frame)
+
+        return frame
+
 
 # Message bar
 def messageBar(parent: QWidget, layout: QBoxLayout, connexionstatus: STATUS, fName: str, lName: str) -> QFrame:
@@ -389,3 +453,6 @@ def closeApp(deconnection: bool) -> QMessageBox:
     rejectButton.clicked.connect(box.reject)
 
     return box
+
+
+

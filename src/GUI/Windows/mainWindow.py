@@ -8,7 +8,7 @@ from PySide6.QtCore import Qt, Slot, QPoint
 from Utils.responsiveLayout import centerWindow
 from Utils.enumeration import CONNEXION_STATUS as STATUS
 from Utils.worker import WorkerWithConnexionStatus, WorkerWithString
-from GUI.Components.widgets import Sidebar, TitleBar
+from GUI.Components.widgets import Sidebar, TitleBar, Statusbar
 from GUI.Pages.pageManager import PagerManager
 from Handler.internet import InternetManager
 from Handler.threads import ThreadManager
@@ -48,7 +48,9 @@ class MainWindow(QMainWindow):
         self.mainLayout.setContentsMargins(0, 0, 0, 0)
         self.mainLayout.setSpacing(0)
 
-        self.titleBar = TitleBar(parent=self.centralArea, Layout=self.mainLayout)
+        self.titleBar = TitleBar(parent=self.centralArea, Layout=self.mainLayout) 
+        self.titleBar.notification.clicked.connect(self.switchToMessagePage)
+
 
         self.pages = PagerManager(self.mainLayout)
         self.pages.setCurrentIndex(0)
@@ -56,10 +58,18 @@ class MainWindow(QMainWindow):
         self.groupbutton = self.sidebar.groupbutton
         self.groupbutton.buttonClicked.connect(self.displayPage)
 
+        self.statusbar = Statusbar()
+        self.setStatusBar(self.statusbar)
+
         self.WorkerIconConnection = WorkerWithConnexionStatus(Target=self.getConnexionState)
-        self.WorkerIconConnection.updatePageSignal.connect(self.titleBar.setStatus) 
+        self.WorkerIconConnection.updatePageSignal.connect(self.statusbar.setInternetConnection) 
         self.ThreadManager.addThread(target=self.WorkerIconConnection.run, label="internetConnection", useStopevent=True)
         self.ThreadManager.startThreadByLabel(label="internetConnection")
+
+        self.WorkerIconNotification = WorkerWithConnexionStatus(Target=UserManager.getMessageNotify)
+        self.WorkerIconNotification.updatePageSignal.connect(self.titleBar.setNotification) 
+        self.ThreadManager.addThread(target=self.WorkerIconNotification.run, label="notification", useStopevent=True)
+        self.ThreadManager.startThreadByLabel(label="notification")
 
         self.WorkerUsername = WorkerWithString(Target=UserManager.getUsername)
         self.WorkerUsername.updatePageSignal.connect(self.setUsername)
@@ -67,6 +77,10 @@ class MainWindow(QMainWindow):
         self.ThreadManager.startThreadByLabel(label="Username")
 
         self.showMaximized()
+
+    def switchToMessagePage(self):
+        self.pages.setCurrentIndex(5)
+        self.sidebar.message.setChecked(True)
 
 
     def mousePressEvent(self, event):
