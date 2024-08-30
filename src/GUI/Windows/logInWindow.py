@@ -127,7 +127,7 @@ class LogInWindow(QDialog):
         self.textLayout = QHBoxLayout()
         self.rightLayout.addLayout(self.textLayout)
 
-        loginCheckbox(parent=self.rightFrame, layout=self.textLayout)
+        self.checkbox = loginCheckbox(parent=self.rightFrame, layout=self.textLayout)
 
         self.textLayout.addStretch()
 
@@ -137,7 +137,7 @@ class LogInWindow(QDialog):
 
         self.buttonLayout = QHBoxLayout()
         self.rightLayout.addLayout(self.buttonLayout)
-        self.connectionButton = StandardButton(parent=self.rightFrame, Layout=self.buttonLayout, Width=346, Height=38).connectionButton()
+        self.button = StandardButton(parent=self.rightFrame, Layout=self.buttonLayout, Width=346, Height=38).connectionButton()
 
         self.rightLayout.addStretch(3)
 
