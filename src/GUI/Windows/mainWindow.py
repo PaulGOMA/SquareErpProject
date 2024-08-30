@@ -66,6 +66,11 @@ class MainWindow(QMainWindow):
         self.ThreadManager.addThread(target=self.WorkerIconConnection.run, label="internetConnection", useStopevent=True)
         self.ThreadManager.startThreadByLabel(label="internetConnection")
 
+        self.WorkerDatabaseConnection = WorkerWithConnexionStatus(Target=UserManager.checkDatabaseConnection)
+        self.WorkerDatabaseConnection.updatePageSignal.connect(self.statusbar.setDatabaseConnection) 
+        self.ThreadManager.addThread(target=self.WorkerDatabaseConnection.run, label="databaseConnection", useStopevent=True)
+        self.ThreadManager.startThreadByLabel(label="databaseConnection")        
+
         self.WorkerIconNotification = WorkerWithConnexionStatus(Target=UserManager.getMessageNotify)
         self.WorkerIconNotification.updatePageSignal.connect(self.titleBar.setNotification) 
         self.ThreadManager.addThread(target=self.WorkerIconNotification.run, label="notification", useStopevent=True)
@@ -120,6 +125,8 @@ class MainWindow(QMainWindow):
             return STATUS.OnLine
         else:
             return STATUS.OffLine
+        
+    
         
     
     @Slot()

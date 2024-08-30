@@ -231,9 +231,11 @@ class Statusbar(QStatusBar):
         self.icon.setPixmap(QPixmap(":/Icons/online.svg" if status == STATUS.OnLine else ":/Icons/offline.svg"))
         self.text.setText("Accès internet" if status == STATUS.OnLine else "Pas d'accès internet")
 
+
     def setDatabaseConnection(self, status: STATUS):
         self.icon.setPixmap(QPixmap(":/Icons/database_connected.svg" if status == STATUS.OnLine else ":/Icons/database_not_connected.svg"))
-        self.text.setText("Connection réussie" if status == STATUS.OnLine else "Accès refusé")        
+        self.text.setText("Connection établie" if status == STATUS.OnLine else "Accès refusé")
+        self.databaseAccess = self.createFrame()        
 
     
     def createFrame(self) -> QFrame:
@@ -245,13 +247,13 @@ class Statusbar(QStatusBar):
         Layout.setContentsMargins(0, 0, 0, 0)
         frame.setLayout(Layout)
 
-        self.icon = QLabel(self)
+        self.icon = QLabel(frame)
         self.icon.setStyleSheet("background-color: none; border-left: none;")
         self.icon.setScaledContents(True)
         self.icon.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
         Layout.addWidget(self.icon)
 
-        self.text = QLabel(self)
+        self.text = QLabel(frame)
         self.text.setStyleSheet(f"background-color: none; border-left: none; color: {Statusbar.textColor}")
         self.text.setFont(QFont('Calibri', fitValueToScreen(value=12), QFont.Normal, False))
         self.text.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)

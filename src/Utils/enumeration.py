@@ -30,3 +30,4 @@ class ERROR_TITLE(Enum):
     ServerConnectionError = "Erreur de connexion au serveur"
     AccountRecoveryError = "Erreur de récupération du compte"
     InternetConnectionError = "Erreur de connecxion de internet"
+

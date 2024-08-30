@@ -3,6 +3,7 @@ sys.path.append("..")
 
 from Handler.internet import InternetManager
 from Handler.databaseConnector import MySQLConnector
+from Utils.enumeration import CONNEXION_STATUS as STATUS
 
 # ::::::::::::::::::::::::::::::: class pour la gestion du user en cours ::::::::::::::::::::::::::::::::::::::::
 class UsersManager:
@@ -37,10 +38,19 @@ class UsersManager:
                 return -1
         else:
             return -1
+        
+    def checkDatabaseConnection(self) -> STATUS:
+        try:
+            self.MySQLConnector.connect()
+            return STATUS.OnLine
+        except:
+            return STATUS.OffLine
+        
 
     def getUpdate(self) -> int:
         print(1)
         return 1
+
 
 # ::::::::::::::::::::::::::: Accesseur :::::::::::::::::::::::::::::::::::::::::::::::::::::::
     @property

@@ -30,7 +30,7 @@ class SetUp():
         if dialog.exec():
             dialog.accept()
             self.WindowManager.setCurrentIndex(1)
-            self.WindowManager.current_window.Push_button.clicked.connect(lambda: self.Login(
+            self.WindowManager.current_window.button.clicked.connect(lambda: self.Login(
                 self.WindowManager.current_window.dataList))
 
     def Inscription_from_new_user(self, List: list):
