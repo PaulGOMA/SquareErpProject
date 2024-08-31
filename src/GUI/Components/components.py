@@ -69,9 +69,11 @@ class StandardButton(QPushButton):
     # Class attribute
     mainBackgroundColor = "#5234A5"
     mainBackgroundColorPressed = "#44317e"
+    mainBackgroundColorDisabled = "#B0B0B0"
     mainTextColor = "white"
     secondTextColor = "#8676F3"
     secondTextColorPressed = "#744be0"
+    
 
 
     def __init__(self, parent: QWidget, Layout: QBoxLayout, Width: int=None, Height: int=None):
@@ -90,6 +92,7 @@ class StandardButton(QPushButton):
             f"""
             QPushButton {{background-color: {StandardButton.mainBackgroundColor};border: none;}}
             QPushButton:pressed {{background-color: {StandardButton.mainBackgroundColorPressed};}}
+            QPushButton:disabled {{background-color: {StandardButton.mainBackgroundColorDisabled};}}
             """
             )
         else:
@@ -121,6 +124,11 @@ class StandardButton(QPushButton):
         self.setText("Valider")
 
         return self
+    
+    def sendButton(self) -> QPushButton:
+        self.setText("Envoyer   ")
+        self.setIcon(QIcon(":/Icons/send_icon.svg"))
+        self.setDisabled(True)
 
     
     def bareButton(self, text: str) -> QPushButton:
@@ -279,6 +287,73 @@ def TitleBarButton(parent: QWidget, layout: QBoxLayout, isClosedButton: bool=Fal
         )
     layout.addWidget(button)
     return button
+
+class ToolbarButtonForMessage(QPushButton):
+
+    textColor = "black"
+    backgroundColorChecked = "#BDBDBD"
+
+    def __init__(self, parent: QWidget, Layout: QBoxLayout):
+        super().__init__(parent)
+
+        self.setFlat(True)
+        self.setFixedSize(fitSizeToScreen(width=26, height=17))
+        self.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+        self.setEnabled(False)
+
+        Layout.addWidget(self)
+
+    def textButton(self, text: str, to_bold: bool=False, to_italic: bool=False, to_underline: bool=False) -> QPushButton:
+        self.setText(text)
+        self.setCheckable(True)
+        self.fontButton = QFont("Montserrat", 11)
+
+        if to_bold:
+            self.fontButton.setBold(True)
+            self.setFont(self.fontButton)
+        elif to_italic:
+            self.fontButton.setItalic(True)
+            self.setFont(self.fontButton)
+        elif to_underline:
+            self.fontButton.setUnderline(True)
+            self.setFont(self.fontButton)
+        else:
+            self.setFont(self.fontButton)
+
+        self.setStyleSheet(
+        f"""
+            QPushButton{{
+                background-color: transparent;
+                color: {ToolbarButtonForMessage.textColor};
+                border: none;
+            }}
+            QPushButton:checked{{
+                background-color: {ToolbarButtonForMessage.backgroundColorChecked};
+                border: none;
+                color: {ToolbarButtonForMessage.textColor};
+            }}
+        """)
+        
+        return self
+    
+    def iconButton(self, unclickedpath: str, clickedpath: str, is_enabled: bool=False) -> QPushButton:
+        self.setIcon(QIcon(unclickedpath))
+        self.setEnabled(True if is_enabled else False)
+        self.setStyleSheet(
+            f"""
+                QPushButton{{
+                background-color: transparent;
+                border: none;
+            }}
+            QPushButton:pressed{{
+                background-color: transparent;
+                border: none;
+                icon: url({clickedpath})
+            }}
+            """
+        )
+
+        return self
 
 # ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 # ::::::::text entry field::::::::::::: #
@@ -539,6 +614,174 @@ def progress(parent: QWidget, layout: QBoxLayout, progress: PROGRESS) -> QFrame:
 # ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 # ::::::::display file::::::::::::: #
 
+class DisplayFile(QFrame):
+
+
+    def __init__(self, parent: QWidget, Layout: QBoxLayout, filename: str, size: int):
+        super().__init__(parent)
+
+        self.file = filename
+        self.Size = size
+
+        self.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+        self.setToolTip(self.file)
+
+        self.frameLayout = QHBoxLayout()
+        self.setLayout(self.frameLayout)
+
+        self.icon = QLabel(self)
+        self.icon.setStyleSheet("border: none;")
+
+        splitFile = self.file.split(".")
+        self.fileFormat = splitFile[-1]        
+
+        self.fileName = QLabel(self)
+        self.fileName.setFont(QFont('Calibri', fitValueToScreen(value=12), QFont.Normal, False))
+        self.fileName.setStyleSheet("QLabel{color : #7c7c7c; border: none;}")
+
+        self.fileSize = QLabel(self)
+        self.fileSize.setFont(QFont('Calibri', fitValueToScreen(value=10), QFont.Bold, False))
+        self.fileSize.setStyleSheet("color: #656565; border: none;")
+
+        self.button = QPushButton(self)
+        self.button.setFlat(True)
+
+        Layout.addWidget(self)
+
+    def fileForMessage(self, type: TYPE) -> QFrame:
+        self.setStyleSheet(
+            f"""
+                QFrame {{border : {fitValueToScreen(value=1)}px solid #7c7c7c; background-color : transparent;}}
+                QFrame:hover {{background-color : #E1E2FE;}}
+            """ 
+            if type.value else 
+            f"""
+                QFrame {{border : {fitValueToScreen(value=1)}px solid #656565; background-color : transparent;}}
+                QFrame:hover {{background-color : #E1E2FE;}}
+            """
+        )
+
+        if self.fileFormat == 'pdf':
+            self.icon.setPixmap(QPixmap(":/Icons/pdf_file.svg"))
+        elif self.fileFormat == 'txt':
+            self.icon.setPixmap(QPixmap(":/Icons/txt.svg"))
+        elif self.fileFormat in ["zip", "7z"]:
+            self.icon.setPixmap(QPixmap(":/Icons/zip.svg"))
+        elif self.fileFormat in ["png", "jpg", "bmp", "webp", "svg"]:
+            self.icon.setPixmap(QPixmap(":/Icons/image.svg"))
+        elif self.fileFormat in ["mp3", "wav", "ogg"]:
+            self.icon.setPixmap(QPixmap(":/Icons/audio.svg"))
+        elif self.fileFormat in ["mp4", "mov", "wmv", "webm", "avi"]:
+            self.icon.setPixmap(QPixmap(":/Icons/video.svg"))
+        elif self.fileFormat in ["doc", "docx"]:
+            self.icon.setPixmap(QPixmap(":/Icons/doc_file.svg"))
+        else:
+            self.icon.setPixmap(QPixmap(":/Icons/unknown_file.svg"))
+
+        self.frameLayout.addWidget(self.icon)
+
+        if len(self.file) > 6:
+            name = self.file[0:3] + "..."
+            self.fileName.setText(name)
+        else:
+            self.fileName.setText(self.file)
+
+        self.frameLayout.addWidget(self.fileName)
+        self.frameLayout.addStretch(1)
+
+        if 1 <= len(str(self.Size)) <= 2:
+            self.fileSize.setText(f"{self.Size} o")
+        elif 3 <= len(str(self.Size)) <= 5:
+            value = self.Size / 1024
+            self.fileSize.setText(f"{value: .2f} Ko")
+        elif 6 <= len(str(self.Size)) <= 7:
+            value = self.Size / 1048576
+            self.fileSize.setText(f"{value: .2f} Mo")
+        else:
+            self.fileSize.setText("!!")
+
+        self.frameLayout.addWidget(self.fileSize)
+        self.frameLayout.addStretch(1)
+
+        self.button.setIcon(QIcon(":/Icons/close_file.svg" if type.value else "Icons/download_file_icon.svg"))
+        self.button.setStyleSheet("QPushButton:pressed {icon: url(':/Icons/close_file_clicked.svg')}" if type.value else "QPushButton:pressed {icon: url('Icons/download_file_icon_clicked.svg')}")
+        self.frameLayout.addWidget(self.button)
+
+        return self
+
+
+    def fileForReport(self) -> QFrame:
+        self.setStyleSheet(
+        """
+            QFrame {border : none; background-color : transparent;}
+            QFrame:hover {background-color : #E1E2FE;}
+        """ 
+        )
+
+        self.frameLayout.addStretch(1)
+
+        first_layout = QVBoxLayout()
+        self.frameLayout.addLayout(first_layout)
+
+        if self.fileFormat == 'pdf':
+            self.icon.setPixmap(QPixmap(":/Icons/pdf_report.svg"))
+        elif self.fileFormat in ["doc", "docx"]:
+            self.icon.setPixmap(QPixmap(":/Icons/doc_report.svg"))
+        else:
+            self.icon.setPixmap(QPixmap(":/Icons/unknown_report.svg"))
+
+        icon_layout = QHBoxLayout()
+        first_layout.addLayout(icon_layout)
+        icon_layout.addStretch(1)
+        icon_layout.addWidget(self.icon)
+        icon_layout.addStretch(1)
+        first_layout.addStretch(1)
+
+        self.fileName.setFont(QFont('Calibri', fitValueToScreen(value=16), QFont.Bold, True))
+        if len(self.file) > 12:
+            name = self.file[0:9] + "..."
+            self.fileName.setText(name)
+        else:
+            self.fileName.setText(self.file)
+
+        file_name_layout = QHBoxLayout()
+        file_name_layout.addStretch(1)
+        file_name_layout.addWidget(self.fileName)
+        file_name_layout.addStretch(1)
+        first_layout.addLayout(file_name_layout)
+        first_layout.addStretch(1)
+
+        self.fileSize.setFont(QFont('Calibri', fitValueToScreen(value=16), QFont.Bold, False))
+
+        if 1 <= len(str(self.Size)) <= 2:
+            self.fileSize.setText(f"{self.Size} o")
+        elif 3 <= len(str(self.Size)) <= 5:
+            value = self.Size / 1024
+            self.fileSize.setText(f"{value: .2f} Ko")
+        elif 6 <= len(str(self.Size)) <= 7:
+            value = self.Size / 1048576
+            self.fileSize.setText(f"{value: .2f} Mo")
+        else:
+            self.fileSize.setText("!!")
+
+        file_size_layout = QHBoxLayout()
+        file_size_layout.addStretch(1)
+        file_size_layout.addWidget(self.fileSize) 
+        file_size_layout.addStretch(1)
+        first_layout.addLayout(file_size_layout)
+
+        second_layout = QVBoxLayout()
+        self.frameLayout.addLayout(second_layout)
+
+        self.button.setIcon(QIcon(":/Icons/close_report.svg"))
+        self.button.setStyleSheet("QPushButton:pressed {icon: url(':/Icons/close_report_clicked.svg')}")
+        second_layout.addWidget(self.button)
+
+        second_layout.addStretch()
+        self.frameLayout.addStretch(1)
+
+        return self
+
 # File to send/download by message
 def displayFileInsideMessage(parent: QWidget, layout: QBoxLayout, filename: str, size: int, type: TYPE) -> QFrame:
     frame = QFrame(parent)
@@ -647,7 +890,7 @@ def displayReport(parent: QWidget, layout: QBoxLayout, filename: str, size: int)
     icon = QLabel(frame)
     icon.setStyleSheet("border: none;")
     split_file = filename.split(".")
-    file_format = split_file[1]
+    file_format = split_file[-1]
     if file_format == 'pdf':
         icon.setPixmap(QPixmap(":/Icons/pdf_report.svg"))
     elif file_format in ["doc", "docx"]:
@@ -823,11 +1066,13 @@ def displayTable(parent: QWidget, layout: QBoxLayout, model: CustomTableModel) -
 
 # ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 # ::::::::separator::::::::::::: #
-def separator(parent: QWidget, layout: QBoxLayout, color: str) -> QFrame:
-    frame = QFrame(parent)
-    frame.setFrameShape(QFrame.Shape.HLine if type(layout) == QVBoxLayout else QFrame.Shape.VLine)
+def separator(layout: QBoxLayout, color: str) -> QFrame:
+    frame = QFrame()
+    frame.setFrameShape(QFrame.Shape.HLine if type(layout) is QVBoxLayout else QFrame.Shape.VLine)
     frame.setFrameShadow(QFrame.Shadow.Plain)
-    frame.setStyleSheet(f"border-top: 1px solid {color}")
+    frame.setLineWidth(0)
+    frame.setMidLineWidth(0)
+    frame.setStyleSheet(f"border-color:{color}")
 
     layout.addWidget(frame)
     return frame
@@ -870,7 +1115,6 @@ def attendanceStatus(parent: QWidget, layout: QBoxLayout) -> QLabel:
     label.setFrameShape(QFrame.NoFrame)
     label.setScaledContents(True)
     label.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
-    # label.setPixmap(QPixmap(":/Icons/online.svg" if status == STATUS.OnLine else ":/Icons/offline.svg"))
 
     layout.addWidget(label)
     return label
@@ -907,7 +1151,7 @@ def loginCheckbox(parent: QWidget, layout: QBoxLayout) -> QCheckBox:
     layout.addWidget(check)
     return check
 
-# Set background image
+# Set background image for log in and sign in page
 def setBackgroundImage(widget: QWidget, imagePath: str) -> None:
     pixmap = QPixmap(imagePath)
     palette = QPalette()

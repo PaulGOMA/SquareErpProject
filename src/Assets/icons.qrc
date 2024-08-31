@@ -68,5 +68,10 @@
         <file alias="database_not_connected.svg">C:/Users/paulg/Documents/MesPprojets/SquareErpProject/src/Assets/Icons/database_not_connected_icon.svg</file>
         <file alias="notified_icon.svg">C:/Users/paulg/Documents/MesPprojets/SquareErpProject/src/Assets/Icons/notified_icon.svg</file>
         <file alias="not_notified_icon.svg">C:/Users/paulg/Documents/MesPprojets/SquareErpProject/src/Assets/Icons/not_notified_icon.svg</file>
+        <file alias="attachement_clicked.svg">C:/Users/paulg/Documents/MesPprojets/SquareErpProject/src/Assets/Icons/attachement_clicked.svg</file>
+        <file alias="attachement_unclicked.svg">C:/Users/paulg/Documents/MesPprojets/SquareErpProject/src/Assets/Icons/attachement_unclicked.svg</file>
+        <file alias="bin_unclicked.svg">C:/Users/paulg/Documents/MesPprojets/SquareErpProject/src/Assets/Icons/bin_unclicked.svg</file>
+        <file alias="bin_clicked.svg">C:/Users/paulg/Documents/MesPprojets/SquareErpProject/src/Assets/Icons/bin_clicked.svg</file>
+        <file alias="send_icon.svg">C:/Users/paulg/Documents/MesPprojets/SquareErpProject/src/Assets/Icons/send_icon.svg</file>
     </qresource>
 </RCC>

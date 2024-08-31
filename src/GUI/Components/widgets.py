@@ -5,18 +5,25 @@
 import sys
 sys.path.append("..")
 
+import os
+
 
 from PySide6.QtWidgets import QFrame, QWidget, QBoxLayout,\
     QSizePolicy, QHBoxLayout, QLabel, QVBoxLayout, QButtonGroup,\
-    QMessageBox, QStyle, QStatusBar
-from PySide6.QtGui import QFont, QPalette, QColor, QPixmap, QIcon
-from PySide6.QtCore import Qt, Slot, QSize
+    QMessageBox, QStyle, QStatusBar, QPushButton, QTextEdit, QScrollArea,\
+    QFileDialog
+from PySide6.QtGui import QFont, QPalette, QColor, QPixmap, QIcon,\
+    QTextCharFormat
+from PySide6.QtCore import Qt, Slot
 
 from GUI.Components.components import StandardButton,\
     separator, SearchBar,attendanceStatus, user,\
-    TitleBarButton, contactAcronym, contactDetails, GroupButton
-from Utils.enumeration import CONNEXION_STATUS as STATUS, SIZE
+    TitleBarButton, contactAcronym, contactDetails, GroupButton,\
+    ToolbarButtonForMessage, DisplayFile
+from Utils.enumeration import CONNEXION_STATUS as STATUS, SIZE, ERROR_TITLE,\
+    MESSAGE_FILE_TYPE as TYPE
 from Utils.responsiveLayout import fitValueToScreen, fitSizeToScreen
+from Utils.errors import error
 
 
 from Assets import icons, pictures
@@ -41,11 +48,18 @@ class Header(QFrame):
     #### headerWithButton(textButton: str=None) -> QFrame
 
     *Constructs an header whith a button*
+
+    #### headerforDialogBox(self) -> QFrame
+
+    *Constructs a dialog box header*
     """
 
     #Class attribute
     backgroundColor = "white"
     textColor = "#5234a5"
+    secondTextColor = "#989898"
+    borderColor = "#DCDCDC"
+    ButtonColor = "#E81123"
 
     def __init__(self, parent: QWidget, Layout: QBoxLayout, text: str):
         super().__init__(parent)
@@ -75,6 +89,25 @@ class Header(QFrame):
 
         return self
     
+    def headerforDialogBox(self) -> QFrame:
+        self.setStyleSheet(f"background-color: {Header.backgroundColor}; border-bottom: {fitValueToScreen(value=1)}px solid {Header.borderColor}")
+        self.frameLayout.setContentsMargins(fitValueToScreen(12), 0, 0, 0)
+        self.frameLayout.addStretch()
+
+        self.button = QPushButton(self)
+        self.button.setFlat(True)
+        self.button.setFixedSize(fitSizeToScreen(width=30, height=30))
+        self.button.setIcon(self.style().standardIcon(QStyle.SP_TitleBarCloseButton))
+        self.button.setStyleSheet(
+            f"""
+            QPushButton {{background-color: none; border: none;}}
+            QPushButton:hover {{background-color: {Header.ButtonColor}; border: none;}}
+            """
+        )
+
+        return self
+
+
 class Sidebar(QFrame):
     """
     # This class is used to create the application's side bar
@@ -119,7 +152,7 @@ class Sidebar(QFrame):
 
         self.frameLayout.addStretch(4)
 
-        separator(self, self.frameLayout, Sidebar.separatorColor)
+        separator(self.frameLayout, Sidebar.separatorColor)
 
         self.message = GroupButton(self, "Message", self.frameLayout, self.groupbutton, 5).sidebarButton(uncheckedIconPath=":/Icons/unchecked_message.svg", checkedIconPath=":/Icons/checked_message.svg")
         self.admin = GroupButton(self, "Administration", self.frameLayout, self.groupbutton, 6).sidebarButton(uncheckedIconPath=":/Icons/unchecked_admin.svg", checkedIconPath=":/Icons/checked_admin.svg")
@@ -455,6 +488,239 @@ def closeApp(deconnection: bool) -> QMessageBox:
     rejectButton.clicked.connect(box.reject)
 
     return box
+
+class MessageInputField(QFrame):
+
+
+    # Class attribute
+    backgroundColor = "white"
+    borderColor = "#DCDCDC"
+    separatorColor = "black"
+
+    def __init__(self, parent: QWidget, Layout: QBoxLayout):
+        super().__init__(parent)
+
+        # List of files attached to the message
+        self.files_to_send = []
+
+        # ::::::::Creating the main frame1 of the text input field and its layout::::::::::::: #
+        self.setStyleSheet(f"QFrame{{background-color: {MessageInputField.backgroundColor}; border: {fitValueToScreen(value=2)}px solid {MessageInputField.borderColor};}}")
+        self.setFixedHeight(fitSizeToScreen(width=None, height=300))
+        self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
+
+        # Adding its layout
+        self.frameLayout = QVBoxLayout()
+        self.frameLayout.setContentsMargins(0, 0, 0, 0)
+        self.setLayout(self.frameLayout)
+
+        # ::::::::Creating the toolbar and its items::::::::::::: #
+        self.toolbar = QFrame(self)
+        self.toolbar.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
+        self.toolbar.setStyleSheet(f"background-color: {MessageInputField.borderColor};")
+        self.frameLayout.addWidget(self.toolbar)
+        self.frameLayout.setAlignment(self.toolbar, Qt.AlignTop)
+
+        # Adding its layout
+        self.toolbarLayout = QHBoxLayout()
+        self.toolbarLayout.setContentsMargins(fitValueToScreen(value=2), fitValueToScreen(value=2), fitValueToScreen(value=2), fitValueToScreen(value=2))
+        self.toolbar.setLayout(self.toolbarLayout)
+
+        self.toolbarButton = ToolbarButtonForMessage(self.toolbar, self.toolbarLayout)
+
+        # Adding the button to make text or selected text bold
+        self.bold_button = ToolbarButtonForMessage(self.toolbar, self.toolbarLayout).textButton("G", True, False, False)
+        self.bold_button.toggled.connect(self.setTextBold)
+        self.toolbarLayout.addWidget(self.bold_button)
+
+        # Adding the separator
+        separator(self.toolbarLayout, MessageInputField.separatorColor)
+
+        # Adding the button to italicize text or selected text
+        self.italic_button = ToolbarButtonForMessage(self.toolbar, self.toolbarLayout).textButton("I", False, True, False)
+        self.italic_button.toggled.connect(self.setTextItalic)
+        self.toolbarLayout.addWidget(self.italic_button)
+
+        # Adding the separator
+        separator(self.toolbarLayout, MessageInputField.separatorColor)
+
+        # Adding the button to underline text or selected text
+        self.underline_button = ToolbarButtonForMessage(self.toolbar, self.toolbarLayout).textButton("S", False, False, True)
+        self.underline_button.toggled.connect(self.setTextUnderline)
+        self.toolbarLayout.addWidget(self.underline_button)
+
+        # Adding the separator
+        separator(self.toolbarLayout, MessageInputField.separatorColor)
+
+        self.toolbarLayout.addStretch()
+
+        # Adding the button to join a file
+        self.file_button = ToolbarButtonForMessage(self.toolbar, self.toolbarLayout).iconButton(":/Icons/attachement_unclicked.svg", ":/Icons/attachement_clicked.svg", True)
+        self.file_button.clicked.connect(self.selectFile)
+        self.toolbarLayout.addWidget(self.file_button)
+
+        # Adding the separator
+        separator(self.toolbarLayout, MessageInputField.separatorColor)
+
+        # Adding the button to clear the text input field
+        self.clear_button =ToolbarButtonForMessage(self.toolbar, self.toolbarLayout).iconButton(":/Icons/bin_unclicked.svg", ":/Icons/bin_clicked.svg", False)
+        self.clear_button.clicked.connect(self.clearTextField)
+        self.toolbarLayout.addWidget(self.clear_button)
+
+        # ::::::::Creating the text input field frame1::::::::::::: #
+        self.inputField = QTextEdit(self)
+        self.inputField.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        self.inputField.setStyleSheet(
+            f"""
+                background-color: #ffffff;
+                color: #000000;
+                selection-color: #ffffff;
+                selection-background-color: #8676f3;
+                border: none;
+            """
+        )
+        self.frameLayout.addWidget(self.inputField)
+
+        # Set the default font
+        self.default_font = QFont('Century Gothic', 12)
+        self.inputField.setCurrentFont(self.default_font)
+
+        # Activate button at start of input
+        self.inputField.textChanged.connect(self.enableButton)
+
+        # ::::::::Creating the footer frame1::::::::::::: #
+
+        self.footerFrame = QFrame(self)
+        self.footerFrame.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
+        self.footerFrame.setStyleSheet("background-color: none; border: none;")
+        self.footerFrame.setFixedHeight(90)
+        self.footerLayout = QHBoxLayout()
+        self.footerFrame.setLayout(self.footerLayout)
+
+        self.frameLayout.addWidget(self.footerFrame)
+        self.frameLayout.setAlignment(self.footerFrame, Qt.AlignBottom)
+
+        # ::::::::Create the selected files frame1 layout::::::::::::: #
+        self.file_frame = QFrame(self.footerFrame)
+        self.file_frame.setStyleSheet("background-color: white;")
+        self.file_layout = QHBoxLayout()
+        self.file_frame.setLayout(self.file_layout)
+
+        # Add the Scroll area
+        self.Scroll = QScrollArea()
+        self.Scroll.setWidget(self.file_frame)
+        self.Scroll.setWidgetResizable(True)
+        self.Scroll.setStyleSheet("background-color: none; ")
+        self.footerLayout.addWidget(self.Scroll)
+
+        # Add the message send button
+        self.sendButton = StandardButton(self.footerFrame, self.footerLayout).sendButton()
+
+        Layout.addWidget(self)
+
+    @Slot()
+    def enableButton(self):
+        self.bold_button.setEnabled(True)
+        self.italic_button.setEnabled(True)
+        self.underline_button.setEnabled(True)
+        self.clear_button.setEnabled(True)
+
+    @Slot()
+    def setTextBold(self, checked: bool):
+        cursor = self.inputField.textCursor()
+        new_format = QTextCharFormat()
+        new_format.setFontWeight(QFont.Bold if checked else QFont.Normal)
+        self.inputField.setFontWeight(QFont.Bold if checked else QFont.Normal)
+
+        current_format = cursor.charFormat().fontWeight()
+        if cursor.hasSelection() and current_format == QFont.Normal:
+            cursor.mergeCharFormat(new_format)
+            self.inputField.setTextCursor(cursor)
+
+    @Slot()
+    def setTextItalic(self, checked: bool):
+
+        cursor = self.inputField.textCursor()
+        new_format = QTextCharFormat()
+        new_format.setFontItalic(True if checked else False)
+        self.inputField.setFontItalic(True if checked else False)
+
+        current_format = cursor.charFormat().fontItalic()
+        if cursor.hasSelection() and current_format:
+            cursor.mergeCharFormat(new_format)
+            self.inputField.setTextCursor(cursor)
+
+    @Slot()
+    def setTextUnderline(self, checked: bool):
+
+        cursor = self.inputField.textCursor()
+        new_format = QTextCharFormat()
+        new_format.setFontUnderline(True if checked else False)
+        self.inputField.setFontUnderline(True if checked else False)
+
+        current_format = cursor.charFormat().fontUnderline()
+        if cursor.hasSelection() and current_format:
+            cursor.mergeCharFormat(new_format)
+            self.inputField.setTextCursor(cursor)
+
+    @Slot()
+    def clearTextField(self):
+        if self.inputField.document().isEmpty() is False:
+            self.inputField.clear()
+
+    @Slot()
+    def selectFile(self):
+
+        self.dialog = QFileDialog(self)
+        self.dialog.setFileMode(QFileDialog.ExistingFile)
+        self.dialog.setNameFilter("Tous les fichiers (*)")
+        self.dialog.setViewMode(QFileDialog.Detail)
+
+        # Création du repertoire de fichiers
+        if self.dialog.exec():
+            try:
+                filenames = self.dialog.selectedFiles()
+                size = os.path.getsize(filenames[0])
+
+                if size > 10485760:
+                    raise error(ERROR_TITLE.SelectedFileError.value, "Le fichier sélectionné est trop grand")
+
+                if filenames[0] in self.files_to_send:
+                    raise error(ERROR_TITLE.SelectedFileError.value, "Le fichier a déjà été sélectionné")
+
+                if len(self.files_to_send) != 0:
+                    files_size = []
+                    for file in self.files_to_send:
+                        s = os.path.getsize(file)
+                        files_size.append(s)
+                    files_size.append(size)
+                    if sum(files_size) > 10485760:
+                        raise error(ERROR_TITLE.SelectedFileError.value, "La taille des fichiers sélectionnés est trop grande")
+            except error as e:
+                PopUp(title=str(e.title), message=str(e.message), icon=QMessageBox.Critical)
+            except OSError:
+                PopUp(title=ERROR_TITLE.SelectedFileError.value, message="Le fichier sélectionné n'existe pas ou est innaccéssible", icon=QMessageBox.Critical)
+            else:
+                self.files_to_send.append(filenames[0])
+                self.file = DisplayFile(self, self.file_layout, filenames[0], size)
+                self.file.fileForMessage(TYPE.Send)
+                self.file.button.clicked.connect(self.removeFile)
+
+    @Slot()
+    def removeFile(self):
+        # Recovery of the object that triggered the signal
+        sender = self.sender()
+
+        # retrieve its parent object, which is the frame1
+        selected_frame = sender.parent()
+
+        # Remove the file_Layout frame1
+        selected_frame.deleteLater()
+
+        # Remove the selected file from the list of selected files
+        selected_file = selected_frame.objectName()
+        if selected_file in self.files_to_send:
+            self.files_to_send.remove(selected_file)
+
 
 
 
