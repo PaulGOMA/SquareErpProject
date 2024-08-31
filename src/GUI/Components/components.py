@@ -92,7 +92,7 @@ class StandardButton(QPushButton):
             f"""
             QPushButton {{background-color: {StandardButton.mainBackgroundColor};border: none;}}
             QPushButton:pressed {{background-color: {StandardButton.mainBackgroundColorPressed};}}
-            QPushButton:disabled {{background-color: {StandardButton.mainBackgroundColorDisabled};}}
+            
             """
             )
         else:
@@ -101,6 +101,7 @@ class StandardButton(QPushButton):
             QPushButton {{background-color: {StandardButton.mainBackgroundColor}; {StandardButton.mainTextColor}; border: none; 
                 padding-top: {fitValueToScreen(value=10)}px; padding-right: {fitValueToScreen(value=20)}px; padding-bottom: {fitValueToScreen(value=10)}px; padding-left: {fitValueToScreen(value=20)}px;}}
             QPushButton:pressed {{background-color: {StandardButton.mainBackgroundColorPressed}; color: white;}}
+            QPushButton:disabled {{background-color: {StandardButton.mainBackgroundColorDisabled}; color: {StandardButton.mainTextColor};}}
             """
             )
 
@@ -127,6 +128,7 @@ class StandardButton(QPushButton):
     
     def sendButton(self) -> QPushButton:
         self.setText("Envoyer   ")
+        self.setLayoutDirection(Qt.RightToLeft)
         self.setIcon(QIcon(":/Icons/send_icon.svg"))
         self.setDisabled(True)
 
@@ -704,7 +706,11 @@ class DisplayFile(QFrame):
         self.frameLayout.addStretch(1)
 
         self.button.setIcon(QIcon(":/Icons/close_file.svg" if type.value else "Icons/download_file_icon.svg"))
-        self.button.setStyleSheet("QPushButton:pressed {icon: url(':/Icons/close_file_clicked.svg')}" if type.value else "QPushButton:pressed {icon: url('Icons/download_file_icon_clicked.svg')}")
+        self.button.setStyleSheet("""QPushButton:pressed {
+                                icon: url(':/Icons/close_file_clicked.svg')}" if type.value else "QPushButton:pressed {icon: url('Icons/download_file_icon_clicked.svg');
+                                background-color: transparent;
+                                bornder: none;
+                                }""")
         self.frameLayout.addWidget(self.button)
 
         return self
@@ -774,7 +780,7 @@ class DisplayFile(QFrame):
         self.frameLayout.addLayout(second_layout)
 
         self.button.setIcon(QIcon(":/Icons/close_report.svg"))
-        self.button.setStyleSheet("QPushButton:pressed {icon: url(':/Icons/close_report_clicked.svg')}")
+        self.button.setStyleSheet("QPushButton:pressed {icon: url(':/Icons/close_report_clicked.svg'), background-color: transparent; border: none;}")
         second_layout.addWidget(self.button)
 
         second_layout.addStretch()

@@ -666,6 +666,9 @@ class MessageInputField(QFrame):
     def clearTextField(self):
         if self.inputField.document().isEmpty() is False:
             self.inputField.clear()
+            self.bold_button.setChecked(False)
+            self.italic_button.setChecked(False)
+            self.underline_button.setChecked(False)
 
     @Slot()
     def selectFile(self):
