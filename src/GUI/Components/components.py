@@ -132,7 +132,8 @@ class StandardButton(QPushButton):
         self.setText("Envoyer   ")
         self.setLayoutDirection(Qt.RightToLeft)
         self.setIcon(QIcon(":/Icons/send_icon.svg"))
-        self.setDisabled(True)
+
+        return self
 
     
     def bareButton(self, text: str) -> QPushButton:

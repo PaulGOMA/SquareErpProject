@@ -578,6 +578,7 @@ class MessageInputField(QFrame):
                 border: none;
             """
         )
+        self.inputField.textChanged.connect(self.enableSendButton)
         self.frameLayout.addWidget(self.inputField)
 
         # Set the default font
@@ -614,6 +615,7 @@ class MessageInputField(QFrame):
 
         # Add the message send button
         self.sendButton = StandardButton(self.footerFrame, self.footerLayout).sendButton()
+        self.enableSendButton()
 
         Layout.addWidget(self)
 
@@ -704,6 +706,7 @@ class MessageInputField(QFrame):
                 PopUp(title=ERROR_TITLE.SelectedFileError.value, message="Le fichier sélectionné n'existe pas ou est innaccéssible", icon=QMessageBox.Critical)
             else:
                 self.files_to_send.append(filenames[0])
+                self.enableSendButton()
                 self.file = DisplayFile(self, self.file_layout, filenames[0], size)
                 self.file.fileForMessage(TYPE.Send)
                 self.file.button.clicked.connect(self.removeFile)
@@ -719,8 +722,16 @@ class MessageInputField(QFrame):
         # Remove the selected file from the list of selected files
         if selected_frame.absPath in self.files_to_send:
             self.files_to_send.remove(selected_frame.absPath)
+            self.enableSendButton()
 
-
+    def enableSendButton(self):
+        text = self.inputField.toPlainText()
+        if len(self.files_to_send) == 0 and text == "":
+            self.sendButton.setDisabled(True)
+        else:
+            self.sendButton.setDisabled(False)
+        
+        return self.sendButton
 
 
 
