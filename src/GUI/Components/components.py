@@ -7,6 +7,8 @@
 import sys
 sys.path.append("..")
 
+import os
+
 from PySide6.QtWidgets import QWidget, QHBoxLayout, QStyle, \
     QPushButton, QBoxLayout, QSizePolicy, QFrame, QLineEdit, \
     QLabel, QVBoxLayout, QComboBox, QStyledItemDelegate, \
@@ -619,14 +621,20 @@ def progress(parent: QWidget, layout: QBoxLayout, progress: PROGRESS) -> QFrame:
 class DisplayFile(QFrame):
 
 
-    def __init__(self, parent: QWidget, Layout: QBoxLayout, filename: str, size: int):
+    def __init__(self, parent: QWidget, Layout: QBoxLayout, path: str, size: int):
         super().__init__(parent)
 
-        self.file = filename
+        self.absPath = path
+
+        if os.path.isabs(path):
+            self.path = os.path.basename(path)
+        else:
+            self.path = path
+
         self.Size = size
 
         self.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
-        self.setToolTip(self.file)
+        self.setToolTip(self.path)
 
         self.frameLayout = QHBoxLayout()
         self.setLayout(self.frameLayout)
@@ -634,7 +642,7 @@ class DisplayFile(QFrame):
         self.icon = QLabel(self)
         self.icon.setStyleSheet("border: none;")
 
-        splitFile = self.file.split(".")
+        splitFile = self.path.split(".")
         self.fileFormat = splitFile[-1]        
 
         self.fileName = QLabel(self)
@@ -649,6 +657,7 @@ class DisplayFile(QFrame):
         self.button.setFlat(True)
 
         Layout.addWidget(self)
+
 
     def fileForMessage(self, type: TYPE) -> QFrame:
         self.setStyleSheet(
@@ -682,11 +691,11 @@ class DisplayFile(QFrame):
 
         self.frameLayout.addWidget(self.icon)
 
-        if len(self.file) > 6:
-            name = self.file[0:3] + "..."
+        if len(self.path) > 6:
+            name = self.path[0:3] + "..."
             self.fileName.setText(name)
         else:
-            self.fileName.setText(self.file)
+            self.fileName.setText(self.path)
 
         self.frameLayout.addWidget(self.fileName)
         self.frameLayout.addStretch(1)
@@ -706,13 +715,20 @@ class DisplayFile(QFrame):
         self.frameLayout.addStretch(1)
 
         self.button.setIcon(QIcon(":/Icons/close_file.svg" if type.value else "Icons/download_file_icon.svg"))
-        self.button.setStyleSheet("""QPushButton:pressed {
-                                icon: url(':/Icons/close_file_clicked.svg')}" if type.value else "QPushButton:pressed {icon: url('Icons/download_file_icon_clicked.svg');
-                                background-color: transparent;
-                                bornder: none;
-                                }""")
+        self.button.setStyleSheet(
+            f"""
+                QPushButton{{
+                    background-color: transparent;
+                    border: none;
+                }}
+                QPushButton:pressed {{
+                    icon: {"url(':/Icons/close_file_clicked.svg')" if type == TYPE.Send else "url('Icons/download_file_icon_clicked.svg')"};
+                    background-color: transparent;
+                    border: none;
+                }}
+            """
+        )
         self.frameLayout.addWidget(self.button)
-
         return self
 
 
@@ -744,11 +760,11 @@ class DisplayFile(QFrame):
         first_layout.addStretch(1)
 
         self.fileName.setFont(QFont('Calibri', fitValueToScreen(value=16), QFont.Bold, True))
-        if len(self.file) > 12:
-            name = self.file[0:9] + "..."
+        if len(self.path) > 12:
+            name = self.path[0:9] + "..."
             self.fileName.setText(name)
         else:
-            self.fileName.setText(self.file)
+            self.fileName.setText(self.path)
 
         file_name_layout = QHBoxLayout()
         file_name_layout.addStretch(1)
@@ -780,7 +796,11 @@ class DisplayFile(QFrame):
         self.frameLayout.addLayout(second_layout)
 
         self.button.setIcon(QIcon(":/Icons/close_report.svg"))
-        self.button.setStyleSheet("QPushButton:pressed {icon: url(':/Icons/close_report_clicked.svg'), background-color: transparent; border: none;}")
+        self.button.setStyleSheet(
+            """
+                QPushButton: {background-color: transparent; border: none;}
+                QPushButton:pressed {icon: url(':/Icons/close_report_clicked.svg'), background-color: transparent; border: none;}
+            """)
         second_layout.addWidget(self.button)
 
         second_layout.addStretch()
