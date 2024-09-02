@@ -663,14 +663,9 @@ class DisplayFile(QFrame):
     def fileForMessage(self, type: TYPE) -> QFrame:
         self.setStyleSheet(
             f"""
-                QFrame {{border : {fitValueToScreen(value=1)}px solid #7c7c7c; background-color : transparent;}}
+                QFrame {{border : {fitValueToScreen(value=1)}px solid {"#7c7c7c" if type.value else "#656565"}; background-color : transparent;}}
                 QFrame:hover {{background-color : #E1E2FE;}}
             """ 
-            if type.value else 
-            f"""
-                QFrame {{border : {fitValueToScreen(value=1)}px solid #656565; background-color : transparent;}}
-                QFrame:hover {{background-color : #E1E2FE;}}
-            """
         )
 
         if self.fileFormat == 'pdf':
@@ -1327,6 +1322,40 @@ def contactDetails(parent: QWidget, layout: QBoxLayout, mail: str, phone: str, j
     frameLayout.addRow(field_icon, field_layout)
 
     layout.addWidget(frame)
+    return frame
+
+def elementContactDetails(parent: QWidget, Layout: QBoxLayout, path: str, title: str, content: str) -> QFrame:
+    frame = QFrame(parent)
+    frame.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+    frame.setStyleSheet("background-color: none; border: none;")
+
+    frameLayout = QHBoxLayout()
+    frameLayout.setContentsMargins(0, 0, 0, 0)
+    frame.setLayout(frameLayout)
+
+    icon = QLabel(frame)
+    icon.setPixmap(QPixmap(path))
+    icon.setScaledContents(True)
+    icon.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+    icon.setStyleSheet("background-color: none; border: none;")
+
+    textLayout = QVBoxLayout()
+    frameLayout.addLayout(textLayout)
+
+    titleLabel = QLabel(frame, title)
+    titleLabel.setFont(QFont('Calibri', fitValueToScreen(value=16), QFont.Medium, False))
+    titleLabel.setStyleSheet("background-color: none; color: black; border: none;")
+    titleLabel.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+    textLayout.addWidget(titleLabel)
+
+    titleContent = QLabel(frame, title)
+    titleContent.setFont(QFont('Calibri', fitValueToScreen(value=14), QFont.Medium, True))
+    titleContent.setStyleSheet("background-color: none; color: #5d5d5d; border: none;")
+    titleContent.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+    textLayout.addWidget(titleContent)
+
+    Layout.addWidget(frame)
+
     return frame
 
 # ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::

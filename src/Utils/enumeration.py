@@ -31,3 +31,7 @@ class ERROR_TITLE(Enum):
     AccountRecoveryError = "Erreur de récupération du compte"
     InternetConnectionError = "Erreur de connecxion de internet"
 
+class CONTACT_ACRONYM_SIZE(Enum):
+    Large = 72
+    Medium = 36
+    Small = 27
