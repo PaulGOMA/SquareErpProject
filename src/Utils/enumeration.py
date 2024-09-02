@@ -33,5 +33,10 @@ class ERROR_TITLE(Enum):
 
 class CONTACT_ACRONYM_SIZE(Enum):
     Large = 72
-    Medium = 36
-    Small = 27
+    Medium = 42
+    Small = 36
+
+class CLOSING_SESSION_INFORMATION(Enum):
+    Deconnexion = ("Deconnexion", "Souhaitez-vous vous déconnecter ?")
+    Application = ("Fermeture de l'application", "Souhaitez-vous fermer l'application ?")
+    MessageBox = ("Annulation de l'envoi du message", "Souhaitez-vous annuler l'envoi de ce message ?")

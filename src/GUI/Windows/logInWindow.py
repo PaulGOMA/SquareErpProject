@@ -4,18 +4,15 @@ import sys
 sys.path.append("..")
 
 from PySide6.QtWidgets import QDialog, QHBoxLayout,\
-    QFrame, QVBoxLayout, QLabel, QSizePolicy, QMessageBox
+    QFrame, QVBoxLayout, QLabel, QSizePolicy
 from PySide6.QtGui import QPixmap, QFont, QIcon 
 from PySide6.QtCore import Qt, Slot
 
 from GUI.Components.components import entryField, StandardButton, \
     loginCheckbox, setBackgroundImage
-from GUI.Components.widgets import PopUp
-from Utils.enumeration import SIZE, ERROR_TITLE
+from Utils.enumeration import SIZE
 from Utils.responsiveLayout import centerWindow, \
     fitSizeToScreen, fitValueToScreen, fitWindowToScreen
-from Utils.errors import error
-from Utils.checkField import *
 
 
 from Assets import pictures
@@ -142,7 +139,6 @@ class LogInWindow(QDialog):
         self.rightLayout.addStretch(3)
 
         self.show()
-
 
     @Slot()
     def addToList(self, index: int, text: str):

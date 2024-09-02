@@ -18,10 +18,10 @@ from PySide6.QtCore import Qt, Slot
 
 from GUI.Components.components import StandardButton,\
     separator, SearchBar,attendanceStatus, user,\
-    TitleBarButton, contactAcronym, contactDetails, GroupButton,\
+    TitleBarButton, GroupButton,\
     ToolbarButtonForMessage, DisplayFile
 from Utils.enumeration import CONNEXION_STATUS as STATUS, SIZE, ERROR_TITLE,\
-    MESSAGE_FILE_TYPE as TYPE
+    MESSAGE_FILE_TYPE as TYPE, CLOSING_SESSION_INFORMATION as SESSION
 from Utils.responsiveLayout import fitValueToScreen, fitSizeToScreen
 from Utils.errors import error
 
@@ -161,7 +161,7 @@ class Sidebar(QFrame):
         self.frameLayout.addStretch(2)
 
         Layout.addWidget(self)
-        
+
 
 class TitleBar(QFrame):
     """
@@ -228,7 +228,7 @@ class TitleBar(QFrame):
 
     @Slot()
     def closeApp(self):
-        dialog = closeApp(deconnection=False)
+        dialog = closeSession(SESSION.Application)
         if dialog.exec():
             self.parent().parent().close()
 
@@ -295,39 +295,6 @@ class Statusbar(QStatusBar):
         self.addPermanentWidget(frame)
 
         return frame
-
-
-# Message bar
-def messageBar(parent: QWidget, layout: QBoxLayout, connexionstatus: STATUS, fName: str, lName: str) -> QFrame:
-    frame = QFrame(parent)
-    frame.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
-    frame.setStyleSheet("background-color: white;")
-
-    frameLayout = QHBoxLayout()
-    frame.setLayout(frameLayout)
-    frameLayout.setContentsMargins(fitValueToScreen(12), fitValueToScreen(12), fitValueToScreen(12), fitValueToScreen(12))
-
-    contactAcronym(parent=frame, layout=frameLayout, fName=fName, lName=lName, size=SIZE.Short)
-
-    username = QLabel(frame)
-    username.setText(f"{fName.capitalize() + " " + lName.upper()}")
-    username.setFont(QFont("Montserrat", fitValueToScreen(13), QFont.DemiBold))
-    palette = username.palette()
-    palette.setColor(QPalette.WindowText, QColor("#3d3d3d"))
-    username.setPalette(palette)
-    frameLayout.addWidget(username)
-
-    if connexionstatus == STATUS.OnLine:
-        status = QFrame(frame)
-        status.setFrameShape(QFrame.NoFrame)
-        status.setFixedSize(fitSizeToScreen(width=12, height=12))
-        status.setStyleSheet(f"background-color: #28FF98; border-radius: {fitValueToScreen(6)}; border: none;")
-        frameLayout.addWidget(status)
-
-    frameLayout.addStretch()
-    
-    layout.addWidget(frame)
-    return frame
 
 # ::::::::Pages::::::::::::: #
 class EmptyPage(QFrame):
@@ -403,66 +370,6 @@ class EmptyPage(QFrame):
 
         return self
 
-# ::::::::Contact::::::::::::: #
-def contact(parent: QWidget, layout: QBoxLayout, fName: str, lName: str, mail: str, phone: str, job: str, field: str) -> QFrame:
-    frame = QFrame(parent)
-    frame.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Expanding)
-    frame.setFrameShape(QFrame.NoFrame)
-    frame.setStyleSheet("background-color: white; border: none;")
-
-    frameLayout = QVBoxLayout()
-    frame.setLayout(frameLayout)
-
-    frameLayout.addStretch(2)
-
-    acronymLayout = QHBoxLayout()
-    frameLayout.addLayout(acronymLayout)
-
-    acronym = contactAcronym(parent=frame, layout=acronymLayout, fName=fName, lName=lName, size=SIZE.Long)
-    acronymLayout.addWidget(acronym)
-
-    nameLayout = QHBoxLayout()
-    nameLayout.setAlignment(Qt.AlignCenter)
-    frameLayout.addLayout(nameLayout)
-
-    username = QLabel(frame)
-    username.setText(f"{fName.capitalize() + " " + lName.upper()}")
-    username.setFont(QFont("Montserrat", fitValueToScreen(value=24), QFont.Medium))
-    username.setStyleSheet("background-color: none; border: none; color: #3d3d3d")
-    nameLayout.addWidget(username)
-
-    jobLayout = QHBoxLayout()
-    jobLayout.setAlignment(Qt.AlignCenter)
-    frameLayout.addLayout(jobLayout)
-
-    userjob = QLabel(frame)
-    userjob.setText(job)
-    userjob.setFont(QFont("Montserrat", fitValueToScreen(value=13), QFont.Medium, True))
-    userjob.setStyleSheet("background-color: none; border: none; color: #989898")
-    jobLayout.addWidget(userjob)
-
-    frameLayout.addStretch(1)
-
-    separator(parent=frame, layout=frameLayout, color="#888888")
-
-    frameLayout.addStretch(1)
-
-    title = QLabel(frame)
-    title.setText("Détails du contact")
-    title.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
-    title.setFont(QFont("Montserrat", fitValueToScreen(value=20), QFont.Medium))
-    title.setStyleSheet("background-color: none; border: none; color: #3d3d3d")
-    frameLayout.addWidget(title)
-
-    frameLayout.addStretch(1)
-
-    contactDetails(parent=frame, layout=frameLayout, mail=mail, phone=phone, job=job, field=field)
-
-    frameLayout.addStretch(4)
-
-    layout.addWidget(frame)
-    
-    return frame
 
 # ::::::::Pop up::::::::::::: #
 def PopUp(title: str, message: str, icon: QMessageBox.Icon) -> QMessageBox:
@@ -475,12 +382,12 @@ def PopUp(title: str, message: str, icon: QMessageBox.Icon) -> QMessageBox:
 
     return box_error
 
-def closeApp(deconnection: bool) -> QMessageBox:
+def closeSession(session: SESSION) -> QMessageBox:
     box = QMessageBox()
-    box.setWindowTitle("Voulez-vous vraiment terminer votre session ?" if deconnection else "Fermeture de l'application")
+    box.setWindowTitle(session.value[0])
     box.setWindowIcon(QIcon(":/Pictures/icon.png"))
     box.setIcon(QMessageBox.Question)
-    box.setText("Souhaitez-vous fermer l'application ?")
+    box.setText(session.value[1])
     acceptButton = box.addButton("Oui", QMessageBox.AcceptRole)
     rejectButton = box.addButton("Non", QMessageBox.RejectRole)
 
@@ -604,6 +511,7 @@ class MessageInputField(QFrame):
         self.file_frame = QFrame(self.footerFrame)
         self.file_frame.setStyleSheet("background-color: white;")
         self.file_layout = QHBoxLayout()
+        self.file_layout.setDirection(QBoxLayout.LeftToRight)
         self.file_frame.setLayout(self.file_layout)
 
         # Add the Scroll area

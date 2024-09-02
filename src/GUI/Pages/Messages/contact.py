@@ -3,12 +3,13 @@ sys.path.append("..")
 
 from PySide6.QtWidgets import QFrame, QWidget, QBoxLayout, QSizePolicy,\
     QHBoxLayout, QLabel, QVBoxLayout, QPushButton
-from PySide6.QtGui import QFont, QIcon
+from PySide6.QtGui import QFont, QIcon, QPixmap
 from PySide6.QtCore import Qt
 
-from Utils.enumeration import CONTACT_ACRONYM_SIZE as SIZE
+from Utils.enumeration import CONTACT_ACRONYM_SIZE as ACRONYM_SIZE
 from Utils.responsiveLayout import fitSizeToScreen, fitValueToScreen
-from GUI.Components.components import elementContactDetails, separator
+from GUI.Components.components import separator
+from Assets import icons
 
 class Contact(QFrame):
 
@@ -20,29 +21,30 @@ class Contact(QFrame):
         self.name : str = user[0]
         self.mail : str = user[1]
         self.number : str = user[2]
-        self.post : str = user[4]
-        self.field : str = user[5]
+        self.post : str = user[3]
+        self.field : str = user[4]
 
         Layout.addWidget(self)
 
-    def contactAcronym(self, scale: SIZE) -> QFrame:
-
+    def contactAcronym(self, scale: ACRONYM_SIZE) -> QFrame:
+        frame = QFrame()
         size = scale.value
 
-        fontSize = scale.value // 3
-
-        if scale == SIZE.Large:
+        if scale == ACRONYM_SIZE.Large:
             borderSize = 3
-        elif scale == SIZE.Medium:
+            fontSize = scale.value // 3
+        elif scale == ACRONYM_SIZE.Medium:
             borderSize = 2
-        elif scale == SIZE.Small:
+            fontSize = 12
+        elif scale == ACRONYM_SIZE.Small:
             borderSize = 1
+            fontSize = 9
 
         borderRadius = size // 2
 
-        self.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
-        self.setFixedSize(fitSizeToScreen(width=size, height=size))
-        self.setStyleSheet(
+        frame.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+        frame.setFixedSize(fitSizeToScreen(width=size, height=size))
+        frame.setStyleSheet(
             f"""
                 background-color: #5234A5; 
                 border-radius: {fitValueToScreen(value=borderRadius)}px; 
@@ -50,38 +52,39 @@ class Contact(QFrame):
             """)
 
         frameLayout = QHBoxLayout()
-        self.setLayout(frameLayout)
+        frame.setLayout(frameLayout)
 
         li = self.name.split(" ")
         fName = li[0]
         lName = li[-1]
 
-        label = QLabel(self)
+        label = QLabel(frame)
         label.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
         label.setText((fName[0] + lName[0]).upper())
-        label.setFont(QFont('Calibri', fitValueToScreen(value=fontSize), QFont.Medium, False))
+        label.setFont(QFont('Calibri', fitValueToScreen(value=fontSize), QFont.DemiBold, False))
         label.setStyleSheet(" background-color: none; color: white; border: none;")
 
         frameLayout.addWidget(label)
         frameLayout.setAlignment(label, Qt.AlignCenter)
-        return self
+        return frame
 
     def contactDetails(self) -> QFrame:
         self.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Expanding)
-        self.setStyleSheet("background-color: white; border: none;")
+        self.setFrameShape(QFrame.NoFrame)
+        self.setStyleSheet("background-color: white;")
 
         frameLayout = QVBoxLayout()
         self.setLayout(frameLayout)
 
         frameLayout.addStretch(2)
 
-        useracronym = self.contactAcronym(SIZE.Large)
+        useracronym = self.contactAcronym(ACRONYM_SIZE.Large)
         frameLayout.addWidget(useracronym)
         frameLayout.setAlignment(useracronym, Qt.AlignCenter)
 
         username = QLabel(self)
         username.setText(self.name.upper())
-        username.setFont(QFont("Montserrat", fitValueToScreen(value=24), QFont.Medium))
+        username.setFont(QFont("Montserrat", fitValueToScreen(value=18), QFont.Medium))
         username.setStyleSheet("background-color: none; border: none; color: #3d3d3d")
         frameLayout.addWidget(username)
         frameLayout.setAlignment(username, Qt.AlignCenter)
@@ -93,7 +96,11 @@ class Contact(QFrame):
         frameLayout.addWidget(userjob)
         frameLayout.setAlignment(userjob, Qt.AlignCenter)
 
+        frameLayout.addStretch(1)
+
         separator(frameLayout, "#888888")
+
+        frameLayout.addStretch(1)
 
         title = QLabel(self)
         title.setText("Détails du contact")
@@ -101,8 +108,6 @@ class Contact(QFrame):
         title.setFont(QFont("Montserrat", fitValueToScreen(value=20), QFont.Medium))
         title.setStyleSheet("background-color: none; border: none; color: #3d3d3d")
         frameLayout.addWidget(title)
-
-        frameLayout.addStretch(1)
 
         usermail = elementContactDetails(self, frameLayout, ":/Icons/mail_contact.svg", "Adresse mail", self.mail)
         frameLayout.addWidget(usermail)
@@ -122,6 +127,7 @@ class Contact(QFrame):
 
 
     def contactCard(self) -> QFrame:
+        self.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
         self.setStyleSheet(
             f"""
                 QFrame {{border : {fitValueToScreen(value=1)}px solid #DCDCDC; background-color : transparent;}}
@@ -132,17 +138,24 @@ class Contact(QFrame):
         frameLayout = QHBoxLayout()
         self.setLayout(frameLayout)
 
-        acronym = self.contactAcronym(SIZE.Small)
+        acronym = self.contactAcronym(ACRONYM_SIZE.Small)
         frameLayout.addWidget(acronym)
 
+        li = self.name.split(" ")
+        fName = li[0].capitalize()
+        lName = li[-1].upper()
+
         username = QLabel(self)
+        username.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
         username.setStyleSheet("background-color: none; border: none; color: #3d3d3d;")
-        username.setText(self.name)
-        username.setFont(QFont("Montserrat", fitValueToScreen(value=10), QFont.Medium))
+        username.setText(f"{fName} {lName}")
+        username.setFont(QFont("Montserrat", fitValueToScreen(value=10), QFont.DemiBold))
+        frameLayout.addWidget(username)
 
         self.Closebutton = QPushButton(self)
+        self.Closebutton.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
         self.Closebutton.setFlat(True)
-        self.button.setIcon(QIcon(":/Icons/close_file.svg"))
+        self.Closebutton.setIcon(QIcon(":/Icons/close_file.svg"))
         self.Closebutton.setStyleSheet(
             """
                 QPushButton{
@@ -150,7 +163,7 @@ class Contact(QFrame):
                     border: none;
                 }
                 QPushButton:pressed {
-                    icon: "url(':/Icons/close_file_clicked.svg')";
+                    icon: url(':/Icons/close_file_clicked.svg');
                     background-color: transparent;
                     border: none;
                 }
@@ -161,7 +174,7 @@ class Contact(QFrame):
 
         return self
     
-    def messageBar(self) -> QFrame:
+    def contactBar(self) -> QFrame:
         self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
         self.setStyleSheet("background-color: white;")
 
@@ -169,14 +182,58 @@ class Contact(QFrame):
         self.setLayout(frameLayout)
         frameLayout.setContentsMargins(fitValueToScreen(12), fitValueToScreen(12), fitValueToScreen(12), fitValueToScreen(12))
 
-        acronym = self.contactAcronym(SIZE.Medium)
+        acronym = self.contactAcronym(ACRONYM_SIZE.Medium)
         frameLayout.addWidget(acronym)
+
+        li = self.name.split(" ")
+        fName = li[0].capitalize()
+        lName = li[-1].upper()
 
         username = QLabel(self)
         username.setStyleSheet("background-color: none; border: none; color: #3d3d3d;")
-        username.setText(self.name)
+        username.setText(f"{fName} {lName}")
         username.setFont(QFont("Montserrat", fitValueToScreen(value=13), QFont.DemiBold))
+        frameLayout.addWidget(username)
 
         frameLayout.addStretch()
 
         return self
+    
+
+
+def elementContactDetails(parent: QWidget, Layout: QBoxLayout, path: str, title: str, content: str) -> QFrame:
+    frame = QFrame(parent)
+    frame.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+    frame.setStyleSheet("background-color: none; border: none;")
+
+    frameLayout = QHBoxLayout()
+    frameLayout.setContentsMargins(0, 0, 0, 0)
+    frame.setLayout(frameLayout)
+
+    icon = QLabel(frame)
+    icon.setPixmap(QPixmap(path))
+    icon.setScaledContents(True)
+    icon.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+    icon.setStyleSheet("background-color: none; border: none;")
+    frameLayout.addWidget(icon)
+
+    textLayout = QVBoxLayout()
+    textLayout.setSpacing(0)
+    frameLayout.addLayout(textLayout)
+
+    titleLabel = QLabel(title, frame)
+    titleLabel.setFont(QFont('Calibri', fitValueToScreen(value=16), QFont.Medium, False))
+    titleLabel.setStyleSheet("background-color: none; color: black; border: none;")
+    titleLabel.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+    textLayout.addWidget(titleLabel)
+
+    titleContent = QLabel(content, frame)
+    titleContent.setFont(QFont('Calibri', fitValueToScreen(value=14), QFont.Medium, True))
+    titleContent.setStyleSheet("background-color: none; color: #5d5d5d; border: none;")
+    titleContent.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+    textLayout.addWidget(titleContent)
+
+    Layout.addWidget(frame)
+
+    return frame
+
